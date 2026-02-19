@@ -3,6 +3,7 @@ import sys
 import re
 import asyncio
 import nest_asyncio
+import requests
 import streamlit as st
 
 nest_asyncio.apply()
@@ -12,14 +13,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from backend.ingestion.pipeline import IngestionPipeline
 from backend.ingestion.crawler import crawl_url
+from backend.generation.rag_service import RAGService
 
-# Initialize pipeline (outside the main interaction loop to avoid reload overhead if possible, 
-# but Streamlit re-runs scripts top-to-bottom. Ideally cache this).
+# Initialize Resources (cached)
 @st.cache_resource
 def get_pipeline():
     return IngestionPipeline()
 
+@st.cache_resource
+def get_rag_service():
+    return RAGService()
+
 pipeline = get_pipeline()
+rag_service = get_rag_service()
 
 st.set_page_config(page_title="Enterprise RAG Agent", layout="wide")
 
@@ -93,11 +99,7 @@ elif option == "Ingest Documents":
                         loop.close()
                         
                         if text:
-                            # Crawler saves to data/crawled_docs/<domain>/content.txt
-                            # We need to find the latest folder or specific folder
-                            # For simplicity, we assume the crawler behavior and manually construct path 
-                            # OR better: have crawler return the path.
-                            # Re-parsing URL to guess path (Fragile but works for now)
+                            # Re-parsing URL to guess path
                             from urllib.parse import urlparse
                             parsed_url = urlparse(url_input)
                             domain = parsed_url.netloc
@@ -126,14 +128,68 @@ elif option == "Ingest Documents":
                             st.success(f"✅ Successfully ingested {num_chunks} chunks into the Knowledge Base!")
                         else:
                             st.warning("Pipeline ran but no chunks were added.")
-                    except EventHandler as e: # Catch all
+                    except Exception as e: # Catch all
                         st.error(f"Pipeline Error: {e}")
                     
                 status.update(label="Ingestion Complete!", state="complete", expanded=False)
 
 elif option == "Chat":
     st.subheader("Chat with Knowledge Base")
-    user_input = st.text_input("Ask a question:")
-    if user_input:
-        st.write("You asked:", user_input)
-        # TODO: Implement RAG logic
+    
+    # Check if Knowledge Base exists
+    if not os.path.exists("data/vectorstore.faiss"):
+        st.warning("⚠️ Knowledge Base not found!")
+        st.info("Please go to the **'Ingest Documents'** tab to create one first.")
+        if st.button("Go to Ingestion (Manual Step)"):
+            st.switch_page("frontend/app.py") # Just refreshes, but instructs user
+    else:
+        st.success("✅ Knowledge Base is Ready!")
+
+        # Initialize chat history
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+
+        # Display chat messages from history on app rerun
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+                if "sources" in message and message["sources"]:
+                    with st.expander("View Sources"):
+                        for i, source in enumerate(message["sources"]):
+                            st.markdown(f"**Source {i+1}:** {source.get('source', 'Unknown')}")
+
+        # Accept user input
+        if prompt := st.chat_input("Ask a question about your documents..."):
+            # Add user message to chat history
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                
+                with st.spinner("Analyzing documents..."):
+                    try:
+                        response_data = rag_service.answer_query(prompt)
+                        answer = response_data["answer"]
+                        sources = response_data["sources"]
+                        
+                        message_placeholder.markdown(answer)
+                        
+                        if sources:
+                            with st.expander("View Sources"):
+                                for i, source in enumerate(sources):
+                                    st.markdown(f"**Source {i+1}:** {source.get('source', 'Unknown')}")
+                                    
+                        # Add assistant response to chat history
+                        st.session_state.messages.append({
+                            "role": "assistant", 
+                            "content": answer,
+                            "sources": sources
+                        })
+                        
+                    except Exception as e:
+                        st.error(f"Error generating response: {e}")
+                        st.session_state.messages.append({"role": "assistant", "content": "Sorry, I encountered an error. Is Ollama running?"})
