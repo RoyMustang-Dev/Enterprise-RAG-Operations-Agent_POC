@@ -14,6 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.ingestion.pipeline import IngestionPipeline
 from backend.ingestion.crawler import crawl_url
 from backend.generation.rag_service import RAGService
+from backend.vectorstore.faiss_store import FAISSStore
 
 # Initialize Resources (cached)
 @st.cache_resource
@@ -48,6 +49,25 @@ if option == "System Health":
 elif option == "Ingest Documents":
     st.subheader("Ingest Documents")
     
+    # Display Current Knowledge Base (Moved to Top)
+    with st.expander("📂 Current Knowledge Base (Click to View)", expanded=False):
+        try:
+            # We need to instantiate FAISSStore safely
+            # Note: This might be slow if the index is huge, but for POC it's fine.
+            # Using specific import to avoid circular dep if needed, but it's already imported.
+            store = FAISSStore() 
+            docs = store.get_all_documents()
+            if docs:
+                st.write(f"**Total Documents:** {len(docs)}")
+                for doc in docs:
+                    st.text(f"• {doc}")
+            else:
+                st.info("Knowledge Base is empty.")
+        except Exception as e:
+            st.error(f"Could not load Knowledge Base details: {e}")
+            
+    st.divider()
+    
     st.markdown("Upload files, enter a URL, or do both. The system will process all inputs into the knowledge base.")
     
     col1, col2 = st.columns(2)
@@ -60,11 +80,22 @@ elif option == "Ingest Documents":
         st.markdown("### 2. Crawl URL")
         url_input = st.text_input("Target URL (e.g., https://learnnect.com)")
 
-    if st.button("Start Ingestion", type="primary"):
+    # Ingestion Mode Selection
+    st.subheader("Ingestion Settings")
+    ingestion_mode = st.radio(
+        "Ingestion Mode:",
+        ("Start Fresh (Clear Logic)", "Append to Knowledge Base"),
+        help="Start Fresh will wipe the existing database. Append will add new documents to it."
+    )
+    
+    if ingestion_mode == "Append to Knowledge Base":
+        st.warning("⚠️ Warning: When appending, ensure you are not uploading duplicate documents. Logic to detect duplicates is currently experimental.")
+
+    if st.button("Start Ingestion"):
         if not uploaded_files and not url_input:
-            st.warning("Please provide at least one file or a URL.")
+            st.error("Please provide at least one source (File or URL).")
         else:
-            with st.status("Processing Ingestion...", expanded=True) as status:
+            with st.spinner("Processing... This may take a while."):
                 
                 paths_to_process = []
                 metadatas_to_process = []
@@ -72,10 +103,10 @@ elif option == "Ingest Documents":
                 # Process Files
                 if uploaded_files:
                     st.write(f"📂 Saving {len(uploaded_files)} file(s)...")
-                    os.makedirs("data", exist_ok=True)
+                    os.makedirs("data/uploaded_docs", exist_ok=True)
                     
                     for uploaded_file in uploaded_files:
-                        temp_path = os.path.join("data", uploaded_file.name)
+                        temp_path = os.path.join("data/uploaded_docs", uploaded_file.name)
                         try:
                             with open(temp_path, "wb") as f:
                                 f.write(uploaded_file.getbuffer())
@@ -123,15 +154,19 @@ elif option == "Ingest Documents":
                 if paths_to_process:
                     st.write("🧠 Generating Embeddings & Updating Vector Store...")
                     try:
-                        num_chunks = pipeline.run_ingestion(paths_to_process, metadatas_to_process)
+                        pipeline = get_pipeline()
+                        reset_flag = True if ingestion_mode == "Start Fresh (Clear Logic)" else False
+                        
+                        num_chunks = pipeline.run_ingestion(paths_to_process, metadatas=metadatas_to_process, reset_db=reset_flag)
                         if num_chunks:
                             st.success(f"✅ Successfully ingested {num_chunks} chunks into the Knowledge Base!")
+                            # Reload the RAG Service's vector store to pick up changes
+                            rag_service.vector_store.load()
+                            st.rerun()
                         else:
                             st.warning("Pipeline ran but no chunks were added.")
                     except Exception as e: # Catch all
                         st.error(f"Pipeline Error: {e}")
-                    
-                status.update(label="Ingestion Complete!", state="complete", expanded=False)
 
 elif option == "Chat":
     st.subheader("Chat with Knowledge Base")
@@ -139,9 +174,7 @@ elif option == "Chat":
     # Check if Knowledge Base exists
     if not os.path.exists("data/vectorstore.faiss"):
         st.warning("⚠️ Knowledge Base not found!")
-        st.info("Please go to the **'Ingest Documents'** tab to create one first.")
-        if st.button("Go to Ingestion (Manual Step)"):
-            st.switch_page("frontend/app.py") # Just refreshes, but instructs user
+        st.info("Please select **'Ingest Documents'** from the sidebar to populate the Knowledge Base.")
     else:
         st.success("✅ Knowledge Base is Ready!")
 
@@ -180,6 +213,7 @@ elif option == "Chat":
                         
                         if sources:
                             with st.expander("View Sources"):
+                                # Backend now returns unique sources, but just in case
                                 for i, source in enumerate(sources):
                                     st.markdown(f"**Source {i+1}:** {source.get('source', 'Unknown')}")
                                     

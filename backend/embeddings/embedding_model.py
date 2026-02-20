@@ -6,19 +6,15 @@ class EmbeddingModel:
     Singleton class to handle text embedding generation using sentence-transformers.
     
     Attributes:
-        model_name (str): The name of the model to use (default: 'all-MiniLM-L6-v2').
-        model (SentenceTransformer): The loaded model instance.
+    Handles generation of text embeddings using sentence-transformers.
+    Uses BAAI/bge-large-en-v1.5 for high-quality enterprise retrieval.
     """
-    _instance = None
     
-    def __new__(cls, model_name: str = "all-MiniLM-L6-v2"):
-        if cls._instance is None:
-            cls._instance = super(EmbeddingModel, cls).__new__(cls)
-            cls._instance.model_name = model_name
-            print(f"Loading embedding model: {model_name}...")
-            cls._instance.model = SentenceTransformer(model_name)
-            print("Model loaded successfully.")
-        return cls._instance
+    def __init__(self, model_name: str = "BAAI/bge-large-en-v1.5"):
+        print(f"Loading embedding model: {model_name}...")
+        # normalize_embeddings=True is highly recommended for BGE models for cosine similarity
+        self.model = SentenceTransformer(model_name)
+        print("Model loaded successfully.")
 
     def generate_embedding(self, text: str) -> List[float]:
         """

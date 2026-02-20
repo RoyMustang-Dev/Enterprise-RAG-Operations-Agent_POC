@@ -22,7 +22,7 @@ class IngestionPipeline:
         self.embedder = EmbeddingModel()
         self.vector_store = FAISSStore()
 
-    def run_ingestion(self, file_paths: List[str], metadatas: List[Dict] = None) -> int:
+    def run_ingestion(self, file_paths: List[str], metadatas: List[Dict] = None, reset_db: bool = False) -> int:
         """
         Runs the full ingestion pipeline for a list of files or crawled content paths.
         
@@ -41,6 +41,11 @@ class IngestionPipeline:
         all_chunks = []
         all_metadatas = []
         
+        # 0. Reset Knowledge Base if requested
+        if reset_db:
+            print("Resetting Knowledge Base...")
+            self.vector_store.clear()
+
         print(f"Starting ingestion for {len(file_paths)} files...")
         
         for i, file_path in enumerate(file_paths):
@@ -80,11 +85,24 @@ class IngestionPipeline:
 
         # 3. Generate Embeddings (Batch)
         print(f"Generating embeddings for {len(all_chunks)} chunks...")
-        embeddings = self.embedder.generate_embeddings(all_chunks)
+        embeddings = []
+        try:
+            embeddings = self.embedder.generate_embeddings(all_chunks)
+            if not embeddings:
+                # If we have chunks but no embeddings, it's a failure
+                if len(all_chunks) > 0:
+                     raise ValueError("Embedding model returned no embeddings for chunks.")
+        except Exception as e:
+            print(f"Embedding generation failed: {e}")
+            raise e
         
         # 4. Store in Vector DB
         print("Adding to vector store...")
-        self.vector_store.add_documents(all_chunks, embeddings, all_metadatas)
+        try:
+            self.vector_store.add_documents(all_chunks, embeddings, all_metadatas)
+        except Exception as e:
+            print(f"Vector store addition failed: {e}")
+            raise e
         
         print(f"Ingestion complete. Added {len(all_chunks)} chunks.")
         return len(all_chunks)

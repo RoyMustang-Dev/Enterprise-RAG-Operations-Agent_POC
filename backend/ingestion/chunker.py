@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-def chunk_text(text: str, chunk_size: int = 512, overlap: int = 50) -> List[str]:
+def chunk_text(text: str, chunk_size: int = 512, overlap: int = 128) -> List[str]:
     """
     Splits text into smaller chunks for vector embedding.
     

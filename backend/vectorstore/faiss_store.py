@@ -6,19 +6,43 @@ from typing import List, Dict, Optional
 
 class FAISSStore:
     """
-    Wrapper around FAISS index for vector storage and retrieval.
-    Includes metadata storage since FAISS only stores vectors.
+    A simple wrapper around FAISS for storing and retrieving document embeddings.
     """
-    def __init__(self, dimension: int = 384, index_path: str = "data/vectorstore.faiss", metadata_path: str = "data/metadata.pkl"):
+    def __init__(self, dimension: int = 1024, index_file: str = "data/vectorstore.faiss", meta_file: str = "data/metadata.json"):
         self.dimension = dimension
-        self.index_path = index_path
-        self.metadata_path = metadata_path
+        self.index_path = index_file
+        self.metadata_path = meta_file
         self.index = faiss.IndexFlatL2(dimension)
         self.metadata: List[Dict] = []
         
         # Load existing index if available
-        if os.path.exists(index_path) and os.path.exists(metadata_path):
+        if os.path.exists(self.index_path) and os.path.exists(self.metadata_path):
             self.load()
+
+    def clear(self):
+        """
+        Clears the vector store state and deletes the persisted files.
+        """
+        self.index = faiss.IndexFlatL2(self.dimension)
+        self.metadata = []
+        
+        if os.path.exists(self.index_path):
+            os.remove(self.index_path)
+        if os.path.exists(self.metadata_path):
+            os.remove(self.metadata_path)
+        print("Vector store cleared.")
+
+    def get_all_documents(self) -> List[str]:
+        """
+        Returns a list of unique source names present in the knowledge base.
+        """
+        if not self.metadata:
+            return []
+        sources = set()
+        for meta in self.metadata:
+            if 'source' in meta:
+                sources.add(meta['source'])
+        return sorted(list(sources))
 
     def add_documents(self, chunks: List[str], embeddings: List[List[float]], metadatas: List[Dict]):
         """
