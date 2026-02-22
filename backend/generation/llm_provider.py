@@ -63,10 +63,10 @@ class SarvamClient:
         self.model = model
         self.base_url = "https://api.sarvam.ai/v1/chat/completions" 
         
-    def generate(self, prompt: str, system_prompt: str = None) -> str:
+    def generate(self, prompt: str, system_prompt: str = None, temperature: float = None, reasoning_effort: str = None, stream: bool = False) -> Any:
         """
         Generates a completion using Sarvam AI.
-        Requires an active API key.
+        If stream=True, yields chunks of text. Otherwise returns a full string.
         """
         if not self.api_key or self.api_key.strip() == "":
              return "Error: Sarvam API Key is missing. Please enter your API key in the sidebar."
@@ -84,25 +84,68 @@ class SarvamClient:
         payload = {
             "model": self.model,
             "messages": messages,
-            "temperature": 0.2, 
-            "max_tokens": 1000
+            "max_tokens": 1000,
+            "stream": stream
         }
         
+        if temperature is not None:
+             payload["temperature"] = temperature
+        else:
+             payload["temperature"] = 0.2
+             
+        # Sarvam API has a bug where stream=True + reasoning_effort generates empty responses
+        if reasoning_effort is not None and not stream:
+             payload["reasoning_effort"] = reasoning_effort
+             
         try:
-            response = requests.post(self.base_url, headers=headers, json=payload)
+            response = requests.post(self.base_url, headers=headers, json=payload, stream=stream)
             if response.status_code == 401:
                 return "Error: Invalid Sarvam API Key. Please check your credentials."
             response.raise_for_status()
-            data = response.json()
-            if "choices" in data and len(data["choices"]) > 0:
-                return data["choices"][0].get("message", {}).get("content", "")
-            return "Error: Unexpected response format from Sarvam API."
+            
+            if stream:
+                def generate_stream():
+                    for line in response.iter_lines():
+                        if line:
+                            line_dec = line.decode('utf-8').strip()
+                            if line_dec.startswith('data: '):
+                                data_str = line_dec[6:]
+                                if data_str.strip() == '[DONE]':
+                                    break
+                                try:
+                                    chunk_data = json.loads(data_str)
+                                    if "choices" in chunk_data and len(chunk_data["choices"]) > 0:
+                                        delta = chunk_data["choices"][0].get("delta", {})
+                                        content = delta.get("content")
+                                        if content is not None:
+                                            yield str(content)
+                                except json.JSONDecodeError:
+                                    pass
+                            elif line_dec.startswith('{'):
+                                # It might have ignored stream=True and returned a full JSON block
+                                try:
+                                    json_data = json.loads(line_dec)
+                                    if "choices" in json_data and len(json_data["choices"]) > 0:
+                                        msg = json_data["choices"][0].get("message", {})
+                                        if "content" in msg and msg["content"]:
+                                            yield msg["content"]
+                                except json.JSONDecodeError:
+                                    pass
+                return generate_stream()
+            else:
+                data = response.json()
+                if "choices" in data and len(data["choices"]) > 0:
+                    return data["choices"][0].get("message", {}).get("content", "")
+                return "Error: Unexpected response format from Sarvam API."
+                
         except requests.exceptions.RequestException as e:
             print(f"Error calling Sarvam API: {e}")
             if hasattr(e, 'response') and e.response is not None:
                 print("Response text:", e.response.text)
-                return f"Error: Sarvam API Failed ({e.response.status_code}): {e.response.text}"
-            return f"Error: Failed to generate response from Sarvam ({self.model}). Check backend logs."
+                err_msg = f"Error: Sarvam API Failed ({e.response.status_code}): {e.response.text}"
+                return [err_msg] if stream else err_msg
+            err_msg = f"Error: Failed to generate response from Sarvam ({self.model}). Check backend logs."
+            return [err_msg] if stream else err_msg
 
 
 if __name__ == "__main__":

@@ -1,0 +1,38 @@
+graph LR
+    %% Inputs
+    Input([Chunked Data])
+
+    %% Embedding Module
+    subgraph Embeddings [Embeddings]
+        direction TB
+        Space0[ ]
+        Space0 ~~~ Model{BAAI bge-large<br/>Model}
+        style Space0 height:0px,width:0px,fill:none,stroke:none,color:none
+    end
+
+    %% Storage Module
+    subgraph Vector [Vector Store]
+        direction TB
+        Space1[ ]
+        Space1 ~~~ FAISS[(FAISS<br/>Index)]
+        Space1 ~~~ Meta[(Metadata<br/>Pickle)]
+        style Space1 height:0px,width:0px,fill:none,stroke:none,color:none
+    end
+
+    %% Flow
+    Input -->|Text Chunks| Model
+    Model -->|Dense Vectors| FAISS
+    Input -.->|Metadata| Meta
+    FAISS <-->|Sync| Meta
+
+    %% Styling
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#212529;
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef core fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef agent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    classDef startend fill:#e7f5ff,stroke:#339af0,stroke-width:2px,rx:20,ry:20;
+
+    class Model core;
+    class FAISS,Meta storage;
+    class Input startend;

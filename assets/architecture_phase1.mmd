@@ -1,0 +1,41 @@
+graph LR
+    %% Inputs
+    subgraph Sources [Enterprise Data]
+        direction TB
+        PDF((PDF Files))
+        DOCX((DOCX Files))
+        TXT((TXT Files))
+        URL((Web URLs))
+    end
+
+    %% Ingestion Module
+    subgraph Ingestion [Ingestion Engine]
+        direction LR
+        Loader{Document<br/>Parsers}
+        Crawler{Playwright<br/>Crawler}
+        Chunker[Text<br/>Chunker]
+    end
+
+    %% Flow
+    PDF --> Loader
+    DOCX --> Loader
+    TXT --> Loader
+    URL --> Crawler
+
+    Loader -->|Raw Text| Chunker
+    Crawler -->|Raw Text| Chunker
+
+    Chunker --> Output([Chunked Data])
+
+    %% Styling
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#212529;
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef core fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef agent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    classDef startend fill:#e7f5ff,stroke:#339af0,stroke-width:2px,rx:20,ry:20;
+
+    class PDF,DOCX,TXT,URL input;
+    class Loader,Crawler core;
+    class Chunker agent;
+    class Output startend;

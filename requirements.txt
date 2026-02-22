@@ -8,3 +8,6 @@ sentence-transformers
 faiss-cpu
 requests
 pytest
+langgraph
+langchain-core
+pydantic

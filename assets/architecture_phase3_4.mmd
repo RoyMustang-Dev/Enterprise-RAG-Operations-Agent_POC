@@ -1,0 +1,48 @@
+graph LR
+    %% User Input
+    User((User Input))
+
+    %% Core Components
+    subgraph Orcehstrator [Orchestrator Layer]
+        Router{Semantic<br/>Router}
+    end
+
+    subgraph Phase4 [Phase 4: Agents]
+        direction TB
+        Space1[ ]
+        Space1 ~~~ Smalltalk[Smalltalk<br/>Agent]
+        Space1 ~~~ Analytical[Analytical<br/>Agent]
+        style Space1 height:0px,width:0px,fill:none,stroke:none,color:none
+    end
+    
+    subgraph Phase3 [Phase 3: RAG Core]
+        direction TB
+        Space2[ ]
+        Space2 ~~~ RagAgent[RAG<br/>Agent]
+        VectorDB[(FAISS<br/>Store)]
+        style Space2 height:0px,width:0px,fill:none,stroke:none,color:none
+    end
+
+    %% Flow
+    User -->|Query| Router
+    
+    Router -->|Greeting| Smalltalk
+    Router -->|Comparison| Analytical
+    Router -->|Information| RagAgent
+    
+    Analytical -->|Hybrid Search| VectorDB
+    RagAgent -->|Hybrid Search| VectorDB
+    
+    VectorDB -.->|Context| Analytical
+    VectorDB -.->|Context| RagAgent
+
+    %% Styling to perfectly match Phase 1 & 2
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef core fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    classDef storage fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef agent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+    class User input;
+    class Router,Smalltalk,Analytical,RagAgent agent;
+    class VectorDB storage;

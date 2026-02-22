@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from typing import List, Union
+from functools import lru_cache
 
 class EmbeddingModel:
     """
@@ -12,10 +13,27 @@ class EmbeddingModel:
     
     def __init__(self, model_name: str = "BAAI/bge-large-en-v1.5"):
         print(f"Loading embedding model: {model_name}...")
+        
+        import os
+        import logging
+        
+        # 1. Silence HuggingFace Authentication Warnings
+        hf_token = os.getenv("HF_TOKEN")
+        if hf_token:
+            try:
+                from huggingface_hub import login
+                login(token=hf_token)
+            except Exception:
+                pass
+                
+        # 2. Silence BAAI bge-large 'Unexpected Layer' Warnings
+        logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
+        
         # normalize_embeddings=True is highly recommended for BGE models for cosine similarity
         self.model = SentenceTransformer(model_name)
         print("Model loaded successfully.")
 
+    @lru_cache(maxsize=1024)
     def generate_embedding(self, text: str) -> List[float]:
         """
         Generates an embedding for a single text string.

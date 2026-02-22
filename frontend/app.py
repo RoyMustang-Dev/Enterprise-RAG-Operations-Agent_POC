@@ -23,6 +23,7 @@ def get_pipeline():
 
 @st.cache_resource
 def get_rag_service():
+    # Force cache reload to pick up FAISS constructor fixes
     return RAGService()
 
 pipeline = get_pipeline()
@@ -196,8 +197,16 @@ elif option == "Chat":
         st.success("✅ Knowledge Base is Ready!")
 
         # Initialize chat history
+        history_path = os.path.join("data", "chat_history.json")
         if "messages" not in st.session_state:
             st.session_state.messages = []
+            if os.path.exists(history_path):
+                try:
+                    import json
+                    with open(history_path, "r") as f:
+                        st.session_state.messages = json.load(f)
+                except Exception:
+                    pass
 
         # Display chat messages from history on app rerun
         for message in st.session_state.messages:
@@ -220,7 +229,25 @@ elif option == "Chat":
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
                 
-                with st.status("Analyzing documents...", expanded=True) as status:
+                import re
+                import difflib
+                
+                # Check for greeting to set initial UI status accurately
+                is_greeting = False
+                normalized = re.sub(r'[^a-zA-Z0-9\s]', '', prompt).strip().lower()
+                words = normalized.split()
+                g_words = ["hi", "hello", "hey", "greetings", "sup", "howdy", "morning", "afternoon", "evening"]
+                if normalized in g_words:
+                    is_greeting = True
+                elif len(words) <= 5:
+                    for w in words:
+                        if difflib.get_close_matches(w, g_words, n=1, cutoff=0.7):
+                            is_greeting = True
+                            break
+                            
+                initial_status = "Agent: Smalltalk" if is_greeting else "Analyzing documents..."
+                
+                with st.status(initial_status, expanded=True) as status:
                     try:
                         # Determine model parameters
                         if "Ollama" in llm_choice:
@@ -239,26 +266,109 @@ elif option == "Chat":
                             status.update(label=msg)
                             st.write(f"⚙️ {msg}")
 
-                        response_data = current_rag.answer_query(prompt, status_callback=update_ui_status)
-                        answer = response_data["answer"]
-                        sources = response_data["sources"]
+                        stream_state = {"text": ""}
+                        def stream_to_ui(chunk: str):
+                            stream_state["text"] += chunk
+                            message_placeholder.markdown(stream_state["text"] + "▌")
+
+                        response_data = current_rag.answer_query(prompt, status_callback=update_ui_status, streaming_callback=stream_to_ui)
                         
                         status.update(label="Complete!", state="complete", expanded=False)
                         
+                        answer = response_data["answer"]
+                        sources = response_data["sources"]
+                        
                         message_placeholder.markdown(answer)
                         
-                        if sources:
-                            with st.expander("View Sources"):
-                                # Backend now returns unique sources, but just in case
-                                for i, source in enumerate(sources):
-                                    st.markdown(f"**Source {i+1}:** {source.get('source', 'Unknown')}")
+                        # Display Trust & Traceability Metrics
+                        confidence = response_data.get("confidence", 0.0)
+                        verdict = response_data.get("verifier_verdict", "UNKNOWN")
+                        is_hallucinated = response_data.get("is_hallucinated", False)
+                        
+                        cols = st.columns(3)
+                        with cols[0]:
+                            st.metric(label="Retrieval Confidence", value=f"{confidence * 100:.0f}%")
+                        with cols[1]:
+                            st.metric(label="Verifier Verdict", value=verdict)
+                        with cols[2]:
+                            st.metric(label="Hallucinated?", value="⚠️ YES" if is_hallucinated else "✅ NO")
+                            
+                        if is_hallucinated:
+                            st.warning("Warning: The system flagged this answer as potentially drifting from the retrieved context. Please verify.")
+                        
+                        attributions = response_data.get("attributions", [])
+                        if attributions:
+                            with st.expander("Sentence-Level Source Mapping"):
+                                for attr in attributions:
+                                    st.markdown(f"**\"{attr['sentence']}\"**")
+                                    st.caption(f"↳ Source: `{attr['source']}` (Confidence: {attr['similarity']*100:.0f}%)")
+                                    st.divider()
+
+                        if sources or response_data.get("search_query"):
+                            with st.expander("View RAG Traceability (Sources & Optimizations)"):
+                                # Issue 6 & 7: Show Query Rewriting and Optimizations
+                                opt = response_data.get("optimizations", {})
+                                if response_data.get("search_query") and response_data.get("search_query") != prompt:
+                                     st.markdown(f"**Original Query:** `{prompt}`")
+                                     st.markdown(f"**Optimized Search Query:** `{response_data['search_query']}` *(Autonomous Rewriting Applied)*")
+                                     st.divider()
+                                
+                                st.markdown("**Latency Optimizations Applied:**")
+                                st.caption(f"- **Short-Circuited:** `{'Yes' if opt.get('short_circuited') else 'No'}` *(Bypassed Heavy Retrieval)*\n- **Vector Caching:** `Active` *(LRU Cache on SentenceTransformer)*\n- **Dynamic Temp:** `{opt.get('temperature')}` | **Compute Effort:** `{opt.get('reasoning_effort')}`")
+                                st.divider()
+                                
+                                if sources:
+                                    for i, source in enumerate(sources):
+                                        st.markdown(f"**Source {i+1}:** {source.get('source', 'Unknown')}")
+                                        st.caption(f"Snippet: {source.get('text', '')[:200]}...")
+                        
+                        # User Feedback Loop
+                        st.write("Was this helpful?")
+                        msg_idx = len(st.session_state.messages)
+                        feedback_key = f"feedback_{msg_idx}"
+                        
+                        if feedback_key not in st.session_state:
+                             st.session_state[feedback_key] = None
+                             
+                        if st.session_state[feedback_key] is None:
+                            f_cols = st.columns([1, 1, 10])
+                            with f_cols[0]:
+                                 if st.button("👍", key=f"up_{msg_idx}"):
+                                      st.session_state[feedback_key] = "positive"
+                                      # Here we would normally connect to an API endpoint or DB to save feedback
+                                      import json, datetime, os
+                                      feedback_dir = os.path.join("data", "audit")
+                                      os.makedirs(feedback_dir, exist_ok=True)
+                                      with open(os.path.join(feedback_dir, "feedback.jsonl"), "a") as f:
+                                            f.write(json.dumps({"timestamp": datetime.datetime.now().isoformat(), "query": prompt, "rating": "positive"}) + "\n")
+                                      st.rerun()
+                            with f_cols[1]:
+                                 if st.button("👎", key=f"dn_{msg_idx}"):
+                                      st.session_state[feedback_key] = "negative"
+                                      import json, datetime, os
+                                      feedback_dir = os.path.join("data", "audit")
+                                      os.makedirs(feedback_dir, exist_ok=True)
+                                      with open(os.path.join(feedback_dir, "feedback.jsonl"), "a") as f:
+                                            f.write(json.dumps({"timestamp": datetime.datetime.now().isoformat(), "query": prompt, "rating": "negative"}) + "\n")
+                                      st.rerun()
+                        else:
+                             st.success(f"Feedback recorded: {st.session_state[feedback_key]}. Thank you!")
                                     
                         # Add assistant response to chat history
                         st.session_state.messages.append({
-                            "role": "assistant", 
+                            "role": "assistant",
                             "content": answer,
-                            "sources": sources
+                            "sources": sources,
+                            "search_query": response_data.get("search_query"),
+                            "optimizations": response_data.get("optimizations"),
+                            "confidence": response_data.get("confidence", 0.0),
+                            "verifier_verdict": response_data.get("verifier_verdict", "UNKNOWN"),
+                            "is_hallucinated": response_data.get("is_hallucinated", False),
+                            "attributions": response_data.get("attributions", [])
                         })
+                        import json
+                        with open(os.path.join("data", "chat_history.json"), "w") as f:
+                            json.dump(st.session_state.messages, f)
                         
                     except Exception as e:
                         st.error(f"Error generating response: {e}")
