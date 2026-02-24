@@ -1,3 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch
+torchvision
+torchaudio
 fastapi
 uvicorn
 streamlit
@@ -12,3 +16,5 @@ langgraph
 langchain-core
 pydantic
 python-multipart
+langchain-text-splitters
+qdrant-client

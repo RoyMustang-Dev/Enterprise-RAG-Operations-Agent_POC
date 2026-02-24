@@ -139,17 +139,29 @@ class CrawlerService:
 
     # ---------------- ASYNC DB WRITER ---------------- #
 
-    async def _db_writer(self, queue):
+    async def _db_writer(self, queue, on_batch_extracted=None):
         """
         Dedicated persistence coroutine.
         Workers push records here.
         This completely removes SQLite from crawler critical path.
         """
+        batch = []
         while True:
             item = await queue.get()
             if item is None:
+                if batch and on_batch_extracted:
+                    await on_batch_extracted(list(batch))
                 break
+                
             insert_page_async(*item)
+            
+            # Execute batch callback hook explicitly for streaming pipeline architecture
+            if item[5] == "success" and on_batch_extracted:
+                batch.append(item)
+                if len(batch) >= 5:
+                    await on_batch_extracted(list(batch))
+                    batch.clear()
+                    
             queue.task_done()
 
     # ---------------- WORKER ---------------- #
@@ -271,7 +283,7 @@ class CrawlerService:
 
     # ---------------- ENTRY ---------------- #
 
-    async def crawl_url(self, url: str, save_folder: str = None, simulate: bool = False, recursive: bool = False, max_depth: int = 1, stop_event: asyncio.Event = None) -> dict:
+    async def crawl_url(self, url: str, save_folder: str = None, simulate: bool = False, recursive: bool = False, max_depth: int = 1, stop_event: asyncio.Event = None, on_batch_extracted=None) -> dict:
         """
         Orchestrates the crawling process with enhanced features.
         """
@@ -315,8 +327,9 @@ class CrawlerService:
             
             browser = await p.chromium.launch(**launch_options)
 
-            # High Concurrency unless simulating
-            NUM = 15 if not simulate else 6 
+            # High Concurrency unless simulating (Phase 13 Dynamic Hardware Hook)
+            import os
+            NUM = min(35, (os.cpu_count() or 4) * 4) if not simulate else 6
             
             context_options = {}
             if not simulate:
@@ -326,7 +339,7 @@ class CrawlerService:
             contexts = [await browser.new_context(**context_options) for _ in range(NUM)]
 
             # Start DB writer
-            db_task = asyncio.create_task(self._db_writer(db_queue))
+            db_task = asyncio.create_task(self._db_writer(db_queue, on_batch_extracted))
 
             workers = [
                 asyncio.create_task(

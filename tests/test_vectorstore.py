@@ -6,22 +6,21 @@ import numpy as np
 # Add backend to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from backend.vectorstore.faiss_store import FAISSStore
+from backend.vectorstore.qdrant_store import QdrantStore
 
-TEST_INDEX_PATH = "tests/data/test_index.faiss"
-TEST_META_PATH = "tests/data/test_meta.pkl"
+TEST_PATH = "tests/data/qdrant_test_storage"
 
 def setup_test_env():
     if os.path.exists("tests/data"):
-        shutil.rmtree("tests/data")
-    os.makedirs("tests/data")
+        shutil.rmtree("tests/data", ignore_errors=True)
+    os.makedirs(TEST_PATH)
 
-def test_faiss_store():
+def test_qdrant_store():
     setup_test_env()
     
-    print("\n[TEST] Initializing FAISS Store...")
+    print("\n[TEST] Initializing Qdrant Store...")
     # Initialize with small dimension for testing
-    store = FAISSStore(dimension=4, index_path=TEST_INDEX_PATH, metadata_path=TEST_META_PATH)
+    store = QdrantStore(dimension=4, collection_name="test_collection", path=TEST_PATH)
     
     chunks = ["doc1", "doc2", "doc3"]
     # Create dummy embeddings (3 docs, 4 dimensions)
@@ -35,7 +34,7 @@ def test_faiss_store():
     print(f"[TEST] Adding {len(chunks)} documents...")
     store.add_documents(chunks, embeddings, metadatas)
     
-    assert store.index.ntotal == 3, "Should have 3 documents in index"
+    assert store.ntotal == 3, "Should have 3 documents in index"
     
     # Test Search
     query = [1.0, 0.0, 0.0, 0.0] # Should match doc1
@@ -47,15 +46,16 @@ def test_faiss_store():
     assert results[0]['source'] == "s1"
     print(f"[SUCCESS] Search result: {results[0]}")
     
-    # Test Persistence
-    print("[TEST] Testing save/load persistence...")
-    store.save()
+    # Test Persistence (Qdrant does this natively)
+    print("[TEST] Testing load persistence...")
     
-    new_store = FAISSStore(dimension=4, index_path=TEST_INDEX_PATH, metadata_path=TEST_META_PATH)
-    new_store.load()
+    # Release the local database lock
+    store.client.close()
     
-    assert new_store.index.ntotal == 3, "Loaded store should have 3 documents"
+    new_store = QdrantStore(dimension=4, collection_name="test_collection", path=TEST_PATH)
+    
+    assert new_store.ntotal == 3, "Loaded store should have 3 documents implicitly"
     print("[SUCCESS] Persistence verified.")
 
 if __name__ == "__main__":
-    test_faiss_store()
+    test_qdrant_store()

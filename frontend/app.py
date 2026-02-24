@@ -21,26 +21,7 @@ load_dotenv()
 # Add backend to path to allow direct object instantiations when bypassing standard API calls
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from backend.ingestion.pipeline import IngestionPipeline
-from backend.ingestion.crawler import crawl_url
-from backend.generation.rag_service import RAGService
-from backend.vectorstore.faiss_store import FAISSStore
 
-# -------------------------------------------------------------------------
-# Resource Allocation & Caching
-# -------------------------------------------------------------------------
-@st.cache_resource
-def get_pipeline():
-    """Caches the massive embedding ingestion pipeline so UI re-renders don't instantiate new models."""
-    return IngestionPipeline()
-
-@st.cache_resource
-def get_rag_service():
-    """Caches the Graph DAG architecture and Language Model API Engine hooks."""
-    return RAGService()
-
-pipeline = get_pipeline()
-rag_service = get_rag_service()
 
 st.set_page_config(page_title="Enterprise RAG Agent", layout="wide")
 
@@ -87,17 +68,22 @@ if option == "System Health":
 elif option == "Ingest Documents":
     st.subheader("Ingest Documents")
     
-    # Render the active FAISS Knowledge Base index count statically
+    # Render the active Qdrant Knowledge Base index count statically
     with st.expander("📂 Current Knowledge Base (Click to View)", expanded=False):
         try:
-            store = FAISSStore() 
-            docs = store.get_all_documents()
-            if docs:
-                st.write(f"**Total Dedicated Document Partitions:** {len(docs)}")
-                for doc in docs:
-                    st.text(f"• {doc}")
+            res = requests.get("http://127.0.0.1:8000/api/v1/ingest/status")
+            if res.status_code == 200:
+                data = res.json()
+                docs = data.get("documents", [])
+                total_vectors = data.get("total_vectors", 0)
+                if docs:
+                    st.write(f"**Total Dedicated Document Partitions:** {len(docs)} (Vectors: {total_vectors})")
+                    for doc in docs:
+                        st.text(f"• {doc}")
+                else:
+                    st.info("System Knowledge Base is functionally empty.")
             else:
-                st.info("System Knowledge Base is functionally empty.")
+                st.error("Failed to map explicit vector store system bounds from API.")
         except Exception as e:
             st.error(f"Could not load vector store explicit boundary mappings: {e}")
             
@@ -114,6 +100,7 @@ elif option == "Ingest Documents":
     with col2:
         st.markdown("### 2. Crawl URL")
         url_input = st.text_input("Target URL (e.g., https://learnnect.com)")
+        max_depth_input = st.number_input("Max Recursion Depth", min_value=1, max_value=4, value=1, help="1 = Single root page. 2 = Root + Immediate child links.")
 
     # -------------------------------------------------------------------------
     # Index Mutability Controls
@@ -135,19 +122,55 @@ elif option == "Ingest Documents":
         if not uploaded_files and not url_input:
             st.error("Please provide at least one explicit data source structure (File or mapped URL).")
         else:
-            with st.spinner("Processing massive vector array embedding generations... This may organically take a while."):
+            def wait_for_job_completion(job_id, success_base_msg):
+                st.write("---")
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                import time
                 
+                while True:
+                    try:
+                        res = requests.get(f"http://127.0.0.1:8000/api/v1/progress/{job_id}")
+                        if res.status_code == 200:
+                            data = res.json()
+                            status = data.get("status")
+                            
+                            if status == "completed":
+                                progress_bar.progress(100)
+                                status_text.success(f"✅ {success_base_msg} (Extracted exactly {data.get('chunks_added', 0)} mathematical chunks)")
+                                break
+                            elif status == "failed":
+                                progress_bar.empty()
+                                status_text.error(f"❌ Background Ingestion Exception: {data.get('error')}")
+                                break
+                            else:
+                                chunks_added = data.get("chunks_added", 0)
+                                total = data.get("total_chunks", 0)
+                                txt_status = status.replace('_', ' ').capitalize()
+                                
+                                if total > 0:
+                                    pct = min(100, int((chunks_added / total) * 100))
+                                    progress_bar.progress(pct)
+                                    status_text.info(f"⏳ {txt_status} ... Embedding {chunks_added} of {total} total discrete text chunks natively.")
+                                else:
+                                    status_text.info(f"⏳ {txt_status} natively...")
+                        else:
+                            status_text.error(f"❌ Progress API Error Format Bounds: {res.text}")
+                            break
+                    except Exception as e:
+                        status_text.error(f"❌ HTTP Target Polling Request failed explicitly: {e}")
+                        break
+                    time.sleep(1.5)
+
+            with st.spinner("Dispatching structural payloads to Background Task APIs..."):
                 reset_flag = "start_fresh" if ingestion_mode == "Start Fresh (Clear Logic)" else "append"
                 
                 # 1. POST Multi-part Forms back to Backend Pipeline Processors
                 if uploaded_files:
-                    st.write(f"📂 Uploading {len(uploaded_files)} structural file(s) direct to dedicated API...")
-                    
+                    st.write(f"📂 Uploading {len(uploaded_files)} structural file(s) natively to endpoint API queue...")
                     files_payload = []
                     for uploaded_file in uploaded_files:
-                        files_payload.append(
-                            ("files", (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type))
-                        )
+                        files_payload.append(("files", (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)))
                     
                     try:
                         res = requests.post(
@@ -157,41 +180,42 @@ elif option == "Ingest Documents":
                         )
                         if res.status_code == 200:
                             data = res.json()
-                            st.success(f"✅ Architecture API Success: {data['message']} (Text Chunks implicitly added: {data.get('chunks_added', 0)})")
+                            st.success(f"✅ API Queue Registration Success: {data['message']}")
+                            job_id = data.get("job_id")
+                            if job_id:
+                                wait_for_job_completion(job_id, "File processing explicitly completely natively")
+                            
                             reset_flag = "append" # Mutate flag to prevent accidental overwrite if Crawler follows in sequence
                         else:
-                            st.error(f"❌ API Explicit Error: {res.text}")
+                            st.error(f"❌ API Explicit Error Formats Bounds: {res.text}")
                     except Exception as e:
-                        st.error(f"❌ FastApi Request pipeline failed: {e}")
+                        st.error(f"❌ FastApi Request pipeline failed natively payload maps bounds explicitly: {e}")
 
                 # 2. POST Crawler Trigger to Playwright API Wrapper
                 if url_input:
-                    st.write(f"🌐 Dispatching Playwright Crawler Web API for explicit mapping on {url_input}...")
+                    st.write(f"🌐 Dispatching background Playwright Crawler Worker Array exclusively mapping on {url_input} with Depth {max_depth_input}...")
                     try:
                         res = requests.post(
                             "http://127.0.0.1:8000/api/v1/ingest/crawler",
-                            data={"url": url_input, "max_depth": 1, "mode": reset_flag}
+                            data={"url": url_input, "max_depth": max_depth_input, "mode": reset_flag}
                         )
                         if res.status_code == 200:
                             data = res.json()
-                            if data.get("status") == "success":
-                                st.success(f"✅ Web Crawler Integration API Success: {data['message']} (Pages: {data.get('pages_crawled', 0)}, Extracted Chunks: {data.get('chunks_added', 0)})")
+                            if data.get("status") == "accepted":
+                                st.success(f"✅ Web Crawler Job ID Queued Effectively: {data['message']}")
+                                job_id = data.get("job_id")
+                                if job_id:
+                                    wait_for_job_completion(job_id, "Crawler execution natively completely bounds resolved")
                             else:
-                                st.warning(f"⚠️ Web Crawler functionally finished with status '{data.get('status')}'. (Pages extracted: {data.get('pages_crawled', 0)})")
+                                st.warning(f"⚠️ Web Crawler queued natively failed bounds. API Raw Response Array Objects Logic Mappings: {data}")
                         else:
-                            st.error(f"❌ Target API Extraction Error: {res.text}")
+                            st.error(f"❌ Target Background Endpoint API Extraction Error Array Sequences Native Mappings: {res.text}")
                     except Exception as e:
-                        st.error(f"❌ Target Node Request failed explicitly: {e}")
+                        st.error(f"❌ Target Node Queue Background Request API HTTP native failed expressly bounds sequences: {e}")
                         
-                # UI Hack: Force reload the global RAG Service's FAISS object so Chat mode immediately sees new vectors
-                try:
-                    rag_service.vector_store.load()
-                except Exception:
-                    pass
-                    
                 # Artificial UI delay to render green success blocks before destructive screen repaint
                 import time
-                time.sleep(1)
+                time.sleep(2)
                 st.rerun()
 
 # =========================================================================
@@ -201,9 +225,9 @@ elif option == "Chat":
     st.subheader("Chat with Semantic Knowledge Base")
     
     # Validate DB existence statically before permitting queries
-    if not os.path.exists("data/vectorstore.faiss"):
+    if not os.path.exists("data/qdrant_storage"):
         st.warning("⚠️ Semantic Knowledge Base not found actively instantiated!")
-        st.info("Please explicitly select **'Ingest Documents'** from the sidebar to populate the FAISS memory maps.")
+        st.info("Please explicitly select **'Ingest Documents'** from the sidebar to populate the Qdrant memory maps.")
     else:
         st.success("✅ Semantic Knowledge Base is Mapped and Ready!")
 
@@ -271,27 +295,24 @@ elif option == "Chat":
                         st.write("⚙️ Connecting actively to internal Galactus execution DAG Orchestrator...")
                         
                         payload = {
-                            "message": prompt,
-                            "session_id": "streamlit_session_active"
+                            "query": prompt,
+                            "chat_history": st.session_state.messages,
+                            "model_provider": "groq"
                         }
-                        if sarvam_api_key:
-                            payload["sarvam_api_key"] = sarvam_api_key
 
                         # Hit the Chat API synchronously
-                        res = requests.post("http://127.0.0.1:8000/api/v1/chat/", data=payload)
+                        res = requests.post("http://127.0.0.1:8000/api/v1/chat", json=payload)
                         res.raise_for_status()
                         response_data = res.json()
                         
                         status.update(label="LangGraph Engine Execution Native Complete!", state="complete", expanded=False)
                         
                         # Destructure payload mappings from strictly typed response contract schema output
-                        answer = response_data.get("reply", "No systemic synthetic reply algorithmically generated.")
+                        answer = response_data.get("answer", "No systemic synthetic reply algorithmically generated.")
                         sources = response_data.get("sources", [])
-                        agent_used = response_data.get("agent_used", "Unknown Native Agent Path")
-                        confidence = response_data.get("confidence_score", 0.0)
+                        confidence = response_data.get("confidence", 0.0)
                         verdict = response_data.get("verifier_verdict", "UNMAPPED_UNKNOWN")
                         is_hallucinated = response_data.get("is_hallucinated", False)
-                        search_query = response_data.get("search_query")
                         optimizations = response_data.get("optimizations", {})
                         
                         agent_used = optimizations.get("agent_routed", response_data.get("agent_used", "Unknown Exec Node Path"))

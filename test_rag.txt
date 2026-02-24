@@ -1,0 +1,5 @@
+The Enterprise Agentic RAG Architecture is a highly scalable system designed for robust data retrieval and verified reasoning.
+It utilizes a Vertical Slice Architecture to explicitly separate concerns between the HTTP API Gateway, the Supervisor Intent Router, the Ingestion Engine, the Retrieval bounded context, and the Core MoE Reasoning modules.
+It uses Qwen 32B for dynamic metadata extraction, strictly mapping natural language into Qdrant JSON Filters.
+It leverages BGE local Cross-Encoders to physically rerank the Top 30 retrieved chunks down to the absolute Top 5 most semantically relevant items.
+Finally, it routes the bounded execution directly into Llama-3.3-70b-versatile, forcing the reasoning engine to synthesize an answer exclusively from the provided mathematical tensors, which is then double-checked by the Sarvam Hallucination Verifier.

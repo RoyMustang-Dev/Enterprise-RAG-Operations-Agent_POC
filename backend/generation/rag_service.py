@@ -8,7 +8,7 @@ off asynchronous threads for Enterprise Audit Logging.
 """
 from typing import List, Dict, Tuple
 from backend.embeddings.embedding_model import EmbeddingModel
-from backend.vectorstore.faiss_store import FAISSStore
+from backend.vectorstore.qdrant_store import QdrantStore
 import os
 import threading
 import json
@@ -26,7 +26,7 @@ class RAGService:
         to prevent redundant 1GB model reloads in memory.
         """
         self.embedding_model = EmbeddingModel()
-        self.vector_store = FAISSStore()
+        self.vector_store = QdrantStore()
         
         # Determine strict AI provider rules from the instantiation payload
         self.model_provider = kwargs.get("model_provider", "sarvam").lower()

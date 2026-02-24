@@ -13,6 +13,17 @@ import asyncio
 from backend.ingestion.crawler_service import CrawlerService
 from backend.ingestion.pipeline import IngestionPipeline
 from urllib.parse import urlparse
+from enum import Enum
+import uuid
+from fastapi import BackgroundTasks
+
+# Memory dictionary to track background job statuses globally
+ingestion_jobs = {}
+
+class IngestionMode(str, Enum):
+    append = "append"
+    start_fresh = "start_fresh"
+
 
 # Initialize the router to namespace ingestion-specific REST operations
 router = APIRouter(
@@ -38,10 +49,27 @@ def get_pipeline() -> IngestionPipeline:
 # -----------------------------------------------------------------------------
 # Endpoints
 # -----------------------------------------------------------------------------
+def _run_files_background(paths_to_process, metadatas_to_process, reset_db, job_id):
+    """Executes the file embedding pipeline fully detached from the main HTTP thread."""
+    try:
+        pipeline = get_pipeline()
+        pipeline.run_ingestion(
+            file_paths=paths_to_process, 
+            metadatas=metadatas_to_process, 
+            reset_db=reset_db, 
+            job_tracker=ingestion_jobs[job_id]
+        )
+    except Exception as e:
+        logger.error(f"Background Ingestion Error: {str(e)}")
+        ingestion_jobs[job_id]["status"] = "failed"
+        ingestion_jobs[job_id]["error"] = str(e)
+
+
 @router.post("/files")
 async def ingest_document(
+    background_tasks: BackgroundTasks,
     files: List[UploadFile] = File(...),
-    mode: str = Form("append") # Options: "append" (keep existing data) or "start_fresh" (wipe DB)
+    mode: IngestionMode = Form(IngestionMode.append, description="Options: 'append' (keep existing data) or 'start_fresh' (wipe DB)")
 ):
     """
     **Manual File Upload Ingestion**
@@ -77,24 +105,154 @@ async def ingest_document(
             # Attach structural metadata dict determining document source types
             metadatas_to_process.append({"type": "file", "original_name": uploaded_file.filename})
             
-        # Execute the heavy synchronous data extraction pipeline synchronously (currently blocks the event loop)
-        num_chunks = pipeline.run_ingestion(paths_to_process, metadatas=metadatas_to_process, reset_db=reset_db)
+        # Detach execution so frontend is not blocked
+        job_id = str(uuid.uuid4())
+        ingestion_jobs[job_id] = {"status": "processing", "chunks_added": 0, "total_chunks": 0, "type": "files_upload"}
+        background_tasks.add_task(_run_files_background, paths_to_process, metadatas_to_process, reset_db, job_id)
         
         return {
-            "status": "success", 
-            "message": f"Successfully ingested {len(filenames)} files.",
-            "chunks_added": num_chunks,
+            "status": "accepted", 
+            "message": f"Successfully queued {len(filenames)} files for background extraction.",
+            "job_id": job_id,
             "mode_applied": mode
         }
     except Exception as e:
-        logger.error(f"Ingestion Error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to process document upload.")
+        logger.error(f"Ingestion Queue Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to initialize document upload queue.")
+
+@router.get("/progress/{job_id}")
+async def check_progress(job_id: str):
+    """
+    **Streaming Context Poller**
+    
+    Provides highly granular, real-time analytics to the UI determining the percentage 
+    of chunks converted to mathematical vectors so far.
+    """
+    if job_id not in ingestion_jobs:
+        raise HTTPException(status_code=404, detail="Ingestion Job ID not found.")
+        
+    job = ingestion_jobs[job_id]
+    if job["status"] == "failed":
+         raise HTTPException(status_code=500, detail=f"Job failed: {job.get('error', 'Unknown Error')}")
+         
+    return job
+
+@router.get("/status")
+async def get_ingestion_status():
+    """
+    **Knowledge Base Status Check**
+    
+    Returns the distinct documents inside the DB and the number of total active vectors.
+    """
+    try:
+        pipeline = get_pipeline()
+        docs = pipeline.vector_store.get_all_documents()
+        total_vectors = pipeline.vector_store.ntotal
+        return {
+            "status": "success",
+            "total_documents": len(docs),
+            "documents": docs,
+            "total_vectors": total_vectors
+        }
+    except Exception as e:
+        logger.error(f"Status Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve database status.")
+
+def _run_crawler_background(url, max_depth, save_folder, mode, job_id):
+    """Executes the Playwright headless web scraping and subsequent vector encoding fully in the background."""
+    print(f"\n[BACKGROUND THREAD] _run_crawler_background initiated for job {job_id} / depth {max_depth}")
+    try:
+        import sys
+        import asyncio
+        if sys.platform == "win32":
+            print("[BACKGROUND THREAD] Applying WindowsProactorEventLoopPolicy...")
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+            
+        print("[BACKGROUND THREAD] Creating new isolated asyncio loop...")
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        print(f"[BACKGROUND THREAD] Instantiating CrawlerService for {url}...")
+        crawler = CrawlerService()
+        
+        reset_db = True if mode == "start_fresh" else False
+        pipeline = get_pipeline()
+        is_first_batch = [True]
+        
+        async def process_live_batch(batch_items):
+            print(f"[BACKGROUND THREAD] Streaming {len(batch_items)} pages natively to Vector Engine...")
+            ingestion_jobs[job_id]["status"] = "crawling_and_extracting"
+            
+            paths = []
+            metas = []
+            import os
+            import hashlib
+            
+            if not os.path.exists(save_folder):
+                os.makedirs(save_folder, exist_ok=True)
+                
+            for item in batch_items:
+                # item: (session_id, current_url, title, clean_content, depth, status)
+                current_url = item[1]
+                title = item[2]
+                content = item[3]
+                
+                safe_name = hashlib.md5(current_url.encode()).hexdigest() + ".txt"
+                path = os.path.join(save_folder, safe_name)
+                    
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(f"== {title} ==\n{content}")
+                    
+                paths.append(path)
+                metas.append({"type": "url", "source_url": current_url})
+                
+            reset = reset_db if is_first_batch[0] else False
+            is_first_batch[0] = False
+            
+            # Sub-thread the synchronous heavy embedding mathematics safely away from Playwright's core event loops
+            def ingest_sync():
+                pipeline.run_ingestion(paths, metadatas=metas, reset_db=reset, job_tracker=ingestion_jobs[job_id], mark_completed=False)
+                
+            await asyncio.to_thread(ingest_sync)
+            
+        print("[BACKGROUND THREAD] Blocking until Playwright crawler resolves completion...")
+        result = loop.run_until_complete(
+            crawler.crawl_url(
+                url=url, 
+                save_folder=save_folder,
+                simulate=False,
+                recursive=(max_depth > 1),
+                max_depth=max_depth,
+                on_batch_extracted=process_live_batch
+            )
+        )
+        print(f"[BACKGROUND THREAD] Playwright crawler successfully resolved: {result.get('status')}")
+        loop.close()
+        
+        if result.get("saved_files") or not is_first_batch[0]:
+            print("[BACKGROUND THREAD] Vector Engine streaming execution formally complete!")
+            ingestion_jobs[job_id]["status"] = "completed"
+        else:
+             print("[BACKGROUND THREAD] No unstructured text output physically extracted.")
+             ingestion_jobs[job_id]["status"] = "failed"
+             ingestion_jobs[job_id]["error"] = "No unstructured text output generated by Playwright crawler."
+
+    except Exception as e:
+        import traceback
+        trace = traceback.format_exc()
+        logger.error(f"Crawler Background Error:\n{trace}")
+        print(f"[BACKGROUND THREAD - FATAL] Target background engine fully crashed natively: {e}")
+        print(trace)
+        ingestion_jobs[job_id]["status"] = "failed"
+        ingestion_jobs[job_id]["error"] = str(e)
+
 
 @router.post("/crawler")
 async def trigger_crawler(
+    background_tasks: BackgroundTasks,
     url: str = Form(..., description="The target URL to crawl (e.g., https://example.com)"),
-    max_depth: int = Form(1, description="Depth of recursion (1 = single page, >1 = follow links)"),
-    mode: str = Form("append", description="Ingestion mode: 'append' adds to KB, 'start_fresh' clears the database first.")
+    max_depth: int = Form(1, description="Depth of recursion (1 = single parent page, 2 = parent + direct child links). It can go up to 4."),
+    mode: IngestionMode = Form(IngestionMode.append, description="Ingestion mode: 'append' adds to KB, 'start_fresh' clears the database first.")
 ):
     """
     **External Website Crawler Trigger**
@@ -104,77 +262,29 @@ async def trigger_crawler(
     and then automatically pipes them into the semantic ingestion pipeline.
     """
     try:
-        logger.info(f"API Triggering advanced crawler on {url} (Depth: {max_depth})")
-            
-        # 1. Directory Formatting
-        # Parse the domain and path to create a clean, identifiable folder name (e.g., example.com_about)
+        logger.info(f"API Triggering background crawler mapping on {url} (Depth: {max_depth})")
         parsed_url = urlparse(url)
         domain = parsed_url.netloc
         path = parsed_url.path.strip("/")
         folder_name = f"{domain}_{path}".replace("/", "_") if path else domain
         save_folder = os.path.join("data", "crawled_docs", folder_name)
         
-        from fastapi.concurrency import run_in_threadpool
-        import sys
-        import asyncio
+        # Instantiate background job
+        job_id = str(uuid.uuid4())
+        ingestion_jobs[job_id] = {"status": "initializing_crawler", "chunks_added": 0, "total_chunks": 0, "type": "web_crawl"}
         
-        # 2. Asynchronous Playwright Wrapping
-        # Because we're executing an entirely separate event loop for the async crawler deep inside a FastAPI endpoint,
-        # we must isolate it safely utilizing run_in_threadpool and explicit Windows Event loop rules.
-        def _run_crawler_sync():
-            # Specifically required on Windows to prevent NotImplementedError when asyncio manages subprocesses
-            if sys.platform == "win32":
-                asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-            
-            # Spin up an isolated loop specifically for Playwright
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-            crawler = CrawlerService()
-            try:
-                # Block the thread pool string until playright completely finishes execution
-                return loop.run_until_complete(
-                    crawler.crawl_url(
-                        url=url, 
-                        save_folder=save_folder,
-                        simulate=False,
-                        recursive=(max_depth > 1),
-                        max_depth=max_depth
-                    )
-                )
-            finally:
-                loop.close()
-                
-        # Fire the threadpool function without blocking FastAPI's main event loops
-        result = await run_in_threadpool(_run_crawler_sync)
-        
-        # 3. Pipeline Ingestion
-        reset_db = True if mode == "start_fresh" else False
-        pipeline = get_pipeline()
-        
-        num_chunks = 0
-        
-        # If the crawl was successful and yielded valid extracted text files...
-        if result.get("saved_files"):
-            for filepath in result["saved_files"]:
-                if filepath.endswith(".txt"):
-                    # Step 4: Pass the raw text files to FAISS/Vector ingestion
-                    num_chunks += pipeline.run_ingestion([filepath], metadatas=[{"type": "url", "source_url": url}], reset_db=reset_db)
-                    
-                    # Prevent subsequent files from a single crawl operation from wiping the DB they just wrote to
-                    reset_db = False 
+        # Dispatch to queue loop
+        background_tasks.add_task(_run_crawler_background, url, max_depth, save_folder, mode, job_id)
 
+        # Drop the HTTP connection so Streamlit receives a response inside 0.1ms
         return {
-            "status": "success" if result["status"] == "success" else result["status"], 
-            "message": f"Crawler dispatched for {url} successfully.",
-            "pages_crawled": result.get("pages_crawled", 0),
-            "duration_seconds": result.get("duration", 0),
-            "chunks_added": num_chunks,
+            "status": "accepted", 
+            "message": f"Successfully queued crawler extraction for {url}.",
+            "job_id": job_id,
             "mode_applied": mode
         }
     except Exception as e:
         import traceback
         error_details = traceback.format_exc()
-        logger.error(f"Crawler Error:\n{error_details}")
-        # Send full trace back specifically for diagnostic debugging
-        raise HTTPException(status_code=500, detail=f"Failed to dispatch crawler. Reason: {str(e)}\n\nTraceback: {error_details}")
+        logger.error(f"Crawler Queue Error:\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Failed to cleanly dispatch crawler task. Reason: {str(e)}")
