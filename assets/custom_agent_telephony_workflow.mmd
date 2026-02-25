@@ -1,0 +1,37 @@
+graph TD
+    %% Styling
+    classDef input fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef core fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    classDef voice fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    classDef notification fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    classDef crm fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+
+    User([Customer]) -->|Opens Ticket| CRM[(CRM: Zoho / HubSpot / Jira)]
+    class User input;
+    class CRM crm;
+
+    CRM -->|Webhook Trigger| FastAPI[FastAPI Backend Webhook Listener]
+    class FastAPI core;
+
+    FastAPI --> Profiler{LangGraph Core Brain<br/>llama-70b}
+    class Profiler core;
+
+    Profiler -->|Retrieves Inventory| Qdrant[(Qdrant Vector DB)]
+    Qdrant --> Profiler
+
+    Profiler -->|Drafts Sales Pitch| Email[Resend SMTP Email API]
+    Email --> User
+
+    User -.->|Replies with Phone #| EmailWebhook[Inbound Email Listener]
+    EmailWebhook --> Dialer{Voice Integration API<br/>Vapi / Bland AI}
+    class EmailWebhook core;
+    class Dialer voice;
+
+    Dialer <-->|Live Audio STT/TTS| User
+
+    Dialer -->|Call Ends| Transcriber[Call Analysis Webhook]
+    class Transcriber core;
+
+    Transcriber -->|Updates Ticket| CRM
+    Transcriber -->|Alerts Team| Slack((Slack / Discord Alerts))
+    class Slack notification;
