@@ -7,6 +7,9 @@ By using an entirely different foundational architecture (Sarvam instead of Llam
 we establish absolute model independence, defeating 'AI Yes-Men' behavior.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import json
 import logging
 import requests

@@ -1,5 +1,9 @@
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import json
+import re
 import logging
 from typing import Dict, Any, List
 from tenacity import retry, wait_exponential, stop_after_attempt
@@ -26,7 +30,8 @@ class CoderAgent:
             
         self.system_prompt = """SYSTEM: You are an elite, deterministic Enterprise Software Engineer. 
 Your objective is to generate syntactically perfect, highly structured Python, JavaScript, or Shell code.
-Do not provide excessive conversational padding. 
+Do not provide excessive conversational padding.
+Do NOT include chain-of-thought or internal reasoning. Never output <think> blocks.
 
 OUTPUT FORMAT:
 Provide a concise explanation of the logic, followed immediately by the runnable code block. 
@@ -47,7 +52,7 @@ If the user provides context chunks or structural data, you MUST utilize that co
             return state
 
         query = state.get("query", "")
-        context_chunks = state.get("context", [])
+        context_chunks = state.get("context_chunks", [])
         
         # We append retrieved chunks as context if the user's coding query involves corporate data
         user_payload = f"USER QUERY: {query}\n\n"
@@ -85,6 +90,10 @@ If the user provides context chunks or structural data, you MUST utilize that co
                     data = await response.json()
                     
                     answer_text = data["choices"][0]["message"]["content"]
+                    # Strip any accidental chain-of-thought blocks if present
+                    # Remove any chain-of-thought blocks (with or without closing tag)
+                    answer_text = re.sub(r"<think>.*?</think>", "", answer_text, flags=re.DOTALL)
+                    answer_text = re.sub(r"<think>.*", "", answer_text, flags=re.DOTALL).strip()
                     
                     # Update State
                     state["answer"] = answer_text

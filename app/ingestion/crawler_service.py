@@ -21,12 +21,16 @@ import urllib.robotparser
 import requests
 import uuid
 import math
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, urldefrag
 from datetime import datetime
 from playwright.async_api import async_playwright, Page, BrowserContext
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from app.infra.database import init_db, insert_page_async, get_all_pages, enable_wal
+from app.infra.hardware import HardwareProbe
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CrawlerService:
 
@@ -48,10 +52,10 @@ class CrawlerService:
     def _get_best_links(self, links: list, visited: set, limit: int = 5) -> list:
         """
         Truly generic smart selection:
-        • URL entropy
-        • path length
-        • depth
-        • duplicate similarity
+        - URL entropy
+        - path length
+        - depth
+        - duplicate similarity
         """
 
         scored = []
@@ -256,6 +260,7 @@ class CrawlerService:
 
                     for a in soup.find_all("a", href=True):
                         full = urljoin(current_url, a["href"]) # Use current_url for relative links
+                        full, _ = urldefrag(full) # Remove URL HTML anchor fragments to prevent infinite loop duplication
                         if full.startswith("http") and urlparse(full).netloc == urlparse(current_url).netloc:
                             if self.is_allowed(full, rp):
                                 discovered.append(full)
@@ -328,10 +333,9 @@ class CrawlerService:
             browser = await p.chromium.launch(**launch_options)
 
             # High Concurrency unless simulating (Phase 13 Dynamic Hardware Hook)
-            import os
-            NUM = (os.cpu_count() or 4) if not simulate else 2
-            
-            print(f"\\n[CRAWLER HARDWARE SCALE] Auto-Detected OS CPU Cores. Instantiating {NUM} parallel headless Chromium workers!\\n")
+            profile = HardwareProbe.get_profile()
+            NUM = profile.get("crawler_workers", 4) if not simulate else 2
+            logger.info(f"[CRAWLER HARDWARE SCALE] Instantiating {NUM} parallel headless Chromium workers.")
             
             context_options = {}
             if not simulate:

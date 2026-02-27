@@ -9,6 +9,9 @@ Groq's `documents` API array mapping.
 It embeds exponential backoff protections and strictly budgets input tokens.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import json
 import logging
 import requests
@@ -61,7 +64,7 @@ class SynthesisEngine:
         response.raise_for_status()
         return response
 
-    def synthesize(self, user_prompt: str, context_chunks: List[Dict[str, Any]], 
+    def synthesize(self, user_prompt: str, context_chunks: List[Dict[str, Any]],
                    override_model: str = None, override_temp: float = None) -> Dict[str, Any]:
         """
         Synthesizes the final conversational output while structurally balancing token economics.
@@ -125,13 +128,21 @@ class SynthesisEngine:
             response_json = response.json()
             raw_content = response_json["choices"][0]["message"]["content"]
             parsed_result = json.loads(raw_content)
-            
+            # Approx token counts (input from prompt/context, output from answer text)
+            tokens_input = system_overhead + user_prompt_overhead + cost_sum
+            answer_text = parsed_result.get("answer", "")
+            tokens_output = len(self.tokenizer.encode(answer_text)) if answer_text else 0
+
             return {
                 "answer": parsed_result.get("answer", ""),
                 "provenance": provenance,
-                "confidence": parsed_result.get("confidence", 0.0)
+                "confidence": parsed_result.get("confidence", 0.0),
+                "tokens_input": tokens_input,
+                "tokens_output": tokens_output,
+                "temperature_used": active_temp,
+                "model_used": active_model
             }
             
         except Exception as e:
              logger.error(f"[SYNTHESIS] Execution completely crashed: {e}")
-             return {"answer": "Internal Generation Error validating tokens.", "provenance": provenance, "confidence": 0.0}
+             return {"answer": "Internal Generation Error validating tokens.", "provenance": provenance, "confidence": 0.0, "tokens_input": 0, "tokens_output": 0, "temperature_used": active_temp, "model_used": active_model}

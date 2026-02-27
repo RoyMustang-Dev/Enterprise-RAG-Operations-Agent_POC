@@ -18,6 +18,9 @@ from typing import List, Dict, Any, Optional
 import os
 import uuid
 import threading
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class QdrantStore:
@@ -26,22 +29,29 @@ class QdrantStore:
     Supports local disk mode and Qdrant Cloud mode (via env vars).
     """
 
-    _instance = None
+    _instances = {}
+    _instances_lock = threading.Lock()
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(QdrantStore, cls).__new__(cls)
-            cls._instance._initialized = False
-            cls._instance._lock = threading.Lock()
-        return cls._instance
+    def __new__(cls, dimension: int = 1024, collection_name: str = None, path: str = "data/qdrant_storage", *args, **kwargs):
+        actual_collection = collection_name or os.getenv("QDRANT_COLLECTION") or "enterprise_rag"
+        with cls._instances_lock:
+            if actual_collection not in cls._instances:
+                instance = super(QdrantStore, cls).__new__(cls)
+                instance._initialized = False
+                instance._lock = threading.Lock()
+                cls._instances[actual_collection] = instance
+            return cls._instances[actual_collection]
 
-    def __init__(self, dimension: int = 1024, collection_name: str = "enterprise_rag", path: str = "data/qdrant_storage"):
+    def __init__(self, dimension: int = 1024, collection_name: str = None, path: str = "data/qdrant_storage", tenant_id: str = None, *args, **kwargs):
         if self._initialized:
             return
 
         self.dimension = dimension
-        self.collection_name = collection_name
+        actual_collection = collection_name or os.getenv("QDRANT_COLLECTION") or "enterprise_rag"
+        self.collection_name = actual_collection
         self.path = path
+        self.tenant_id = tenant_id
+        self.multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
 
         self.qdrant_url = os.getenv("QDRANT_URL")
         self.qdrant_api_key = os.getenv("QDRANT_API_KEY")
@@ -49,13 +59,14 @@ class QdrantStore:
 
         if self.is_cloud:
             self.client = QdrantClient(url=self.qdrant_url, api_key=self.qdrant_api_key)
-            print("[QDRANT] Connected to Qdrant Cloud deployment.")
+            logger.info("[QDRANT] Connected to Qdrant Cloud deployment.")
         else:
             os.makedirs(self.path, exist_ok=True)
             self.client = QdrantClient(path=self.path)
-            print("[QDRANT] Using local persistent storage.")
+            logger.info("[QDRANT] Using local persistent storage.")
 
         self._ensure_collection()
+        self._ensure_payload_indexes()
         self._initialized = True
 
     def _ensure_collection(self):
@@ -67,7 +78,21 @@ class QdrantStore:
                 collection_name=self.collection_name,
                 vectors_config=VectorParams(size=self.dimension, distance=Distance.COSINE),
             )
-            print(f"Created new Qdrant Collection: {self.collection_name} with Cosine distance.")
+            logger.info(f"[QDRANT] Created new collection: {self.collection_name} with Cosine distance.")
+
+    def _ensure_payload_indexes(self):
+        """Ensure payload indexes exist for common filter fields."""
+        fields = ["document_type", "source_domain", "author", "creation_year", "source", "tenant_id"]
+        for field in fields:
+            try:
+                self.client.create_payload_index(
+                    collection_name=self.collection_name,
+                    field_name=field,
+                    field_schema="keyword",
+                )
+            except Exception:
+                # Ignore if index already exists or backend doesn't support it
+                pass
 
     def clear(self):
         """Hard-resets the active vector memory state."""
@@ -75,7 +100,7 @@ class QdrantStore:
             if self.is_cloud:
                 self.client.delete_collection(collection_name=self.collection_name)
                 self._ensure_collection()
-                print("Cleared Qdrant Cloud collection.")
+                logger.info("[QDRANT] Cleared cloud collection.")
                 return
 
             import shutil
@@ -86,30 +111,36 @@ class QdrantStore:
             os.makedirs(self.path, exist_ok=True)
             self.client = QdrantClient(path=self.path)
             self._ensure_collection()
-            print("Explicit Qdrant local database cleared.")
+            logger.info("[QDRANT] Local database cleared.")
 
     def get_all_documents(self) -> List[str]:
         """Returns unique source names currently stored in vector payloads."""
         sources = set()
         offset = None
-        while True:
-            records, offset = self.client.scroll(
-                collection_name=self.collection_name,
-                limit=1000,
-                offset=offset,
-                with_payload=True,
-                with_vectors=False,
-            )
-            for record in records:
-                if record.payload and "source" in record.payload:
-                    sources.add(record.payload["source"])
-            if offset is None:
-                break
-        return sorted(list(sources))
+        try:
+            while True:
+                records, offset = self.client.scroll(
+                    collection_name=self.collection_name,
+                    limit=1000,
+                    offset=offset,
+                    with_payload=True,
+                    with_vectors=False,
+                )
+                for record in records:
+                    if record.payload and "source" in record.payload:
+                        sources.add(record.payload["source"])
+                if offset is None:
+                    break
+            return sorted(list(sources))
+        except Exception:
+            return []
 
     @property
     def ntotal(self) -> int:
-        return self.client.count(collection_name=self.collection_name).count
+        try:
+            return self.client.count(collection_name=self.collection_name).count
+        except Exception:
+            return 0
 
     def stats(self) -> Dict[str, Any]:
         return {
@@ -126,6 +157,8 @@ class QdrantStore:
         points = []
         for i, chunk in enumerate(chunks):
             meta = metadatas[i] if i < len(metadatas) else {}
+            if self.multi_tenant and self.tenant_id:
+                meta["tenant_id"] = self.tenant_id
             meta["page_content"] = chunk
 
             points.append(
@@ -138,13 +171,15 @@ class QdrantStore:
 
         with self._lock:
             self.client.upsert(collection_name=self.collection_name, points=points)
-            print(f"Added {len(chunks)} documents to Qdrant. Total: {self.ntotal}")
+            logger.info(f"[QDRANT] Added {len(chunks)} documents. Total: {self.ntotal}")
 
     def _build_qdrant_filter(self, metadata_filters: Optional[Dict[str, Dict[str, Any]]]) -> Optional[Filter]:
         if not metadata_filters:
-            return None
+            metadata_filters = {}
 
         conditions = []
+        if self.multi_tenant and self.tenant_id:
+            conditions.append(FieldCondition(key="tenant_id", match=MatchValue(value=self.tenant_id)))
         for field, cfg in metadata_filters.items():
             if not isinstance(cfg, dict):
                 continue

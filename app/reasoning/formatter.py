@@ -39,7 +39,7 @@ class ResponseFormatter:
                               # Use Markdown strike-through
                               formatted_answer = formatted_answer.replace(bad_sentence, f"~~{bad_sentence}~~")
                               
-              formatted_answer = f"⚠️ **Enterprise Guard Warning: The logic engine has flagged portions of this response as unverified and mathematically isolated them via strike-through.**\n\n{formatted_answer}"
+              formatted_answer = f"WARNING: Enterprise Guard flagged portions of this response as unverified and isolated them via strike-through.\n\n{formatted_answer}"
               
          return {
              "answer": formatted_answer,

@@ -8,8 +8,8 @@ to strictly score the relevance from 0-1, explicitly isolating only the TOP 5 ch
 """
 import logging
 import threading
-import math
 from typing import List, Dict, Any
+from app.infra.hardware import HardwareProbe
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,11 @@ class SemanticReranker:
         self.model_name = model_name
         self._model = None
         self._gpu_lock = threading.Lock()
+        profile = HardwareProbe.get_profile()
+        self.device = profile.get("primary_device", "cpu")
+        self.batch_size = profile.get("rerank_batch_size", 4)
+        if self.device == "cpu":
+            logger.warning("[RERANKER] Running on CPU. Expect higher latency. Install CUDA-enabled PyTorch for GPU acceleration.")
         
         # In a physical deployment, this checks `app.infra.hardware.HardwareProbe`
         # and binds to 'cuda' or 'mps' immediately upon instantiation.
@@ -38,13 +43,8 @@ class SemanticReranker:
             try:
                 from sentence_transformers import CrossEncoder
                 
-                # Check hardware configuration to optimize deployment
-                from app.infra.hardware import HardwareProbe
-                hw = HardwareProbe.detect_environment()
-                device = hw.get("primary_device", "cpu")
-                
-                self._model = CrossEncoder(self.model_name, device=device)
-                logger.info(f"[RERANKER] Successfully bound {self.model_name} to {device} tensor mapping.")
+                self._model = CrossEncoder(self.model_name, device=self.device)
+                logger.info(f"[RERANKER] Successfully bound {self.model_name} to {self.device} tensor mapping. batch={self.batch_size}")
             except ImportError:
                 logger.error("[RERANKER] sentence_transformers not installed. Reranking will universally fail.")
                 raise
@@ -72,26 +72,17 @@ class SemanticReranker:
             # Predict produces an explicit array of numeric values corresponding accurately to input positions
             logger.info(f"[RERANKER] Requesting lock for model inference on {len(pairs)} candidate arrays...")
             with self._gpu_lock:
-                scores = self.model.predict(pairs)
+                scores = self.model.predict(pairs, batch_size=self.batch_size)
             
-            # Reattach the mathematical floats aggressively to the primary dictionaries
-            valid_chunks = []
+            # Reattach the raw scores directly to the primary dictionaries
+            scored_chunks = []
             for i, chunk in enumerate(context_chunks):
-                # Apply Sigmoid activation to convert logit to explicitly 0.0-1.0 probability bounds
-                logit = float(scores[i])
-                try:
-                    probability = 1 / (1 + math.exp(-logit))
-                except OverflowError:
-                    probability = 0.0 if logit < 0 else 1.0
-                
-                chunk["rerank_score"] = probability
-                if probability > 0.35:
-                    valid_chunks.append(chunk)
-                else:
-                    logger.debug(f"[RERANKER] Pruning chunk due to low relevance -> Logit: {logit} | Prob: {probability}")
+                score = float(scores[i])
+                chunk["rerank_score"] = score
+                scored_chunks.append(chunk)
                 
             # Filter mathematically mapping highest arrays to index 0
-            sorted_chunks = sorted(valid_chunks, key=lambda x: x["rerank_score"], reverse=True)
+            sorted_chunks = sorted(scored_chunks, key=lambda x: x["rerank_score"], reverse=True)
             
             # Truncate
             final_chunks = sorted_chunks[:top_k]

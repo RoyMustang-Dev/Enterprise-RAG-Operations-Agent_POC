@@ -12,47 +12,52 @@ graph TD
     class User input;
     class Guard verify;
 
-    %% 2. Rewriter
+    %% 2. Rewriter & SQLite
     Guard -->|Safe| Rewriter[2. Prompt Rewriter<br/>gpt-oss-120b]
     Guard -->|Malicious| Reject((Block))
+    DB[(SQLite Multi-Turn<br/>Chat History)] -.-> |"Context Provide"| Rewriter
     class Rewriter agent;
+    class DB storage;
 
-    %% 3. Intent & 4. Dispatch
-    Rewriter --> Intent{3. Intent Supervisor<br/>llama-3.1-8b}
-    class Intent core;
+    %% 3. Adaptive Planner (New)
+    Rewriter --> Planner{3. Adaptive Planner<br/>Dynamic Decision}
+    class Planner core;
+
+    %% 4. Parallel Intent & Complexity
+    Planner --> Intent[4a. Intent Supervisor<br/>llama-3.1-8b]
+    Planner --> Complexity[4b. Complexity Analyzer<br/>Heuristic Scoring]
+    class Intent,Complexity core;
     
-    Intent -->|Smalltalk| Bypass[4. Bypass Responder]
-    Intent -->|Code/Analytics| Coder[4. MoE Coder<br/>qwen3-32b]
+    Intent -->|Smalltalk| Bypass[5. Bypass Responder]
+    Intent -->|Code/Analytics| Coder[5. MoE Coder<br/>qwen3-32b]
     class Bypass,Coder agent;
 
-    %% 5. Metadata
-    Intent -->|RAG Query| Metadata[5. Metadata Extractor<br/>llama-3.1-8b]
+    %% 6. Metadata
+    Intent -->|RAG Query| Metadata[6. Metadata Extractor<br/>llama-3.1-8b]
     class Metadata agent;
 
-    %% 6. Retrieval & 7. Rerank
-    Metadata --> VectorDB[(6. Qdrant Search<br/>Top 30 Chunks)]
+    %% 7. Retrieval & 8. Rerank
+    Metadata --> VectorDB[(7. Qdrant Search<br/>Top 30 Chunks)]
     class VectorDB storage;
     
-    VectorDB --> Rerank{7. Cross-Encoder<br/>Rerank Top 5}
+    VectorDB --> Rerank{8. Cross-Encoder<br/>Rerank Top 5 (Sigmoid)}
     class Rerank core;
 
-    %% 8. Synthesis (Dynamic Routing)
-    Rerank --> Complexity{Complexity<br/>Analyzer}
-    Complexity -->|Low/Medium| Synth70B[8. Core Synthesis<br/>llama-3.3-70b]
-    Complexity -->|High| Synth120B[8. Core Synthesis<br/>gpt-oss-120b]
-    class Complexity core;
-    class Synth70B,Synth120B highlight;
+    %% 9. Synthesis
+    Complexity -->|Model Route| Synth[9. Adaptive Synthesis<br/>llama-70b OR gpt-120b]
+    Rerank --> Synth
+    class Synth highlight;
 
-    %% 9. Verifier
-    Synth70B --> Verifier{9. Fact Verifier<br/>Sarvam M}
-    Synth120B --> Verifier
+    %% 10. Verifier
+    Synth --> Verifier{10. Fact Verifier<br/>Sarvam M}
+    Verifier -.->|Hallucination Detected<br/>(Correction Loop)| Synth
     class Verifier verify;
 
-    %% 10. Formatter & 11. Telemetry
-    Verifier --> Formatter[10. Markup Formatter]
-    Formatter --> Telemetry[(11. Telemetry / RLHF<br/>audit_logs.jsonl)]
+    %% 11. Formatter & 12. Telemetry
+    Verifier -->|Verified Text| Formatter[11. Markup Formatter]
+    Formatter --> Telemetry[(12. Telemetry & RLHF<br/>audit_logs.jsonl)]
     class Formatter agent;
     class Telemetry storage;
     
-    Telemetry --> Output((Final JSON Response))
+    Telemetry --> Output((Final JSON Output))
     class Output input;

@@ -8,13 +8,17 @@ dictionary down the pipe, running the Guard -> Intent -> RAG or Smalltalk sequen
 import logging
 import asyncio
 from typing import Dict, Any
+import re
 
 from app.core.types import AgentState
+from app.infra.database import get_chat_history, save_chat_turn
 from app.prompt_engine.guard import PromptInjectionGuard
 from app.prompt_engine.rewriter import PromptRewriter
 from app.supervisor.intent import IntentClassifier
+from app.supervisor.planner import AdaptivePlanner
 from app.agents.rag import RAGAgent
 from app.agents.coder import CoderAgent
+from app.reasoning.complexity import ComplexityClassifier
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +35,20 @@ class ExecutionGraph:
         self.guard = PromptInjectionGuard()
         self.rewriter = PromptRewriter()
         self.classifier = IntentClassifier()
+        self.complexity = ComplexityClassifier()
+        self.planner = AdaptivePlanner()
         self.rag_agent = RAGAgent()
         self.coder_agent = CoderAgent()
+
+    @staticmethod
+    def _strip_think(text: str) -> str:
+        if not text:
+            return text
+        text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+        text = re.sub(r"<think>.*", "", text, flags=re.DOTALL)
+        return text.strip()
         
-    async def invoke(self, query: str, chat_history: list = None, session_id: str = "", model_provider: str = "groq") -> AgentState:
+    async def invoke(self, query: str, chat_history: list = None, session_id: str = "", tenant_id: str = None, model_provider: str = "groq") -> AgentState:
         """
         The formal entrypoint called by `app.api.routes`.
         
@@ -46,11 +60,20 @@ class ExecutionGraph:
             AgentState: The fully completed dictionary containing the final grounded answer.
         """
         # Initialize the global TypedDict scope
-        safe_history = chat_history or []
+        # Pull recent chat history from SQLite and merge with provided history
+        persisted_history = []
+        if session_id:
+            try:
+                persisted_history = get_chat_history(session_id)
+            except Exception:
+                persisted_history = []
+
+        safe_history = persisted_history + (chat_history or [])
         safe_history.append({"role": "user", "content": query})
         
         state: AgentState = {
             "session_id": session_id,
+            "tenant_id": tenant_id,
             "query": query,
             "chat_history": safe_history,
             "streaming_callback": None,
@@ -71,6 +94,13 @@ class ExecutionGraph:
         }
         state["optimizations"]["model_provider"] = model_provider
         
+        # Persist the user turn immediately
+        if session_id:
+            try:
+                save_chat_turn(session_id, "user", query)
+            except Exception:
+                pass
+
         # -------------------------------------------------------------
         # STEP 1: SAFETY (Prompt Injection Guard)
         # -------------------------------------------------------------
@@ -81,61 +111,109 @@ class ExecutionGraph:
             state["answer"] = "Security Exception: Your request violates Enterprise parameters."
             state["confidence"] = 1.0
             state["chat_history"].append({"role": "assistant", "content": state["answer"]})
+            if session_id:
+                try:
+                    save_chat_turn(session_id, "assistant", state["answer"])
+                except Exception:
+                    pass
             return state
             
         # -------------------------------------------------------------
-        # STEP 2: REASONING (Intent Classification)
+        # STEP 2: REASONING (Intent + Complexity in Parallel)
         # -------------------------------------------------------------
-        intent_report = await self.classifier.classify(query)
+        intent_task = self.classifier.classify(query)
+        complexity_task = self.complexity.score(query)
+        intent_report, complexity_score = await asyncio.gather(intent_task, complexity_task)
+
         state["intent"] = intent_report.get("intent", "rag_question")
+        state["optimizations"]["complexity_score"] = complexity_score
         
         # -------------------------------------------------------------
-        # STEP 3: PROMPT OPTIMIZATION (MoE Rewriter)
+        # STEP 3: ADAPTIVE PLANNING (Dynamic Routing)
         # -------------------------------------------------------------
-        # Generate 3 canonical prompts with explicit Temp/Token Metadata
-        rewrite_data = await self.rewriter.rewrite(query, state["intent"])
-        state["optimized_prompts"] = rewrite_data.get("prompts", {})
+        plan = self.planner.generate_plan(state)
+        state["reasoning_effort"] = plan.get("reasoning_effort", state["reasoning_effort"])
+        if plan.get("override_model"):
+            state["optimizations"]["override_model"] = plan["override_model"]
+
+        # -------------------------------------------------------------
+        # STEP 4: PROMPT OPTIMIZATION (MoE Rewriter)
+        # -------------------------------------------------------------
+        if plan.get("run_rewriter", True):
+            # Generate 3 canonical prompts with explicit Temp/Token Metadata
+            rewrite_data = await self.rewriter.rewrite(query, state["intent"])
+            state["optimized_prompts"] = rewrite_data.get("prompts", {})
         
         # -------------------------------------------------------------
-        # STEP 4: EXECUTION FORK (MoE / ReAct Routing)
+        # STEP 5: EXECUTION FORK (MoE / ReAct Routing)
         # -------------------------------------------------------------
-        if state["intent"] == "out_of_scope":
-             logger.info("[ROUTER] Out_of_scope Intent Bypass executing.")
-             state["optimizations"]["agent_routed"] = "out_of_scope_bypass"
-             state["answer"] = "I am unable to answer this question based on the provided enterprise context."
-             state["confidence"] = 1.0
-             state["chat_history"].append({"role": "assistant", "content": state["answer"]})
-             return state
+        if plan.get("route") == "out_of_scope":
+            logger.info("[ROUTER] Out_of_scope Intent Bypass executing.")
+            state["optimizations"]["agent_routed"] = "out_of_scope_bypass"
+            state["answer"] = "I am unable to answer this question based on the provided enterprise context."
+            state["confidence"] = 1.0
+            state["answer"] = self._strip_think(state.get("answer", ""))
+            state["chat_history"].append({"role": "assistant", "content": state["answer"]})
+            if session_id:
+                try:
+                    save_chat_turn(session_id, "assistant", state["answer"])
+                except Exception:
+                    pass
+            return state
              
-        elif state["intent"] in ["greeting", "smalltalk"]:
+        elif plan.get("route") == "smalltalk":
              # Bypass the expensive 70B logic completely.
              logger.info("[ROUTER] Smalltalk Bypass executing via Llama-8B.")
              state["optimizations"]["agent_routed"] = "smalltalk_bypass"
              state["answer"] = "Hello! I am the Enterprise RAG System. How can I help you today?"
              state["confidence"] = 0.99
+             state["answer"] = self._strip_think(state.get("answer", ""))
              state["chat_history"].append({"role": "assistant", "content": state["answer"]})
+             if session_id:
+                 try:
+                     save_chat_turn(session_id, "assistant", state["answer"])
+                 except Exception:
+                     pass
              return state
              
-        elif state["intent"] in ["code_request", "analytics_request"]:
+        elif plan.get("route") == "coder_agent":
              logger.info(f"[ROUTER] Dispatching payload to the {state['intent']} Coder Agent.")
              state["optimizations"]["agent_routed"] = "coder_agent"
              # We execute solely against the Coder MoE ignoring dense 70B RAG chains
              final_state = await self.coder_agent.ainvoke(state)
+             final_state["answer"] = self._strip_think(final_state.get("answer", ""))
              final_state["chat_history"].append({"role": "assistant", "content": final_state.get("answer", "")})
+             if session_id:
+                 try:
+                     save_chat_turn(session_id, "assistant", final_state.get("answer", ""))
+                 except Exception:
+                     pass
              return final_state
              
-        elif state["intent"] == "rag_question":
+        elif plan.get("route") == "rag_agent":
              # Dispatch into the heavy machinery
              logger.info("[ROUTER] Dispatching payload to the dense RAG agent.")
              state["optimizations"]["agent_routed"] = "rag_agent"
              
              # Execute the end-to-end RAG pipeline
              final_state = await self.rag_agent.ainvoke(state)
+             final_state["answer"] = self._strip_think(final_state.get("answer", ""))
              final_state["chat_history"].append({"role": "assistant", "content": final_state.get("answer", "")})
+             if session_id:
+                 try:
+                     save_chat_turn(session_id, "assistant", final_state.get("answer", ""))
+                 except Exception:
+                     pass
              return final_state
         
         # Failsafe Catch-all
         state["optimizations"]["agent_routed"] = "fallback"
         state["answer"] = "I am unsure how to route this specific query format."
+        state["answer"] = self._strip_think(state.get("answer", ""))
         state["chat_history"].append({"role": "assistant", "content": state["answer"]})
+        if session_id:
+            try:
+                save_chat_turn(session_id, "assistant", state["answer"])
+            except Exception:
+                pass
         return state

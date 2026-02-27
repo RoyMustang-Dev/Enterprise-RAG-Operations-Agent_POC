@@ -6,6 +6,7 @@ and database persistence operations into a single cohesive synchronous block.
 """
 import os
 import time
+import logging
 from datetime import datetime
 from typing import List, Dict
 
@@ -13,6 +14,9 @@ from app.ingestion.loader import load_document
 from app.ingestion.chunker import chunk_text
 from app.retrieval.embeddings import EmbeddingModel
 from app.retrieval.vector_store import QdrantStore
+from app.infra.hardware import HardwareProbe
+
+logger = logging.getLogger(__name__)
 
 class IngestionPipeline:
     """
@@ -24,12 +28,22 @@ class IngestionPipeline:
     3. Embedder: Converts the text segments into high-dimensional vector representations.
     4. Vector Store: Saves the vectors alongside their descriptive metadata dictionaries for RAG retrieval.
     """
-    def __init__(self):
+    def __init__(self, tenant_id: str = None):
         """
         Initializes the pipeline with explicit EmbeddingModel and Database backend adapters.
         """
         self.embedder = EmbeddingModel()
-        self.vector_store = QdrantStore()
+        profile = HardwareProbe.get_profile()
+        self.batch_size = int(os.getenv("INGEST_BATCH_SIZE", profile.get("embedding_batch_size", 32)))
+        logger.info(f"[INGESTION] Batch size set to {self.batch_size} for embeddings.")
+        if tenant_id:
+            use_multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
+            if use_multi_tenant:
+                self.vector_store = QdrantStore(tenant_id=tenant_id)
+            else:
+                self.vector_store = QdrantStore(collection_name=tenant_id)
+        else:
+            self.vector_store = QdrantStore()
 
     def run_ingestion(self, file_paths: List[str], metadatas: List[Dict] = None, reset_db: bool = False, job_tracker: dict = None, mark_completed: bool = True) -> int:
         """
@@ -56,17 +70,26 @@ class IngestionPipeline:
         # 0. Defensive Database Truncation
         # -------------------------------------------------------------------------
         if reset_db:
-            print("Resetting active Knowledge Base index mappings...")
+            msg = "Resetting active Knowledge Base index mappings..."
+            print(msg)
+            if job_tracker is not None:
+                job_tracker.setdefault("logs", []).append(msg)
             self.vector_store.clear()
 
-        print(f"Starting pipeline ingestion loop for {len(file_paths)} system files...")
+        msg = f"Starting pipeline ingestion loop for {len(file_paths)} system files..."
+        logger.info(msg)
+        if job_tracker is not None:
+            job_tracker.setdefault("logs", []).append(msg)
         
         # -------------------------------------------------------------------------
         # 1. & 2. Loading and Chunking Sequences Loop
         # -------------------------------------------------------------------------
         for i, file_path in enumerate(file_paths):
             try:
-                print(f"Processing Data File: {file_path}")
+                msg = f"Processing Data File: {file_path}"
+                logger.info(msg)
+                if job_tracker is not None:
+                    job_tracker.setdefault("logs", []).append(msg)
                 # Dispatch mapping load based on file extension
                 text = load_document(file_path)
                 if not text:
@@ -104,13 +127,13 @@ class IngestionPipeline:
                 print(f"Error Pipeline extraction processing {file_path}: {e}")
 
         if not all_chunks:
-            print("No valid data chunks generated to actively ingest.")
+            logger.warning("No valid data chunks generated to actively ingest.")
             return 0
 
         # -------------------------------------------------------------------------
         # 3. & 4. Batch Embedding and Persistence (Generator Pattern)
         # -------------------------------------------------------------------------
-        batch_size = 100
+        batch_size = self.batch_size
         total_processed = 0
         total_to_process = len(all_chunks)
         
@@ -121,7 +144,10 @@ class IngestionPipeline:
                 job_tracker["chunks_added"] = 0
             job_tracker["total_chunks"] += total_to_process
             
-        print(f"Executing mathematical embedding generations for {total_to_process} system chunks in batches of {batch_size}...")
+        msg = f"Executing mathematical embedding generations for {total_to_process} system chunks in batches of {batch_size}..."
+        logger.info(msg)
+        if job_tracker is not None:
+            job_tracker.setdefault("logs", []).append(msg)
         
         for i in range(0, total_to_process, batch_size):
             batch_chunks = all_chunks[i:i + batch_size]
@@ -133,8 +159,21 @@ class IngestionPipeline:
                 if not embeddings:
                     raise ValueError("Embedding model returned an explicitly empty array for chunks.")
                     
-                # Push normalized vectors to permanent vector store backend
-                self.vector_store.add_documents(batch_chunks, embeddings, batch_metas)
+                # Push normalized vectors to permanent vector store backend with Exponential Backoff
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        self.vector_store.add_documents(batch_chunks, embeddings, batch_metas)
+                        break
+                    except Exception as connection_err:
+                        if attempt == max_retries - 1:
+                            raise connection_err
+                        retry_msg = f"Network connection dropped (Attempt {attempt+1}/{max_retries}). Retrying in {2 ** attempt}s..."
+                        logger.warning(retry_msg)
+                        if job_tracker is not None:
+                            job_tracker.setdefault("logs", []).append(retry_msg)
+                        time.sleep(2 ** attempt)
+                        
                 total_processed += len(batch_chunks)
                 
                 # Update tracker so frontend sees real-time progress
@@ -149,8 +188,10 @@ class IngestionPipeline:
                 gc.collect()
                 
             except Exception as e:
-                print(f"Batch generation pipeline failed catastrophically at index {i}: {e}")
+                msg = f"Batch generation pipeline failed catastrophically at index {i}: {e}"
+                logger.error(msg)
                 if job_tracker is not None:
+                    job_tracker.setdefault("logs", []).append(msg)
                     job_tracker["status"] = "failed"
                     job_tracker["error"] = str(e)
                 raise e
@@ -159,5 +200,8 @@ class IngestionPipeline:
         if job_tracker is not None and mark_completed:
             job_tracker["status"] = "completed"
             
-        print(f"Orchestration Ingestion loop complete. Successfully persisted {total_processed} exact chunks.")
+        msg = f"Orchestration Ingestion loop complete. Successfully persisted {total_processed} exact chunks."
+        logger.info(msg)
+        if job_tracker is not None:
+            job_tracker.setdefault("logs", []).append(msg)
         return total_processed

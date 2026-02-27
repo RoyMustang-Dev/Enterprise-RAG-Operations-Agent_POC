@@ -51,10 +51,14 @@ graph TD
 
     subgraph Layer5 [Layer 5: Expansion & Routing]
         direction TB
+        DB[(SQLite Chat History)] -.-> L2
         L2[Prompt Rewriter<br/>gpt-oss-120b]
         L2_Out([Output: Expanded JSON Queries])
         L2 --> L2_Out
-        L2_Out -.-> |"Queries"| L3{Intent Supervisor<br/>llama-3.1-8b-instant}
+        L2_Out -.-> |"Queries"| Planner{Adaptive Planner}
+        Planner_Out([Output: Route & Effort])
+        Planner --> Planner_Out
+        Planner_Out -.-> |"Route Execution"| L3{Intent Supervisor<br/>llama-3.1-8b-instant}
         L3_Out([Output: Intent Enum])
         L3 --> L3_Out
     end
@@ -93,6 +97,8 @@ graph TD
         L8_Out -.-> |"Generated Claims"| L9{Fact Verifier<br/>Sarvam M}
         L9_Out([Output: Hallucination Array])
         L9 --> L9_Out
+        
+        L9_Out -.-> |"If True: Correction Loop"| L8
     end
 
     L9_Out -.-> |"Verified Draft"| L10

@@ -7,6 +7,8 @@ single, highly-cohesive API Router built in `app.api.routes`.
 import os
 import sys
 import asyncio
+import logging
+import time
 
 # CRITICAL for Windows: Playwright subprocesses require the Proactor event loop
 if sys.platform == "win32":
@@ -14,17 +16,19 @@ if sys.platform == "win32":
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(override=True)
 except Exception:
     # Optional dependency in constrained environments; service can still run with injected env vars.
     pass
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 # Import the new Vertical Slice router
 from app.api.routes import router as api_router
+from app.infra.otel import init_otel
+from app.infra.hardware import HardwareProbe
 
 # -----------------------------------------------------------------------------
 # FastAPI Application Initialization
@@ -35,11 +39,28 @@ app = FastAPI(
     version="2.0.0",
 )
 
+# Log hardware profile on startup
+HardwareProbe.get_profile()
+
+# Logging
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(
+    level=log_level,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
+logger = logging.getLogger("app")
+
 # Configure CORS
+cors_origins = [o.strip() for o in os.getenv("CORS_ALLOW_ORIGINS", "").split(",") if o.strip()]
+allow_credentials = os.getenv("CORS_ALLOW_CREDENTIALS", "false").lower() == "true"
+if allow_credentials and not cors_origins:
+    # If credentials are enabled, explicit origins are required
+    cors_origins = []
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins if cors_origins or allow_credentials else ["*"],
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -49,6 +70,18 @@ app.add_middleware(
 # -----------------------------------------------------------------------------
 # Mount all endpoints under the /api/v1 namespace for versioning compliance
 app.include_router(api_router, prefix="/api/v1")
+
+# Optional OpenTelemetry bootstrap
+init_otel(app)
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed = round((time.perf_counter() - start) * 1000, 3)
+    logger.info(f"{request.method} {request.url.path} -> {response.status_code} ({elapsed} ms)")
+    return response
 
 # -----------------------------------------------------------------------------
 # Root & Health Endpoints

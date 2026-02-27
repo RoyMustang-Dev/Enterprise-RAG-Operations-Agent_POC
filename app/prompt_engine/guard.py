@@ -8,6 +8,9 @@ attempting prompt-injection, jailbreaking, or data exfiltration.
 Enterprise Clients mandate this layer to prevent prompt extracting and data poisoning.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import json
 import logging
 import requests

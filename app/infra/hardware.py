@@ -29,47 +29,92 @@ class HardwareProbe:
         try:
             # CPU Extraction
             cpu_cores = multiprocessing.cpu_count() or 4
-            
-            # Target `cpu_cores * 2 + 1` for I/O bound tasks like Crawler networking
             recommended_async_workers = (cpu_cores * 2) + 1
-            
+
             # GPU Extraction (PyTorch hooks)
             has_gpu = False
             device = "cpu"
             gpu_name = "None"
-            
-            try:
-                import torch
-                if torch.cuda.is_available():
-                    has_gpu = True
-                    device = "cuda"
-                    # Prevent crashes on older PyTorch versions by safely probing the property mapping
-                    gpu_name = torch.cuda.get_device_name(0) if torch.cuda.device_count() > 0 else "Unknown CUDA"
-                elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-                     has_gpu = True
-                     device = "mps"
-                     gpu_name = "Apple Silicon"
-            except ImportError:
-                logger.warning("PyTorch not installed. Falling back strictly to CPU mapping.")
-                
+            gpu_mem_gb = 0.0
+
+            force_device = os.getenv("FORCE_DEVICE")
+            if force_device:
+                device = force_device
+                has_gpu = device in ["cuda", "mps"]
+                gpu_name = "Forced"
+            else:
+                try:
+                    import torch
+                    if torch.cuda.is_available():
+                        has_gpu = True
+                        device = "cuda"
+                        gpu_name = torch.cuda.get_device_name(0) if torch.cuda.device_count() > 0 else "Unknown CUDA"
+                        try:
+                            props = torch.cuda.get_device_properties(0)
+                            gpu_mem_gb = round(props.total_memory / (1024 ** 3), 2)
+                        except Exception:
+                            gpu_mem_gb = 0.0
+                    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+                        has_gpu = True
+                        device = "mps"
+                        gpu_name = "Apple Silicon"
+                except ImportError:
+                    logger.warning("PyTorch not installed. Falling back strictly to CPU mapping.")
+
+            # Heuristic batch sizes
+            if device == "cuda":
+                embedding_batch_size = 128 if gpu_mem_gb >= 8 else 64
+                rerank_batch_size = 16 if gpu_mem_gb < 8 else 32
+            elif device == "mps":
+                embedding_batch_size = 64
+                rerank_batch_size = 8
+            else:
+                embedding_batch_size = 32
+                rerank_batch_size = 4
+
+            # Overrides
+            if os.getenv("EMBEDDING_BATCH_SIZE"):
+                embedding_batch_size = int(os.getenv("EMBEDDING_BATCH_SIZE"))
+            if os.getenv("RERANK_BATCH_SIZE"):
+                rerank_batch_size = int(os.getenv("RERANK_BATCH_SIZE"))
+
+            crawler_workers = min(max(2, cpu_cores), 8)
+            if os.getenv("CRAWLER_WORKERS"):
+                crawler_workers = int(os.getenv("CRAWLER_WORKERS"))
+
             config = {
                 "cpu_cores": cpu_cores,
                 "recommended_async_workers": recommended_async_workers,
                 "has_gpu": has_gpu,
                 "primary_device": device,
-                "gpu_name": gpu_name
+                "gpu_name": gpu_name,
+                "gpu_mem_gb": gpu_mem_gb,
+                "embedding_batch_size": embedding_batch_size,
+                "rerank_batch_size": rerank_batch_size,
+                "crawler_workers": crawler_workers
             }
-            
+
             logger.info(f"[HARDWARE PROBE] Initialized scaling config: {config}")
             return config
-            
+
         except Exception as e:
             logger.error(f"[HARDWARE PROBE] Catastrophic failure during environment scan: {e}")
-            # Failsafe values guaranteeing system doesn't crash on failure
             return {
                 "cpu_cores": 2,
                 "recommended_async_workers": 4,
                 "has_gpu": False,
                 "primary_device": "cpu",
-                "gpu_name": "None"
+                "gpu_name": "None",
+                "gpu_mem_gb": 0.0,
+                "embedding_batch_size": 32,
+                "rerank_batch_size": 4,
+                "crawler_workers": 2
             }
+
+    _cached_profile = None
+
+    @classmethod
+    def get_profile(cls) -> dict:
+        if cls._cached_profile is None:
+            cls._cached_profile = cls.detect_environment()
+        return cls._cached_profile.copy()

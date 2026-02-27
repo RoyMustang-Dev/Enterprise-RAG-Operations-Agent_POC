@@ -8,6 +8,9 @@ generate a strict JSON schema corresponding to Vector Database `$eq` and `$in` f
 By applying these filters BEFORE the semantic search, we drastically reduce hallucinations.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import json
 import logging
 from typing import Dict, Any
@@ -114,10 +117,18 @@ Rules:
                     # Explicit Validation: Purge hallucinated DB Fields proactively
                     safe_filters = {}
                     for field, config in extracted_filters.items():
-                        if field in self.available_fields and isinstance(config, dict) and "op" in config and "value" in config:
-                            safe_filters[field] = config
-                        else:
+                        if field not in self.available_fields:
                             logger.warning(f"[METADATA] Purged Hallucinated Schema Boundary: {field}")
+                            continue
+                        if not isinstance(config, dict):
+                            logger.warning(f"[METADATA] Purged invalid filter config for field: {field}")
+                            continue
+                        op = config.get("op")
+                        value = config.get("value")
+                        if op not in {"$eq", "$in"} or value is None:
+                            logger.warning(f"[METADATA] Purged invalid op/value for field: {field}")
+                            continue
+                        safe_filters[field] = {"op": op, "value": value}
                             
                     result["filters"] = safe_filters
                     

@@ -10,6 +10,9 @@ the execution graph (e.g., Short-circuit "Hello" directly to a fast response,
 saving massive compute costs).
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import json
 import logging
 import aiohttp
@@ -27,14 +30,14 @@ class IntentClassifier:
         self.model_id = model_override
         self.escalation_model_id = escalation_model
         
-        # The rigid JSON schema instructed in the rag-implementation blueprint
         self.system_prompt = '''SYSTEM: You are a high-precision intent classifier. Given the user message, classify into one of: ["greeting","smalltalk","out_of_scope","rag_question","code_request","analytics_request","multimodal_audio","other"]. Output exactly one compact JSON:
 
 {"intent": "<one of the labels above>", "confidence": 0.00-1.00, "route": "<target_agent_name>", "multi_intent": <true/false>, "notes": "<optional 1-sentence signal words>"}
 
 Rules:
 - If user asks for anything illegal, set intent="out_of_scope".
-- If user references files, docs, data, or asks about specific people/entities (e.g. HR reviews, employee data) -> prefer "rag_question".
+- If user references ANY specific names, technical concepts, asks for justification, or asks questions about documents/data -> MUST be "rag_question".
+- "smalltalk" and "greeting" are ONLY for simple, brief pleasantries (e.g., "Hello", "How are you", "Thanks"). If the query contains ANY specific domain question, named entities, or requires reasoning, it MUST be "rag_question".
 - If user asks to write/execute code -> "code_request".
 - If user asks two highly conflicting/separate questions simultaneously, set "multi_intent": true.
 - If not confident (<0.5), choose "other" and include notes.

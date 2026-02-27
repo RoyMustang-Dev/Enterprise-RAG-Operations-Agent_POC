@@ -6,12 +6,19 @@ This file is the exact computational layer that translates human semantic string
 into 1024-dimensional floating-point tensors capable of mathematical comparison.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import torch
 import requests
 import concurrent.futures
 from sentence_transformers import SentenceTransformer
 from typing import List, Union
 from functools import lru_cache
+import logging
+from app.infra.hardware import HardwareProbe
+
+logger = logging.getLogger(__name__)
 
 class EmbeddingModel:
     """
@@ -32,11 +39,16 @@ class EmbeddingModel:
         
         # Phase 13: Hardware Probing
         if not self.openai_api_key:
-            self.device = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
-            self.num_cores = os.cpu_count() or 4
-            print(f"[EMBEDDING ENGINE] Hardware Probe: Local Compute Node -> {self.device} with {self.num_cores} cores.")
+            profile = HardwareProbe.get_profile()
+            self.device = profile.get("primary_device", "cpu")
+            self.num_cores = profile.get("cpu_cores", os.cpu_count() or 4)
+            self.batch_size = profile.get("embedding_batch_size", 32)
+            logger.info(f"[EMBEDDING ENGINE] Hardware Probe: device={self.device} cores={self.num_cores} batch={self.batch_size}")
+            if self.device == "cpu":
+                logger.warning("[EMBEDDING ENGINE] Running on CPU. Embedding throughput will be slower.")
         else:
-            print("[EMBEDDING ENGINE] Hardware Probe: Cloud Override -> Routing to OpenAI API text-embedding-3-small.")
+            self.batch_size = 32
+            logger.info("[EMBEDDING ENGINE] Cloud Override -> Routing to OpenAI API text-embedding-3-small.")
         
     @property
     def model(self):
@@ -48,7 +60,7 @@ class EmbeddingModel:
             return None # Prevent allocating 1.5GB of RAM by bypassing PyTorch altogether
             
         if self._model is None:
-            print(f"Loading local tensor mathematics model into Hardware Active Memory: {self.model_name}...")
+            logger.info(f"Loading local tensor mathematics model into Hardware Active Memory: {self.model_name}...")
             
             import os
             import logging
@@ -78,10 +90,10 @@ class EmbeddingModel:
             # -------------------------------------------------------------------------
             from sentence_transformers import SentenceTransformer
             self._model = SentenceTransformer(self.model_name, device=self.device)
-            print(f"Mathematical Model loaded successfully into {self.device} Hardware Context.")
+            logger.info(f"Mathematical Model loaded successfully into {self.device} Hardware Context.")
         return self._model
 
-    @lru_cache(maxsize=1024)
+    @lru_cache(maxsize=1000)
     def generate_embedding(self, text: str) -> List[float]:
         """
         Generates a 1024-dimensional mathematical embedding for a single text string.
@@ -145,7 +157,7 @@ class EmbeddingModel:
             # Native GPU Tensor processing devours entire arrays aggressively
             embeddings = self.model.encode(
                 texts, 
-                batch_size=128,
+                batch_size=self.batch_size,
                 convert_to_numpy=True, 
                 normalize_embeddings=True,
                 show_progress_bar=False

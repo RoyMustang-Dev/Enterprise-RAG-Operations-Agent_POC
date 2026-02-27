@@ -35,6 +35,7 @@ class AgentState(TypedDict):
     """
     # System Inputs
     session_id: str
+    tenant_id: Optional[str]
     query: str
     chat_history: List[Dict[str, str]]
     streaming_callback: Optional[Any]
@@ -93,3 +94,9 @@ class TelemetryLogRecord(BaseModel):
     
     hardware_used: str = Field(default="cpu", description="Records 'cuda', 'mps', or 'cpu' dynamically.")
     temperature_used: float = Field(default=0.4, description="Records the exact heat signature of the LLM execution.")
+
+    # Adaptive planning + retrieval metadata
+    complexity_score: float = Field(default=0.0, description="Adaptive planner complexity score (0.0-1.0).")
+    metadata_filters_applied: Dict[str, Any] = Field(default_factory=dict, description="Validated metadata filters applied.")
+    reward_score: float = Field(default=0.0, description="Weighted reward score for response quality.")
+    answer_preview: str = Field(default="", description="Short preview of the response for debugging.")
