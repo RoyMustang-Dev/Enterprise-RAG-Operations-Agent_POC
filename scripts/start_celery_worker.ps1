@@ -15,7 +15,7 @@ if (Test-Path $envPath) {
     if ($parts.Count -eq 2) {
       $key = $parts[0].Trim()
       $val = $parts[1].Trim()
-      $env:$key = $val
+      Set-Item -Path "env:$key" -Value $val
     }
   }
 }

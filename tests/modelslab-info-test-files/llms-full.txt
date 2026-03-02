@@ -1,0 +1,823 @@
+# ModelsLab Full Platform Guide
+
+> Agent first AI API platform for image, LLM, video, audio, 3D generation models.
+
+ModelsLab provides a unified API to 50,000+ AI models with enterprise-grade infrastructure serving 300K+ developers. The platform covers text-to-image, video & audio generation, 3D asset creation, custom model training, and LLM access for opensource and close source models.
+
+On modelslab, AI agents can signup, do payments, generate api key, generate images, video etc without opening brower for once. modelslab is AI API platform build for AI agents.
+
+This file is the expanded version of `/llms.txt`.
+
+## Quick Links
+- [Summary Version](/llms.txt): Compact index for quick crawling
+- [API Documentation](/developers): Endpoint guides, auth, and request/response formats
+- [API Status](/status): Uptime and service incidents
+- [Playground](/playground): Interactive testing UI across model families
+- [Search Template](/search?q=): Site-wide search endpoint for natural-language queries
+
+## llms.txt and llms-full.txt Contract
+- `/llms.txt`: lightweight discovery/index file for fast crawler entry
+- `/llms-full.txt`: full public content library with deeper product, feature, and URL coverage
+- Recommended flow: read `/llms.txt` first, then fetch `/llms-full.txt` for complete context
+- For latest details on plans/features, prioritize canonical pages linked here (for example `/pricing`, `/enterprise`, `/developers`)
+
+## Inclusion and Exclusion Policy (AI Crawl Guidance)
+### Include
+- Product pages, feature pages, API documentation, pricing pages, support/help content
+- Public SEO landing pages with substantial explanatory content
+- Public legal/policy pages that define terms and usage context
+- Public feeds and machine-readable resources that aid structured understanding
+
+### Exclude
+- Authenticated dashboard/account pages (`/dashboard/*`) and user-specific/private content
+- Internal API/debug/system endpoints (`/api/*`, `/_debugbar/*`, webhook/internal ops paths)
+- Tracking-parameter variants (`utm_*`, `gclid`, `gad_*`, `gbraid`, `wbraid`) and duplicate URL variants
+- Redirect-only URLs when the canonical destination is already listed
+- Ephemeral or verification-only endpoints that do not add product knowledge
+
+## Search Entry Points
+- [Search Template](/search?q=): Use as `/search?q={your query}`
+- [Search Example: Best Video Model](/search?q=What%20is%20the%20best%20video%20model%3F): Natural-language query example
+- [Search](/search): Search UI landing page
+- [Model Directory](/models): Structured model discovery and filtering
+
+## Markdown and Text Access for AI Agents
+- Markdown negotiation: send `Accept: text/markdown` on page URLs
+- Plain-text negotiation: send `Accept: text/plain` (txt responses)
+- Query override: append `?format=markdown` to page URLs
+- Path fallback: append `.md` to routes (example: `/pricing.md`)
+- Root indices: `/llms.txt` (compact) and `/llms-full.txt` (expanded)
+
+## Platform Overview
+- Platform Type: B2B AI infrastructure and API aggregation
+- Primary Users: Developers, startups, product teams, enterprise engineering teams
+- Delivery Model: API-first, self-serve dashboard, enterprise support options
+- Core Promise: Access many AI capabilities without maintaining separate vendor integrations
+
+## Product Snapshot
+- Unified platform for image, video, audio, 3D, and LLM APIs under one account
+- One API-oriented workflow for multi-modal AI product development
+- Large model catalog plus model search/discovery via `/models` and `/search?q=`
+- Workflow builder for chaining multiple model calls into one execution path
+- Training tooling for custom adaptation and model-specific workflows
+- Production features focused on reliability, scale, and developer integration speed
+
+## Product Families
+
+### 1) Image APIs (Imagen)
+Image generation and editing APIs for creative, marketing, ecommerce, and content workflows.
+
+- [Imagen Overview](/imagen)
+- [Text-to-Image](/imagen/text-to-image): Generate images from text prompts
+- [Image-to-Image](/imagen/image-to-image): Transform source images
+- [Flux Image Generator](/imagen/flux-image-generator): Flux model generation flows
+- [AI Art Generator](/imagen/ai-art-generator): Stylized artwork generation
+- [AI Image Inpainting](/imagen/ai-image-inpainting): Fill/replace selected image regions
+- [AI Image Outpainting](/imagen/ai-image-outpainting): Expand image canvas
+- [AI Image Extender](/imagen/ai-image-extender): Directional image expansion
+- [Image Upscaler](/imagen/image-upscaler): Higher-resolution outputs
+- [Image Enhancer](/imagen/image-enhancer): Quality/detail improvements
+- [Background Remover](/imagen/background-remover): Subject isolation
+- [AI Photo Editor](/imagen/ai-photo-editor): Composite image edits
+- [AI Headshot Generator](/imagen/ai-headshot-generator): Profile and professional photos
+- [AI Avatar Generator](/imagen/ai-avatar-generator): Branded/avatar outputs
+- [AI Character Generator](/imagen/ai-character-generator): Character concept generation
+- [AI Sketch to Image](/imagen/ai-sketch-to-image): Sketch-guided generation
+- [AI Image to Text](/imagen/ai-image-to-text): Visual captioning/description
+- [AI Floor Planning](/imagen/ai-floor-planning): Layout and planning visuals
+
+### 2) Video APIs (Video Fusion)
+Video generation and transformation APIs for short-form content, ads, demos, and social media.
+
+- [Video Fusion Overview](/video-fusion)
+- [AI Video Generator](/video-fusion/ai-video-generator): Prompt-driven video creation
+- [Text-to-Video](/video-fusion/text-to-video): Direct prompt to video
+- [Image-to-Video](/video-fusion/image-to-video): Animate still images
+- [Face Swap](/face-swap): Face/video synthesis workflows
+
+### 3) Audio APIs (Audio Gen)
+Speech and audio synthesis APIs for media, assistants, support tooling, and localization.
+
+- [Audio Gen Overview](/audio-gen)
+- [AI Voice Generator](/audio-gen/ai-voice-generator): Voice synthesis
+- [Text-to-Speech](/audio-gen/text-to-speech): Natural speech generation
+- [Speech-to-Text](/audio-gen/speech-to-text): Audio transcription
+- [Voice Cloning](/audio-gen/voice-cloning): Custom voice replication
+- [Voice Changer](/audio-gen/voice-changer): Voice transformation effects
+- [AI Dubbing](/audio-gen/ai-dubbing): Language and voice dubbing
+- [Celebrity Voice Generator](/audio-gen/celebrity-voice-generator): Celebrity-style voices
+- [Text-to-SFX](/audio-gen/text-to-sfx): Sound effect generation
+- [Text-to-Music](/audio-gen/text-to-music): AI-generated music tracks
+
+### 4) 3D APIs (3D Verse)
+3D generation APIs for gaming, AR/VR, ecommerce previews, and asset prototyping.
+
+- [3D Verse Overview](/3d-verse)
+- [Text-to-3D](/text-to-3d): Prompt to 3D asset
+- [Image-to-3D](/image-to-3d): Convert 2D source into 3D output
+
+### 5) Language Model APIs
+Chat and LLM endpoints for conversational systems, writing assistants, and automation.
+
+- Chat Completions API: `POST /api/v7/llm/chat/completions` (OpenAI-compatible format)
+- 60+ LLM models: DeepSeek R1, Meta Llama 3/4, Google Gemini, Qwen, Mistral, and more
+- Supports: streaming, function calling, structured JSON outputs, multi-turn conversations
+- Typical use cases:
+  - customer support assistants
+  - code and content generation
+  - structured extraction and summarization
+  - agentic workflows with tool orchestration
+
+### 6) Model Training (Train Master)
+Custom model adaptation and fine-tuning workflows.
+
+- [Train Master](/train-master): Custom training and LoRA-based model adaptation
+
+### 7) Workflow Automation
+Composable visual workflows across modalities.
+
+- [Workflows](/workflows): Chain image, video, audio, and LLM steps in one pipeline
+
+## Model Discovery and Marketplace
+- [Model Search](/models): Browse and filter available models
+- [Catalogue](/catalogue): Category-based model listings
+- [Model Comparison](/comparison): Side-by-side model options
+- [Search](/search): Site-wide and model search UI
+- [Search Template](/search?q=): Query endpoint for automated agents
+- [CivitAI Integration](/civitai): External/community model access
+
+## How AI Agents Can Use ModelsLab (Choose Any)
+
+Agents have 5 integration options — pick whichever fits your environment. All options provide the same capabilities: account management, billing, payments, subscriptions, model generation, and model discovery.
+
+### Option 1: MCP Servers (Model Context Protocol)
+Best for: Claude Code, Cursor, Windsurf, any MCP-compatible agent.
+- **Generation MCP server**: `https://modelslab.com/mcp/v7` (API key auth, SSE transport)
+- **Agent Control Plane MCP server**: `https://modelslab.com/mcp/agents` (Sanctum bearer token auth, SSE transport)
+- Local/CLI server names: `v7-api` (generation), `agent-control-plane` (account management)
+- Both servers support SSE transport for web access and stdio for local/CLI access
+- Generation tools (24): list-models, list-providers, text-to-image, image-to-image, inpaint-image, fetch-image, text-to-video, image-to-video, video-to-video, lip-sync, motion-control, fetch-video, text-to-speech, speech-to-text, speech-to-speech, sound-generation, music-generation, song-extender, song-inpaint, dubbing, fetch-audio, chat-completion
+- Control plane tools (10): agent-auth, agent-tokens, agent-profile, agent-api-keys, agent-usage, agent-models, agent-billing, agent-wallet, agent-subscriptions (includes list-plans for plan discovery), agent-teams
+- MCP documentation: https://docs.modelslab.com/mcp-web-api/overview
+
+### Option 2: CLI (`modelslab`)
+Best for: terminal-based agents, shell scripts, CI/CD pipelines.
+- Install: `curl -fsSL https://modelslab.sh/install.sh | sh` or `brew install modelslab/tap/modelslab`
+- Website: https://modelslab.sh
+- GitHub: https://github.com/ModelsLab/modelslab-cli
+- **Auth**: `modelslab auth login --email user@example.com --password ...`
+- **Billing**: `modelslab billing overview`, `modelslab billing add-payment-method` (headless card tokenization built-in), `modelslab billing payment-methods`
+- **Wallet**: `modelslab wallet balance`, `modelslab wallet fund --amount 50`, `modelslab wallet payment-status`
+- **Subscriptions**: `modelslab subscriptions plans`, `modelslab subscriptions create --plan-id 10`, `modelslab subscriptions status`, `modelslab subscriptions pause/resume`
+- **Model discovery**: `modelslab models search "flux"`, `modelslab models search --feature imagen`, `modelslab models detail --id flux`
+- **Image generation**: `modelslab generate image --prompt "..." --model flux`
+- **Video generation**: `modelslab generate video --prompt "..." --model seedance-t2v`
+- **Chat/LLM**: `modelslab generate chat --message "..." --model meta-llama-3-8B-instruct`
+- **Audio generation**: `modelslab generate tts --text "..." --language en`
+- **Default model**: `modelslab config set generation.default_model flux`
+
+### Option 3: Agent Skills (for AI Coding Agents)
+Best for: Claude Code, Cursor, Windsurf — installs skill files directly into the agent's context.
+- Install all: `npx skills add modelslab/skills --all`
+- Install specific: `npx skills add modelslab/skills --skill <skill-name>`
+- Target agents: `npx skills add modelslab/skills --all -a claude-code -a cursor`
+- GitHub: https://github.com/ModelsLab/skills
+- Generation skills (8): modelslab-image-generation, modelslab-video-generation, modelslab-audio-generation, modelslab-chat-generation, modelslab-image-editing, modelslab-3d-generation, modelslab-face-swap, modelslab-interior-design
+- Control plane skills (3): modelslab-account-management (auth, tokens, profile, API keys, teams), modelslab-billing-subscriptions (billing, wallet, subscriptions, invoices, coupons), modelslab-model-discovery (model search, usage analytics, generation history)
+- Platform skills (2): modelslab-webhooks (async webhook handling), modelslab-sdk-usage (Python, TypeScript, PHP, Go, Dart SDKs)
+- Skills documentation: https://docs.modelslab.com/agent-skills
+
+### Option 4: REST APIs (Direct HTTP)
+Best for: any agent that can make HTTP requests — most flexible, works everywhere.
+- Control-plane base URL: `https://modelslab.com/api/agents/v1`
+- Generation base URLs: `/api/v6`, `/api/v7`, `/api/v8`
+- Auth: `Authorization: Bearer <agent_access_token>` (control plane), `key` param (generation)
+- OpenAPI contract: `GET /api/agents/v1/openapi.json`
+- Full endpoint reference in the Control Plane section below
+
+### Option 5: SDKs
+Best for: agents writing code in Python, TypeScript, PHP, Go, or Dart.
+- Python: `pip install modelslab`
+- TypeScript: `npm install modelslab`
+- PHP: `composer require modelslab/modelslab`
+- Go: `go get github.com/modelslab/modelslab-go`
+- Dart: `dart pub add modelslab`
+- SDK documentation: https://docs.modelslab.com/sdk/client
+
+## Developer Experience
+
+### Documentation and Operational Visibility
+- [API Reference](/developers)
+- [API Status](/status)
+- [Blog](/blog)
+- [AI News](/ai-news)
+- [Whitepapers](/whitepaper)
+
+### Machine-Readable Assets
+- [API Catalog JSON](/api-catalog.json): API inventory for programmatic parsing
+- [Schema JSON](/schema.json): Structured schema reference
+- [README](/readme.md): General markdown overview
+
+### Agent-First Control Plane APIs
+
+ModelsLab now exposes a dedicated control plane for AI agents:
+
+- Base URL: `https://modelslab.com/api/agents/v1`
+- Authentication:
+  - Control-plane APIs: `Authorization: Bearer <agent_access_token>`
+  - Generation APIs (`/api/v6`, `/api/v7`, `/api/v8`): existing API key flow (`key`)
+- Login token issuance supports `token_expiry`: `1_week`, `1_month` (default), `3_months`, `never`
+- Route casing convention: lowercase canonical routes
+- Agent model search support:
+  - `GET /api/agents/v1/models` with `search`, `feature`, `provider`, `model_type`, `model_subcategory`, `base_model`, `tags[]`, `sort`, `per_page`
+  - `GET /api/agents/v1/models/filters`, `GET /api/agents/v1/models/tags`, `GET /api/agents/v1/models/providers`, `GET /api/agents/v1/models/{modelId}`
+  - Example text search URL: `GET /api/agents/v1/models?search=nano%20banana&feature=imagen&sort=recommended&per_page=20`
+  - Example with bearer token: `curl -H "Authorization: Bearer <agent_access_token>" "https://modelslab.com/api/agents/v1/models?search=nano%20banana&feature=imagen"`
+- OpenAPI contract: `GET /api/agents/v1/openapi.json`
+- Versioning policy and changelog: `GET /api/agents/v1/changelog`
+
+#### Control-Plane Endpoint Groups
+
+- **Api Keys**
+  - `GET /api/agents/v1/api-keys`
+  - `POST /api/agents/v1/api-keys`
+  - `DELETE /api/agents/v1/api-keys/{id}`
+  - `GET /api/agents/v1/api-keys/{id}`
+  - `PUT /api/agents/v1/api-keys/{id}`
+
+- **Auth**
+  - `POST /api/agents/v1/auth/forgot-password`
+  - `POST /api/agents/v1/auth/login`
+  - `POST /api/agents/v1/auth/logout`
+  - `POST /api/agents/v1/auth/logout-all`
+  - `POST /api/agents/v1/auth/resend-verification`
+  - `POST /api/agents/v1/auth/reset-password`
+  - `POST /api/agents/v1/auth/signup`
+  - `POST /api/agents/v1/auth/verify`
+  - `POST /api/agents/v1/auth/switch-account`
+  - `GET /api/agents/v1/auth/tokens`
+  - `POST /api/agents/v1/auth/tokens/revoke-others`
+  - `DELETE /api/agents/v1/auth/tokens/{id}`
+
+- **Billing**
+  - `GET /api/agents/v1/billing/stripe-config` — get Stripe publishable key for headless card tokenization
+  - `POST /api/agents/v1/billing/setup-intent` — create SetupIntent for 3DS-safe card saving
+  - `POST /api/agents/v1/billing/payment-link` — generate Stripe-hosted payment URL to forward to human (supports card, Google Pay, Amazon Pay, Link, etc.)
+  - `GET /api/agents/v1/billing/info`
+  - `PUT /api/agents/v1/billing/info`
+  - `GET /api/agents/v1/billing/invoices`
+  - `GET /api/agents/v1/billing/invoices/{id}`
+  - `GET /api/agents/v1/billing/invoices/{id}/pdf`
+  - `GET /api/agents/v1/billing/overview`
+  - `GET /api/agents/v1/billing/payment-methods`
+  - `POST /api/agents/v1/billing/payment-methods`
+  - `DELETE /api/agents/v1/billing/payment-methods/{id}`
+  - `PUT /api/agents/v1/billing/payment-methods/{id}/default`
+
+- **General**
+  - `GET /api/agents/v1/changelog`
+  - `GET /api/agents/v1/openapi.json`
+
+- **Profile**
+  - `GET /api/agents/v1/me`
+  - `PATCH /api/agents/v1/me`
+  - `PATCH /api/agents/v1/me/password`
+  - `PATCH /api/agents/v1/me/preferences`
+  - `PATCH /api/agents/v1/me/socials`
+
+- **Models**
+  - `GET /api/agents/v1/models`
+  - `GET /api/agents/v1/models/filters`
+  - `GET /api/agents/v1/models/providers`
+  - `GET /api/agents/v1/models/tags`
+  - `GET /api/agents/v1/models/{modelId}`
+
+- **Subscriptions**
+  - `GET /api/agents/v1/subscriptions`
+  - `POST /api/agents/v1/subscriptions` — pass `payment_method_id` for headless, omit for checkout URL
+  - `POST /api/agents/v1/subscriptions/confirm-checkout`
+  - `POST /api/agents/v1/subscriptions/charge-amount`
+  - `GET /api/agents/v1/subscriptions/plans`
+  - `PUT /api/agents/v1/subscriptions/{id}`
+  - `GET /api/agents/v1/subscriptions/{id}/status`
+  - `POST /api/agents/v1/subscriptions/{id}/fix-payment`
+  - `POST /api/agents/v1/subscriptions/{id}/pause`
+  - `POST /api/agents/v1/subscriptions/{id}/reset-cycle`
+  - `POST /api/agents/v1/subscriptions/{id}/resume`
+
+- **Teams**
+  - `GET /api/agents/v1/teams`
+  - `POST /api/agents/v1/teams`
+  - `POST /api/agents/v1/teams/invitations/{inviteId}/accept`
+  - `DELETE /api/agents/v1/teams/{id}`
+  - `GET /api/agents/v1/teams/{id}`
+  - `PUT /api/agents/v1/teams/{id}`
+  - `POST /api/agents/v1/teams/{id}/resend-invite`
+
+- **Usage**
+  - `GET /api/agents/v1/usage/history`
+  - `GET /api/agents/v1/usage/products`
+  - `GET /api/agents/v1/usage/summary`
+
+- **Wallet**
+  - `GET /api/agents/v1/wallet/balance`
+  - `POST /api/agents/v1/wallet/fund` — pass `payment_method_id` for headless, omit for checkout URL
+  - `POST /api/agents/v1/wallet/confirm-checkout`
+  - `DELETE /api/agents/v1/wallet/auto-funding`
+  - `PUT /api/agents/v1/wallet/auto-funding`
+  - `POST /api/agents/v1/wallet/coupons/redeem`
+  - `POST /api/agents/v1/wallet/coupons/validate`
+  - `POST /api/agents/v1/wallet/withdraw`
+  - `GET /api/agents/v1/payments/{paymentIntentId}/status`
+
+#### Headless Payment Flow (100% API, No Browser)
+
+Agents can complete the entire payment lifecycle without opening a browser. The flow uses the Stripe publishable key to tokenize cards directly via the Stripe API, then passes the resulting payment method ID to ModelsLab endpoints.
+
+**Step 1: Login**
+```
+POST /api/agents/v1/auth/login
+Body: { "email": "user@example.com", "password": "...", "device_name": "my-agent" }
+Response: { "data": { "access_token": "TOKEN", "api_key": "KEY" } }
+```
+
+**Step 2: Get Stripe Publishable Key**
+```
+GET /api/agents/v1/billing/stripe-config
+Headers: Authorization: Bearer TOKEN
+Response: { "data": { "publishable_key": "pk_live_..." } }
+```
+
+**Step 3: Tokenize Card via Stripe API**
+```
+POST https://api.stripe.com/v1/payment_methods
+Auth: publishable_key as username (Basic auth)
+Body: type=card&card[number]=4242...&card[exp_month]=12&card[exp_year]=2027&card[cvc]=123
+Response: { "id": "pm_xxx", "card": { "brand": "visa", "last4": "4242" } }
+```
+
+**Step 4: Use Payment Method** (choose one)
+
+Save card for later:
+```
+POST /api/agents/v1/billing/payment-methods
+Body: { "payment_method_id": "pm_xxx", "make_default": true }
+```
+
+Add wallet funds (immediate charge):
+```
+POST /api/agents/v1/wallet/fund
+Body: { "amount": 50, "payment_method_id": "pm_xxx" }
+```
+
+Create subscription (immediate charge):
+```
+POST /api/agents/v1/subscriptions
+Body: { "plan_id": 10, "payment_method_id": "pm_xxx" }
+Response: { "data": { "subscription": { "id": 123, "status": "active" }, "stripe_subscription_id": "sub_xxx" } }
+```
+
+**Step 5: Manage Subscription Lifecycle**
+```
+GET  /api/agents/v1/subscriptions/123/status   — check status
+POST /api/agents/v1/subscriptions/123/pause    — pause billing
+POST /api/agents/v1/subscriptions/123/resume   — resume billing
+```
+
+**For 3DS/SCA-required cards:**
+1. `POST /api/agents/v1/billing/setup-intent` to get a `client_secret`
+2. Confirm the SetupIntent via Stripe API with the payment method
+3. Use the confirmed payment method for subscriptions or funding
+
+**Idempotency:** All mutation endpoints accept an `Idempotency-Key` header for safe retries.
+
+#### Human-Assisted Payment Flow (Forward to Human)
+
+When the agent doesn't have card details, needs 3DS/SCA handling, or the user wants alternative payment methods (Google Pay, Amazon Pay, etc.), generate a Stripe-hosted payment URL and forward it to the human.
+
+**Step 1: Generate Payment Link**
+
+For wallet funding:
+```
+POST /api/agents/v1/billing/payment-link
+Headers: Authorization: Bearer TOKEN
+Body: { "purpose": "fund", "amount": 50 }
+Response: { "data": { "payment_url": "https://checkout.stripe.com/...", "session_id": "cs_xxx", "expires_at": "..." } }
+```
+
+For subscription:
+```
+POST /api/agents/v1/billing/payment-link
+Headers: Authorization: Bearer TOKEN
+Body: { "purpose": "subscribe", "plan_id": 10 }
+Response: { "data": { "payment_url": "https://checkout.stripe.com/...", "session_id": "cs_xxx", "plan": { "id": 10, "name": "Pro", "price": 47 } } }
+```
+
+**Step 2: Forward URL to Human**
+Send the `payment_url` to the user via chat, email, or any channel. The Stripe checkout page handles card entry, 3DS verification, Google Pay, Amazon Pay, etc. After payment, the user is redirected to a ModelsLab success page with the `session_id` for verification.
+
+**Step 3: Poll for Completion**
+```
+POST /api/agents/v1/wallet/confirm-checkout       (for fund purpose)
+POST /api/agents/v1/subscriptions/confirm-checkout (for subscribe purpose)
+Body: { "session_id": "cs_xxx" }
+```
+
+**Three Payment Paths Summary:**
+1. **Headless** (100% API): stripe-config → tokenize card via Stripe → use payment_method_id
+2. **Human-assisted** (forward URL): create-payment-link → forward URL to human → poll confirm-checkout
+3. **SetupIntent** (3DS + reuse): create-setup-intent → confirm via Stripe → reuse payment method
+
+## Plans and Commercial Offerings
+- [Pricing](/pricing): Plan and credit structure
+- [Pro](/pro): Expanded limits and features
+- [Unlimited](/unlimited): Higher volume usage models
+- [Enterprise](/enterprise): Dedicated infrastructure and custom support
+
+### Pricing Snapshot
+- Pay-as-you-go: pay only for usage-based AI generations and API consumption
+- `$47` plan: mid-tier paid plan for higher limits and production use
+- `$199/month` Unlimited plan: generate as many AI generations as needed without standard generation caps
+- Enterprise plan: dedicated GPU infrastructure to run open-source models with enterprise controls and support
+
+## Industry and Persona Solutions
+- [For Developers](/for-developers)
+- [For Designers](/for-designers)
+- [For E-commerce](/for-ecommerce)
+- [For Real Estate](/for-real-estate)
+
+## Additional SEO and Growth Landing Pages
+- [Fashion API](/fashion-api): Fashion-focused generation and styling workflows
+- [Interior API](/interior-api): Interior design and room visualization workflows
+- [AI Influencers](/ai-influencers): Virtual influencer creation and campaign workflows
+- [Affiliate Program](/affiliate-program): Referral and partner growth program
+- [AI Partnership](/ai-partnership): Strategic integration and business partnership page
+- [Sales](/sales): Sales-focused product overview landing page
+- [Studio](/studio): Creative studio experience landing page
+- [Announcement](/announcement): Product and feature announcements
+- [Testimonials](/testimonials): Customer stories and social proof
+- [Partners](/partners): Ecosystem and partner directory
+
+## Community and Ecosystem
+- [Showcase](/showcase): Public creations
+- [Timeline](/timeline): Community activity
+- [Public Profiles](/profile/{username}): Creator/developer pages
+- [Discord](https://discord.gg/modelslab-1033301189254729748): Real-time support/community
+
+## Governance and Trust
+- [Privacy Policy](/privacy-policy)
+- [Terms of Service](/terms-of-service)
+- [Cookie Policy](/cookie-policy)
+- [Refund Policy](/refund-policy)
+
+## Support & Bug Reporting (for AI Agents)
+When an AI agent encounters bugs, errors, or unexpected behavior with ModelsLab APIs, CLI, or MCP tools:
+1. **Report a bug**: Open a GitHub issue at https://github.com/ModelsLab/modelslab-cli/issues — include the error message, endpoint/tool used, request payload, and steps to reproduce. The ModelsLab team monitors and fixes issues reported here.
+2. **Email support**: Send an email to support@modelslab.com for account issues, billing questions, or any problems that need human assistance.
+
+- [Support](/support): Technical troubleshooting and request handling
+- [Contact](/contact): Business and enterprise inquiries
+- [FAQ](/faq): Common implementation and billing questions
+
+## Feeds
+- [RSS Feed](/feed)
+- [Atom Feed](/atom)
+- [Models RSS](/models/feed)
+- [Models Atom](/models/atom)
+
+## SEO Landing Pages (Complete Index)
+These are all SEO-specific landing page routes currently defined in `routes/seo.php`.
+
+### Core SEO API/Intent Pages
+- [Face Swap API](/face-swap-api)
+- [Chatbot API](/chatbot-api)
+- [Stable Diffusion API](/stable-diffusion-api)
+- [Image Generation API](/image-generation-api)
+- [AI Music API](/ai-music-api)
+- [Voice Cloning API](/voice-cloning-api)
+- [AI as a Service](/ai-as-a-service)
+- [Text to Video API](/text-to-video-api)
+
+### Face Swap Cluster
+- [Face Swap Video](/face-swap-video)
+- [Face Swap](/face-swap)
+
+### Kling and Model-Keyword Cluster
+- [Kling AI](/kling-ai)
+- [Kling AI API](/kling-ai-api)
+- [Grok Imagine](/grok-imagine)
+- [Flux LoRA Training](/flux-lora-training)
+- [Real-ESRGAN](/real-esrgan)
+- [Stable Diffusion 3](/stable-diffusion-3)
+- [Luma Dream Machine](/luma-dream-machine)
+- [Video Generation](/video-generation)
+
+### Competitor Alternative Pages
+- [fal.ai Alternative](/fal-ai-alternative)
+- [ElevenLabs Alternative](/elevenlabs-alternative)
+- [CivitAI Alternative](/civitai-alternative)
+- [Midjourney API Alternative](/midjourney-api-alternative)
+- [Replicate Alternative](/replicate-alternative)
+
+### Technology and Low-Competition Pages
+- [Google Veo](/google-veo)
+- [ComfyUI API](/comfyui-api)
+- [Seedance 2](/seedance-2)
+
+### SEO Redirects
+- `/deepfake-maker-api` -> `/deepfake-maker` (301)
+
+## Suggested Crawl Strategy for AI Agents
+- Start with `/llms.txt` for compact indexing.
+- Use `/llms-full.txt` for deeper product and service context.
+- Use `/api-catalog.json` and `/schema.json` for structured machine-readable metadata.
+- Use `/developers` for endpoint-level implementation details.
+
+## Full Landing Sitemap URL Inventory
+Snapshot source: `public/sitemap-landing.xml`
+Base URL: `https://modelslab.com`
+Use this as a broad public URL inventory. Apply the inclusion/exclusion policy above when building training or retrieval corpora.
+
+- `/`
+- `/studio`
+- `/sales`
+- `/imagen`
+- `/video-fusion`
+- `/3d-verse`
+- `/audio-gen`
+- `/train-master`
+- `/enterprise`
+- `/ai-consulting`
+- `/ai-partnership`
+- `/pricing`
+- `/unlimited`
+- `/privacy-policy`
+- `/terms-of-service`
+- `/cookie-policy`
+- `/refund-policy`
+- `/developers`
+- `/faq`
+- `/voice-lists`
+- `/trained-voice-lists`
+- `/announcement`
+- `/showcase`
+- `/pro`
+- `/text-to-3d`
+- `/image-to-3d`
+- `/support`
+- `/contact`
+- `/affiliate-program`
+- `/fashion-api`
+- `/interior-api`
+- `/testimonials`
+- `/partners`
+- `/schema.json`
+- `/api-catalog.json`
+- `/civitai`
+- `/ai-influencers`
+- `/for-developers`
+- `/for-ecommerce`
+- `/for-designers`
+- `/for-real-estate`
+- `/feed`
+- `/models/feed`
+- `/atom`
+- `/models/atom`
+- `/blog`
+- `/search`
+- `/catalogue`
+- `/whitepaper`
+- `/ai-news`
+- `/status`
+- `/comparison`
+- `/plugins`
+- `/audio-gen/ai-voice-generator`
+- `/audio-gen/ai-dubbing`
+- `/audio-gen/speech-to-text`
+- `/audio-gen/text-to-sfx`
+- `/audio-gen/text-to-music`
+- `/audio-gen/voice-cloning`
+- `/audio-gen/voice-changer`
+- `/audio-gen/celebrity-voice-generator`
+- `/audio-gen/text-to-speech`
+- `/video-fusion/ai-video-generator`
+- `/video-fusion/image-to-video`
+- `/video-fusion/text-to-video`
+- `/imagen/text-to-image`
+- `/imagen/ai-photo-editor`
+- `/imagen/ai-image-extender`
+- `/imagen/ai-image-inpainting`
+- `/imagen/ai-image-outpainting`
+- `/imagen/ai-image-to-text`
+- `/imagen/ai-headshot-generator`
+- `/imagen/ai-avatar-generator`
+- `/imagen/image-enhancer`
+- `/imagen/image-to-image`
+- `/imagen/image-upscaler`
+- `/imagen/ai-character-generator`
+- `/imagen/ai-sketch-to-image`
+- `/imagen/flux-image-generator`
+- `/imagen/ai-art-generator`
+- `/imagen/background-remover`
+- `/imagen/ai-floor-planning`
+- `/timeline`
+- `/models`
+- `/workflows`
+- `/face-swap-api`
+- `/chatbot-api`
+- `/stable-diffusion-api`
+- `/image-generation-api`
+- `/ai-music-api`
+- `/voice-cloning-api`
+- `/ai-as-a-service`
+- `/face-swap-video`
+- `/face-swap`
+- `/kling-ai`
+- `/kling-ai-api`
+- `/grok-imagine`
+- `/flux-lora-training`
+- `/real-esrgan`
+- `/stable-diffusion-3`
+- `/luma-dream-machine`
+- `/video-generation`
+- `/fal-ai-alternative`
+- `/elevenlabs-alternative`
+- `/google-veo`
+- `/civitai-alternative`
+- `/comfyui-api`
+- `/midjourney-api-alternative`
+- `/replicate-alternative`
+- `/seedance-2`
+- `/text-to-video-api`
+- `/audio-gen/text-to-speech/english`
+- `/audio-gen/speech-to-text/english`
+- `/audio-gen/ai-dubbing/english`
+- `/audio-gen/voice-cloning/english`
+- `/audio-gen/text-to-speech/hindi`
+- `/audio-gen/speech-to-text/hindi`
+- `/audio-gen/ai-dubbing/hindi`
+- `/audio-gen/voice-cloning/hindi`
+- `/audio-gen/text-to-speech/spanish`
+- `/audio-gen/speech-to-text/spanish`
+- `/audio-gen/ai-dubbing/spanish`
+- `/audio-gen/voice-cloning/spanish`
+- `/audio-gen/text-to-speech/french`
+- `/audio-gen/speech-to-text/french`
+- `/audio-gen/ai-dubbing/french`
+- `/audio-gen/voice-cloning/french`
+- `/audio-gen/text-to-speech/german`
+- `/audio-gen/speech-to-text/german`
+- `/audio-gen/ai-dubbing/german`
+- `/audio-gen/voice-cloning/german`
+- `/audio-gen/text-to-speech/italian`
+- `/audio-gen/speech-to-text/italian`
+- `/audio-gen/ai-dubbing/italian`
+- `/audio-gen/voice-cloning/italian`
+- `/audio-gen/text-to-speech/portuguese`
+- `/audio-gen/speech-to-text/portuguese`
+- `/audio-gen/ai-dubbing/portuguese`
+- `/audio-gen/voice-cloning/portuguese`
+- `/audio-gen/text-to-speech/polish`
+- `/audio-gen/speech-to-text/polish`
+- `/audio-gen/ai-dubbing/polish`
+- `/audio-gen/voice-cloning/polish`
+- `/audio-gen/text-to-speech/turkish`
+- `/audio-gen/speech-to-text/turkish`
+- `/audio-gen/ai-dubbing/turkish`
+- `/audio-gen/voice-cloning/turkish`
+- `/audio-gen/text-to-speech/russian`
+- `/audio-gen/speech-to-text/russian`
+- `/audio-gen/ai-dubbing/russian`
+- `/audio-gen/voice-cloning/russian`
+- `/audio-gen/text-to-speech/dutch`
+- `/audio-gen/speech-to-text/dutch`
+- `/audio-gen/ai-dubbing/dutch`
+- `/audio-gen/voice-cloning/dutch`
+- `/audio-gen/text-to-speech/czech`
+- `/audio-gen/speech-to-text/czech`
+- `/audio-gen/ai-dubbing/czech`
+- `/audio-gen/voice-cloning/czech`
+- `/audio-gen/text-to-speech/arabic`
+- `/audio-gen/speech-to-text/arabic`
+- `/audio-gen/ai-dubbing/arabic`
+- `/audio-gen/voice-cloning/arabic`
+- `/audio-gen/text-to-speech/chinese`
+- `/audio-gen/speech-to-text/chinese`
+- `/audio-gen/ai-dubbing/chinese`
+- `/audio-gen/voice-cloning/chinese`
+- `/audio-gen/text-to-speech/japanese`
+- `/audio-gen/speech-to-text/japanese`
+- `/audio-gen/ai-dubbing/japanese`
+- `/audio-gen/voice-cloning/japanese`
+- `/audio-gen/text-to-speech/hungarian`
+- `/audio-gen/speech-to-text/hungarian`
+- `/audio-gen/ai-dubbing/hungarian`
+- `/audio-gen/voice-cloning/hungarian`
+- `/audio-gen/text-to-speech/korean`
+- `/audio-gen/speech-to-text/korean`
+- `/audio-gen/ai-dubbing/korean`
+- `/audio-gen/voice-cloning/korean`
+- `/audio-gen/text-to-speech/ukrainian`
+- `/audio-gen/speech-to-text/ukrainian`
+- `/audio-gen/ai-dubbing/ukrainian`
+- `/audio-gen/voice-cloning/ukrainian`
+- `/audio-gen/text-to-speech/romanian`
+- `/audio-gen/speech-to-text/romanian`
+- `/audio-gen/ai-dubbing/romanian`
+- `/audio-gen/voice-cloning/romanian`
+- `/audio-gen/text-to-speech/serbian`
+- `/audio-gen/speech-to-text/serbian`
+- `/audio-gen/ai-dubbing/serbian`
+- `/audio-gen/voice-cloning/serbian`
+- `/audio-gen/text-to-speech/swedish`
+- `/audio-gen/speech-to-text/swedish`
+- `/audio-gen/ai-dubbing/swedish`
+- `/audio-gen/voice-cloning/swedish`
+- `/audio-gen/text-to-speech/thai`
+- `/audio-gen/speech-to-text/thai`
+- `/audio-gen/ai-dubbing/thai`
+- `/audio-gen/voice-cloning/thai`
+- `/audio-gen/text-to-speech/welsh`
+- `/audio-gen/speech-to-text/welsh`
+- `/audio-gen/ai-dubbing/welsh`
+- `/audio-gen/voice-cloning/welsh`
+- `/audio-gen/text-to-speech/afrikaans`
+- `/audio-gen/speech-to-text/afrikaans`
+- `/audio-gen/ai-dubbing/afrikaans`
+- `/audio-gen/voice-cloning/afrikaans`
+- `/audio-gen/text-to-speech/belarusian`
+- `/audio-gen/speech-to-text/belarusian`
+- `/audio-gen/ai-dubbing/belarusian`
+- `/audio-gen/voice-cloning/belarusian`
+- `/audio-gen/text-to-speech/bulgarian`
+- `/audio-gen/speech-to-text/bulgarian`
+- `/audio-gen/ai-dubbing/bulgarian`
+- `/audio-gen/voice-cloning/bulgarian`
+- `/audio-gen/text-to-speech/danish`
+- `/audio-gen/speech-to-text/danish`
+- `/audio-gen/ai-dubbing/danish`
+- `/audio-gen/voice-cloning/danish`
+- `/audio-gen/text-to-speech/finnish`
+- `/audio-gen/speech-to-text/finnish`
+- `/audio-gen/ai-dubbing/finnish`
+- `/audio-gen/voice-cloning/finnish`
+- `/audio-gen/text-to-speech/greek`
+- `/audio-gen/speech-to-text/greek`
+- `/audio-gen/ai-dubbing/greek`
+- `/audio-gen/voice-cloning/greek`
+- `/audio-gen/text-to-speech/hebrew`
+- `/audio-gen/speech-to-text/hebrew`
+- `/audio-gen/ai-dubbing/hebrew`
+- `/audio-gen/voice-cloning/hebrew`
+- `/audio-gen/text-to-speech/indonesian`
+- `/audio-gen/speech-to-text/indonesian`
+- `/audio-gen/ai-dubbing/indonesian`
+- `/audio-gen/voice-cloning/indonesian`
+- `/audio-gen/text-to-speech/persian`
+- `/audio-gen/speech-to-text/persian`
+- `/audio-gen/ai-dubbing/persian`
+- `/audio-gen/voice-cloning/persian`
+- `/audio-gen/text-to-speech/nepali`
+- `/audio-gen/speech-to-text/nepali`
+- `/audio-gen/ai-dubbing/nepali`
+- `/audio-gen/voice-cloning/nepali`
+- `/audio-gen/text-to-speech/vietnamese`
+- `/audio-gen/speech-to-text/vietnamese`
+- `/audio-gen/ai-dubbing/vietnamese`
+- `/audio-gen/voice-cloning/vietnamese`
+- `/audio-gen/text-to-speech/urdu`
+- `/audio-gen/speech-to-text/urdu`
+- `/audio-gen/ai-dubbing/urdu`
+- `/audio-gen/voice-cloning/urdu`
+- `/audio-gen/text-to-speech/telugu`
+- `/audio-gen/speech-to-text/telugu`
+- `/audio-gen/ai-dubbing/telugu`
+- `/audio-gen/voice-cloning/telugu`
+- `/audio-gen/text-to-speech/tamil`
+- `/audio-gen/speech-to-text/tamil`
+- `/audio-gen/ai-dubbing/tamil`
+- `/audio-gen/voice-cloning/tamil`
+- `/audio-gen/text-to-speech/kannada`
+- `/audio-gen/speech-to-text/kannada`
+- `/audio-gen/ai-dubbing/kannada`
+- `/audio-gen/voice-cloning/kannada`
+- `/audio-gen/text-to-speech/malayalam`
+- `/audio-gen/speech-to-text/malayalam`
+- `/audio-gen/ai-dubbing/malayalam`
+- `/audio-gen/voice-cloning/malayalam`
+- `/audio-gen/text-to-speech/punjabi`
+- `/audio-gen/speech-to-text/punjabi`
+- `/audio-gen/ai-dubbing/punjabi`
+- `/audio-gen/voice-cloning/punjabi`
+- `/audio-gen/text-to-speech/gujarati`
+- `/audio-gen/speech-to-text/gujarati`
+- `/audio-gen/ai-dubbing/gujarati`
+- `/audio-gen/voice-cloning/gujarati`
+- `/audio-gen/text-to-speech/marathi`
+- `/audio-gen/speech-to-text/marathi`
+- `/audio-gen/ai-dubbing/marathi`
+- `/audio-gen/voice-cloning/marathi`
+- `/audio-gen/text-to-speech/bangla`
+- `/audio-gen/speech-to-text/bangla`
+- `/audio-gen/ai-dubbing/bangla`
+- `/audio-gen/voice-cloning/bangla`
