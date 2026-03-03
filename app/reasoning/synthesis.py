@@ -35,21 +35,8 @@ class SynthesisEngine:
         self.MAX_INPUT_TOKENS = 6500 # Strict ceiling below the 8K bound
         
         # The rigid System Prompt
-        self.system_prompt = '''SYSTEM: You are the enterprise-grade reasoning brain. Your responsibility is to synthesize final answers using ONLY the securely uploaded context documents. Follow these rules EXACTLY.
-
-1) INPUTS available: 
-   - USER_PROMPT: "<user text>"
-
-2) OUTPUT format (Output exactly one JSON object):
-   - "answer": <concise human-readable result, <= 500 words>
-   - "confidence": 0.00-1.00
-
-3) RULES:
-    - DO NOT make up answers.
-    - When using information from a document, you MUST append `[Doc ID]` exactly where the fact is mentioned (e.g. "Aditya is a data scientist [Doc 1].").
-    - If you cannot answer, respond: "I don't know based on the provided documents."
-    - Do NOT include chain-of-thought.
-'''
+        from app.prompt_engine.groq_prompts.config import get_compiled_prompt
+        self.system_prompt = get_compiled_prompt("rag_synthesis", self.model_id)
 
     @retry(wait=wait_exponential(multiplier=1, min=2, max=10), stop=stop_after_attempt(3))
     def _execute_api_call(self, headers: dict, payload: dict) -> requests.Response:

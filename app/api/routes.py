@@ -14,7 +14,7 @@ import time
 import logging
 from typing import List, Dict, Any, Optional, Literal
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, File, UploadFile, Form, Header, Request
+from fastapi import APIRouter, HTTPException, BackgroundTasks, File, UploadFile, Form, Header, Request, Body
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -38,6 +38,66 @@ _rate_limiter = TokenBucketRateLimiter()
 router = APIRouter()
 logger = logging.getLogger(__name__)
 telemetry = ObservabilityLayer()
+
+# -----------------------------------------------------------------------------
+# Global Bootstrapper (Create New Agent)
+# -----------------------------------------------------------------------------
+@router.post("/agents", summary="Global Persona Bootstrapper")
+async def create_new_agent(
+    bot_name: str = Form(...),
+    brand_details: str = Form(...),
+    welcome_message: str = Form(...),
+    prompt_instructions: str = Form(""),
+    company_logo: Optional[UploadFile] = File(default=None)
+):
+    """
+    Receives frontend multipart/form-data to define the overarching System Persona.
+    Saves the logo securely to `app/static/logos` and utilizes a dynamic LLM hook 
+    to expand raw instructions into a hyper-detailed ReAct prompt structure before 
+    injecting it directly into the `PersonaCacheManager` singleton.
+    """
+    try:
+        logo_path = ""
+        # Secure the uploaded logo if provided
+        if company_logo and company_logo.filename:
+            logo_filename = os.path.basename(company_logo.filename)
+            # Ensure path security avoiding traversal attacks
+            logo_path = os.path.join("app", "static", "logos", logo_filename.replace("..", ""))
+            os.makedirs(os.path.dirname(logo_path), exist_ok=True)
+            
+            try:
+                with open(logo_path, "wb") as f:
+                    f.write(await company_logo.read())
+            except Exception as e:
+                logger.error(f"[API ROUTE] Failed to save logo physically: {e}")
+                raise HTTPException(status_code=500, detail="Failed to save physical logo artifact.")
+                
+        # Trigger the Expansion Hook
+        from app.prompt_engine.bootstrapper import PersonaBootstrapper
+        bootstrapper = PersonaBootstrapper()
+        logger.info(f"Expanding Persona for {bot_name}...")
+        expanded_prompt = bootstrapper.expand_persona(bot_name=bot_name, brand_details=brand_details, raw_instructions=prompt_instructions)
+        
+        # Persist and Sync Cache
+        success = bootstrapper.persist_agent(
+            bot_name=bot_name, 
+            logo_path=logo_path, 
+            brand_details=brand_details, 
+            welcome_message=welcome_message, 
+            raw_prompt=prompt_instructions, 
+            expanded_prompt=expanded_prompt
+        )
+        
+        if success:
+            return {"status": "success", "message": f"Agent '{bot_name}' bootstrapped and cached globally.", "logo": logo_path}
+        else:
+            raise HTTPException(status_code=500, detail="Database persistence failed during bootstrapper cascade.")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[API ERROR] Bootstrapper fault: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Lazy singleton orchestrator to avoid recreating heavy components on each request.
 _CHAT_ORCHESTRATOR = None
@@ -77,20 +137,24 @@ def _chunk_text_for_stream(text: str, size: int = 120):
 # -----------------------------------------------------------------------------
 class ChatRequest(BaseModel):
     query: str = Field(..., description="The user's raw prompt.")
-    chat_history: Optional[List[Dict[str, Any]]] = Field(default=[], description="Previous conversational turns.")
+    chat_history: Optional[List[Dict[str, Any]]] = Field(
+        default=[],
+        description="Previous conversational turns. Example: "
+                    "[{\"role\":\"user\",\"content\":\"Hi\"},{\"role\":\"assistant\",\"content\":\"Hello\"}]"
+    )
     model_provider: Literal["groq", "openai", "anthropic", "gemini", "auto"] = Field(
         default="groq",
         description="Requested provider. Use 'auto' to enable provider auto-routing (when PROVIDER_AUTO_ROUTING=true).",
     )
     session_id: Optional[str] = Field(default=None, description="Optional client session identifier for telemetry correlation.")
     stream: Optional[bool] = Field(default=False, description="Enable server-sent events (SSE) streaming output.")
-    reranker_profile: Optional[Literal["auto", "accurate", "fast", "off"]] = Field(
-        default="auto",
-        description="Reranker profile: auto (default), accurate (large), fast (base), or off."
+    reranker_profile: Optional[Literal["custom", "accurate", "fast", "mid", "off"]] = Field(
+        default="accurate",
+        description="Reranker profile: custom (use model override), accurate (large), fast (base), mid (balanced), or off."
     )
     reranker_model_name: Optional[str] = Field(
-        default=None,
-        description="Explicit reranker model override (e.g., BAAI/bge-reranker-base)."
+        default="BAAI/bge-reranker-large",
+        description="Reranker model override (used only when reranker_profile=custom)."
     )
 
     model_config = {
@@ -117,6 +181,7 @@ class ChatResponse(BaseModel):
     optimizations: Dict[str, Any]
     chat_history: Optional[List[Dict[str, Any]]] = Field(default=[])
     latency_optimizations: Optional[Dict[str, Any]] = Field(default={})
+    active_persona: Optional[str] = Field(default=None, description="The bootstrapped persona mapped during execution.")
 
     model_config = {
         "json_schema_extra": {
@@ -131,6 +196,16 @@ class ChatResponse(BaseModel):
                 "chat_history": [],
                 "latency_optimizations": {"llm_time_ms": 12000.0}
             }
+        }
+    }
+
+
+class TTSRequest(BaseModel):
+    text: str = Field(..., description="Text to synthesize into speech.")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {"text": "Hello! This is your assistant speaking."}
         }
     }
 
@@ -198,33 +273,62 @@ class FeedbackRequest(BaseModel):
     description="Primary chat endpoint. Accepts JSON or multipart form-data. "
                 "If files are included, they are ingested into a 24h ephemeral collection and merged into retrieval. "
                 "Session reuse test: Upload files once with session_id, then send follow-up requests with the same "
-                "session_id (and no files) to query previously uploaded content.",
+                "session_id (and no files) to query previously uploaded content.\n\n"
+                "Swagger test matrix:\n"
+                "1) JSON chat (no files)\n"
+                "2) TXT/DOCX/PDF/MD upload + query\n"
+                "3) Image OCR: image_mode=ocr\n"
+                "4) Image Vision: image_mode=vision\n"
+                "5) Session reuse: upload once, then query with same session_id\n",
     openapi_extra={
         "requestBody": {
             "content": {
-                "application/json": {
-                    "schema": ChatRequest.model_json_schema(),
-                    "example": {
-                        "query": "Summarize Updated_Resume_DS.pdf.",
-                        "chat_history": [],
-                        "model_provider": "groq",
-                        "session_id": "session-123",
-                        "stream": False
-                    }
-                },
                 "multipart/form-data": {
                     "schema": {
                         "type": "object",
                         "properties": {
                             "query": {"type": "string"},
-                            "chat_history": {"type": "string"},
-                            "model_provider": {"type": "string"},
+                            "chat_history": {
+                                "type": "string",
+                                "description": "JSON list of messages. Example: "
+                                               "[{\"role\":\"user\",\"content\":\"Hi\"},{\"role\":\"assistant\",\"content\":\"Hello\"}]"
+                            },
+                            "model_provider": {
+                                "type": "string",
+                                "enum": ["groq", "openai", "anthropic", "gemini", "auto"],
+                                "default": "groq",
+                                "description": "Provider selection. Use auto when PROVIDER_AUTO_ROUTING=true."
+                            },
                             "session_id": {"type": "string"},
-                            "image_mode": {"type": "string", "enum": ["auto", "ocr", "vision"]},
+                            "image_mode": {
+                                "type": "string",
+                                "enum": ["auto", "ocr", "vision"],
+                                "default": "auto",
+                                "description": "How to handle image inputs."
+                            },
                             "stream": {"type": "boolean"},
-                            "reranker_profile": {"type": "string", "enum": ["auto", "accurate", "fast", "off"]},
-                            "reranker_model_name": {"type": "string"},
-                            "files": {"type": "array", "items": {"type": "string", "format": "binary"}},
+                            "reranker_profile": {
+                                "type": "string",
+                                "enum": ["custom", "accurate", "fast", "mid"],
+                                "default": "accurate",
+                                "description": "accurate → bge-reranker-large, fast → bge-reranker-base, mid → balanced, custom → use reranker_model_name."
+                            },
+                            "reranker_model_name": {
+                                "type": "string",
+                                "enum": ["BAAI/bge-reranker-large", "BAAI/bge-reranker-base"],
+                                "default": "BAAI/bge-reranker-large",
+                                "description": "Used only when reranker_profile=custom."
+                            },
+                            "files": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "binary"},
+                                "description": "Optional docs: .csv, .tsv, .xlsx, .docx, .txt, .md, .pdf"
+                            },
+                            "images": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "binary"},
+                                "description": "Optional images: .jpg, .jpeg, .png"
+                            }
                         },
                         "required": ["query"]
                     }
@@ -248,54 +352,73 @@ async def chat_endpoint(
     - `x-tenant-id`: tenant or collection namespace
     - `x-user-id`: user identity for telemetry
     """
-    # Detect JSON vs multipart body
-    content_type = (http_request.headers.get("content-type", "") or "").lower()
-    query = None
     chat_history_list = []
-    model_provider = "groq"
+    files: List[UploadFile] = []
+    image_files: List[UploadFile] = []
+    query = None
+    model_provider = None
     session_id = None
-    stream = False
     image_mode = "auto"
-    files = None
-    reranker_profile = "auto"
+    stream = False
+    reranker_profile = None
     reranker_model_name = None
 
+    content_type = (http_request.headers.get("content-type", "") or "").lower()
     if content_type.startswith("application/json"):
-        payload = await http_request.json()
-        parsed = ChatRequest(**payload)
-        query = parsed.query
-        chat_history_list = parsed.chat_history or []
-        model_provider = parsed.model_provider
-        session_id = parsed.session_id or str(uuid.uuid4())
-        stream = bool(parsed.stream)
-        reranker_profile = parsed.reranker_profile or "auto"
-        reranker_model_name = parsed.reranker_model_name
+        try:
+            raw = await http_request.json()
+            parsed = ChatRequest(**raw)
+            query = parsed.query
+            chat_history_list = parsed.chat_history or []
+            model_provider = parsed.model_provider
+            session_id = parsed.session_id or str(uuid.uuid4())
+            stream = bool(parsed.stream)
+            reranker_profile = parsed.reranker_profile or "accurate"
+            reranker_model_name = parsed.reranker_model_name
+        except Exception as e:
+            raise HTTPException(status_code=422, detail=f"Invalid JSON payload: {e}")
+    elif "multipart/form-data" in content_type:
+        try:
+            form = await http_request.form()
+            query = form.get("query")
+            chat_history = form.get("chat_history")
+            model_provider = form.get("model_provider")
+            session_id = form.get("session_id")
+            image_mode = form.get("image_mode") or "auto"
+            stream = str(form.get("stream", "false")).lower() == "true"
+            reranker_profile = form.get("reranker_profile")
+            reranker_model_name = form.get("reranker_model_name")
+
+            raw_files = form.getlist("files") if hasattr(form, "getlist") else []
+            files = [f for f in raw_files if isinstance(f, UploadFile) and getattr(f, "filename", None)]
+
+            raw_images = form.getlist("images") if hasattr(form, "getlist") else []
+            image_files = [f for f in raw_images if isinstance(f, UploadFile) and getattr(f, "filename", None)]
+        except Exception as e:
+            raise HTTPException(status_code=422, detail=f"Invalid multipart payload: {e}")
     else:
-        form = await http_request.form()
-        query = form.get("query")
-        if not query:
-            raise HTTPException(status_code=422, detail="Missing required field: query")
+        raise HTTPException(status_code=415, detail="Unsupported Content-Type. Use JSON or multipart/form-data.")
 
-        chat_history = form.get("chat_history")
-        if chat_history:
-            try:
-                chat_history_list = json.loads(chat_history)
-                if not isinstance(chat_history_list, list):
-                    chat_history_list = []
-            except Exception:
+    if not query:
+        raise HTTPException(status_code=422, detail="Missing required field: query")
+    if isinstance(query, str) and not query.strip():
+        raise HTTPException(status_code=422, detail="Query cannot be empty.")
+
+    if chat_history:
+        try:
+            chat_history_list = json.loads(chat_history)
+            if not isinstance(chat_history_list, list):
                 chat_history_list = []
+        except Exception:
+            chat_history_list = []
 
-        model_provider = form.get("model_provider") or "groq"
-        session_id = form.get("session_id") or str(uuid.uuid4())
-        image_mode = form.get("image_mode") or "auto"
-        reranker_profile = form.get("reranker_profile") or "auto"
-        reranker_model_name = form.get("reranker_model_name") or None
-        stream_val = form.get("stream")
-        if isinstance(stream_val, str):
-            stream = stream_val.lower() in ["true", "1", "yes", "y"]
-        else:
-            stream = bool(stream_val)
-        files = form.getlist("files")
+    model_provider = (model_provider or "groq").lower()
+    session_id = session_id or str(uuid.uuid4())
+    image_mode = image_mode or "auto"
+    reranker_profile = (reranker_profile or "accurate").lower()
+    reranker_model_name = reranker_model_name or None
+    if reranker_profile != "custom":
+        reranker_model_name = None
 
     start = time.perf_counter()
     client_id = x_tenant_id or (http_request.client.host if http_request.client else "anonymous")
@@ -305,11 +428,23 @@ async def chat_endpoint(
         extra_collections = []
         router = _get_multimodal_router()
 
+        # Validate uploads
+        allowed_doc_exts = {".csv", ".tsv", ".xlsx", ".docx", ".txt", ".md", ".pdf"}
+        allowed_img_exts = {".jpg", ".jpeg", ".png"}
+        for f in files:
+            ext = os.path.splitext(f.filename or "")[1].lower()
+            if ext not in allowed_doc_exts:
+                raise HTTPException(status_code=415, detail=f"Unsupported file type for docs: {f.filename}")
+        for img in image_files:
+            ext = os.path.splitext(img.filename or "")[1].lower()
+            if ext not in allowed_img_exts:
+                raise HTTPException(status_code=415, detail=f"Unsupported image type: {img.filename}")
+
         # If files were uploaded, ingest and attach ephemeral session collection
-        if files:
+        if files or image_files:
             max_mb = int(os.getenv("MAX_UPLOAD_MB", "20"))
             file_payloads = []
-            for f in files:
+            for f in files + image_files:
                 file_bytes = await f.read()
                 if len(file_bytes) > max_mb * 1024 * 1024:
                     raise HTTPException(status_code=413, detail=f"File too large. Max allowed: {max_mb} MB.")
@@ -354,6 +489,7 @@ async def chat_endpoint(
             optimizations=result.get("optimizations", {}),
             chat_history=result.get("chat_history", []),
             latency_optimizations=result.get("latency_optimizations", {}),
+            active_persona=result.get("active_persona", None)
         )
 
         elapsed_ms = round((time.perf_counter() - start) * 1000, 3)
@@ -401,7 +537,7 @@ async def chat_endpoint(
 
         return response
     except Exception as e:
-        logger.error(f"Chat Execution Failed: {str(e)}")
+        import traceback; logger.error(f"Chat Execution Failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Internal Generation Error.")
 
 
@@ -413,12 +549,37 @@ async def chat_endpoint(
     response_model=IngestionResponse,
     tags=["Ingestion"],
     summary="Ingest Files",
-    description="Upload PDF/DOCX/TXT files and enqueue ingestion into the vector store."
+    description="Upload PDF/DOCX/TXT/MD/CSV/TSV/XLSX files and enqueue ingestion into the vector store.",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "files": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "binary"},
+                                "description": "Select one or more documents: .csv, .tsv, .xlsx, .docx, .txt, .md, .pdf"
+                            },
+                            "mode": {
+                                "type": "string",
+                                "enum": ["append", "overwrite"],
+                                "default": "append",
+                                "description": "append merges; overwrite resets the vector DB before ingestion."
+                            }
+                        },
+                        "required": ["files"]
+                    }
+                }
+            }
+        }
+    }
 )
 async def ingest_files_endpoint(
     http_request: Request,
     background_tasks: BackgroundTasks,
-    files: List[UploadFile] = File(..., description="Select one or more PDF, DOCX, or TXT documents to process."),
+    files: List[UploadFile] = File(..., description="Select one or more PDF/DOCX/TXT/MD/CSV/TSV/XLSX documents to process."),
     mode: Literal["append", "overwrite"] = Form(
         "append",
         description="Select 'append' to merge extracted documents, or 'overwrite' to reset vector DB before ingestion.",
@@ -442,7 +603,11 @@ async def ingest_files_endpoint(
         save_dir = os.path.join("data", "uploaded_docs")
         os.makedirs(save_dir, exist_ok=True)
 
+        allowed_exts = {".csv", ".tsv", ".xlsx", ".docx", ".txt", ".md", ".pdf"}
         for uploaded_file in files:
+            ext = os.path.splitext(uploaded_file.filename or "")[1].lower()
+            if ext not in allowed_exts:
+                raise HTTPException(status_code=415, detail=f"Unsupported file type: {uploaded_file.filename}")
             temp_path = os.path.join(save_dir, uploaded_file.filename)
             with open(temp_path, "wb") as f:
                 while True:
@@ -693,9 +858,13 @@ async def ingestion_status_endpoint(x_tenant_id: Optional[str] = Header(default=
     """Returns current vector collection mode, total vectors, and source documents."""
     try:
         from app.retrieval.vector_store import QdrantStore
-
-        store = QdrantStore(collection_name=x_tenant_id)
-        stats = store.stats()
+        use_multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
+        if use_multi_tenant:
+            store = QdrantStore()
+            stats = store.stats(tenant_id=x_tenant_id)
+        else:
+            store = QdrantStore(collection_name=x_tenant_id)
+            stats = store.stats()
         return IngestionStatusResponse(**stats)
     except Exception as e:
         logger.error(f"Failed to read vector status: {e}")
@@ -709,11 +878,19 @@ async def ingestion_status_endpoint(x_tenant_id: Optional[str] = Header(default=
     "/tts",
     tags=["Audio"],
     summary="Text-to-Speech (Coqui)",
-    description="Generate a WAV audio response from input text using Coqui TTS."
+    description="Generate a WAV audio response from input text using Coqui TTS. "
+                "Accepts JSON ({\"text\": \"...\"}) or form-data (text=...)."
 )
-async def tts_endpoint(text: str = Form(..., description="Text to synthesize into speech.")):
+async def tts_endpoint(
+    payload: Optional[TTSRequest] = Body(default=None),
+    text: Optional[str] = Form(default=None, description="Text to synthesize into speech.")
+):
     """Generate a WAV file from text using local Coqui TTS."""
     try:
+        if payload is not None:
+            text = payload.text
+        if not text:
+            raise HTTPException(status_code=422, detail="Missing required field: text")
         from app.multimodal.tts import TextToSpeech
 
         engine = TextToSpeech()
@@ -742,18 +919,32 @@ class TranscriptionResponse(BaseModel):
     response_model=TranscriptionResponse,
     tags=["Audio"],
     summary="Audio Transcription (Experimental)",
-    description="Audio transcription endpoint (disabled by default)."
+    description="Audio transcription endpoint. Accepts WAV/MP3 files and returns text."
 )
 async def transcribe_audio_endpoint(
     http_request: Request,
-    audio_file: UploadFile = File(..., description="WAV/MP3/M4A/WebM audio stream")
+    audio_file: UploadFile = File(..., description="WAV or MP3 audio stream")
 ):
-    """Proxy audio transcription via Groq Whisper."""
+    """Audio transcription via Groq Whisper or local Whisper pipeline."""
     try:
         client_id = http_request.client.host if http_request.client else "anonymous"
         _rate_limiter.consume(client_id)
-        if os.getenv("ENABLE_TRANSCRIBE", "false").lower() != "true":
+        if os.getenv("ENABLE_TRANSCRIBE", "true").lower() != "true":
             raise HTTPException(status_code=501, detail="Audio transcription endpoint is disabled. Set ENABLE_TRANSCRIBE=true to enable.")
+
+        filename = audio_file.filename or ""
+        ext = os.path.splitext(filename)[1].lower()
+        if ext not in [".wav", ".mp3"]:
+            raise HTTPException(status_code=415, detail="Unsupported file type. Please upload WAV or MP3.")
+
+        backend = os.getenv("STT_BACKEND", "groq").lower()
+        if backend == "local":
+            from app.multimodal.stt import SpeechToText
+            engine = SpeechToText()
+            file_bytes = await audio_file.read()
+            transcript = engine.transcribe(file_bytes, filename=filename)
+            return TranscriptionResponse(transcript=transcript)
+
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="Missing GROQ API KEY for whisper transcription.")
@@ -762,7 +953,7 @@ async def transcribe_audio_endpoint(
 
         form = aiohttp.FormData()
         file_bytes = await audio_file.read()
-        form.add_field("file", file_bytes, filename=audio_file.filename, content_type=audio_file.content_type)
+        form.add_field("file", file_bytes, filename=filename, content_type=audio_file.content_type)
         form.add_field("model", "whisper-large-v3-turbo")
         form.add_field("response_format", "json")
 

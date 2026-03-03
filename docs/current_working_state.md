@@ -8,15 +8,15 @@ It is intentionally concise and focused on what is currently in place.
 - Multi-file session reuse (ephemeral session collections with TTL) for file uploads.
 - OCR path + Vision path for images (`image_mode=auto|ocr|vision`).
 - Streaming output for `/chat` (SSE when `stream=true`).
-- Audio transcription endpoint (`/transcribe`) using faster-whisper.
-- TTS endpoint (`/tts`) using Coqui TTS.
+- Audio transcription endpoint (`/transcribe`) using Groq Whisper (default) or local Whisper pipeline.
+- TTS endpoint (`/tts`) using Coqui TTS (accepts JSON or form).
 - Provider auto-routing when `PROVIDER_AUTO_ROUTING=true` and `model_provider=auto`.
 - Reranker profiles: `auto|accurate|fast|off` with override `reranker_model_name`.
 - Background cleanup timer for ephemeral collections.
 
 ## Key New Modules Added
 - `app/multimodal/` (file parsing, session vectors, multimodal router, TTS, vision)
-- `app/infra/model_bootstrap.py` (preload models, cache, paddle auto-install)
+- `app/infra/model_bootstrap.py` (preload models, cache)
 - `app/infra/provider_router.py` (provider auto-selection)
 - `app/infra/celery_app.py`, `app/infra/celery_tasks.py`, `app/infra/job_tracker.py`
 - `app/infra/qdrant_patch.py` (gRPC patch guard)
@@ -37,16 +37,18 @@ It is intentionally concise and focused on what is currently in place.
 - `scripts/full_reset_and_bootstrap.ps1`: full reset + rebuild + start stack.
 
 ## Current Env Flags in Use (See `.env` / `.env-copy`)
-- `MODEL_CACHE_DIR`, `PRELOAD_MODELS`, `PADDLE_AUTO_INSTALL`, `PADDLE_PIP_*`
-- `VISION_MODEL_NAME`, `VISION_FALLBACK_MODEL`, `VISION_ALLOW_FALLBACK`
+- `MODEL_CACHE_DIR`, `PRELOAD_MODELS`
+- `VISION_BACKEND`, `VISION_MODEL_NAME`, `VISION_FALLBACK_MODEL`, `VISION_ALLOW_FALLBACK`, `VISION_LLAVA_MIN_VRAM_GB`
+- `ENABLE_TRANSCRIBE`, `STT_BACKEND`, `STT_MODEL_NAME`
 - `HYBRID_SEARCH`, `RERANKER_ENABLED`, `RERANKER_MODEL_NAME`, `RERANK_TOP_K`
 - `CELERY_ENABLED`, `CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`, `CELERY_AUTOSTART`
 - `EPHEMERAL_TTL_HOURS`, `EPHEMERAL_CLEANUP_INTERVAL_MINUTES`, `MAX_UPLOAD_MB`
 
 ## Notes About Known-Working Behavior
 - `/chat` supports multi-file uploads and session reuse across turns.
-- Vision uses LLaVA by default with BLIP fallback.
-- OCR uses Paddle-based pipeline (auto-installs runtime when enabled).
+- Vision uses BLIP by default with LLaVA optional and VRAM-based fallback.
+- OCR uses EasyOCR (PyTorch-native).
+- Persona injection defaults to strict mode (full in synthesis; partial in intent/coder).
 - Streaming responses are SSE on `/chat` when `stream=true`.
 
 ## Guardrails

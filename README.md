@@ -14,7 +14,7 @@ It allows users to ingest complex enterprise documents (PDF, DOCX, TXT, MD, PNG,
 - **Hardware Agnostics (Auto-Detection)**: The system utilizes advanced runtime probes (`app.infra.hardware`) to instantly adapt its GPU/CPU limits on startup. It ships with custom PowerShell automation scripts that bypass complex Python environment setups, seamlessly detecting and deploying localized CUDA dependencies effortlessly across Windows constraints.
 - **Provider API Agnosticism**: Seamlessly decouples backend logic from a single provider. The entire architecture actively supports and cycles between native `Groq`, `OpenAI`, `Anthropic`, and `Gemini` models locally utilizing a dynamic fallback switch map routing natively inside Fast API constraints.
 - **Deterministic Multi-Agent Orchestration**: Powered by **LangGraph** to maintain robust `AgentState` dictionaries, strictly preventing runtime hallucinations and bounding LLM logic through an explicit DAG topology.
-- **Full Spectrum Multimodality**: Native ingestion and orchestration of Image, Audio, Text, and complex File pathways. Supports visual query understanding (`LLaVA` / `BLIP`), GPU-powered fast OCR (`EasyOCR`), native Audio playback (`Coqui TTS`), and vocal transcription (`Whisper Proxy`).
+- **Full Spectrum Multimodality**: Native ingestion and orchestration of Image, Audio, Text, and complex File pathways. Supports visual query understanding (`LLaVA` / `BLIP` with VRAM fallback), GPU-powered fast OCR (`EasyOCR`), native Audio playback (`Coqui TTS`), and vocal transcription (Groq Whisper or local Whisper).
 - **Cross-Encoder Reranking**: Utilizes `bge-reranker-large` locally to semantically filter top-30 low-confidence similarity chunks down to the absolute top 5 most relevant documents, executing a mathematically pristine `Math Sigmoid` filter.
 - **Adaptive Execution Planner**: Advanced node interceptor actively deciding optimal reasoning models, bounding deep metrics explicitly mapping heavy 120B+ models natively only when heuristic boundaries are explicitly exceeded by `ComplexityClassifier` logic arrays.
 - **RLAIF Hallucination Correction Loop**: Sovereign Verifier bounds. Draft generations flagged (`is_hallucinated=True`) systematically route through a forced error-correction execution DAG natively suppressing loose citations dynamically.
@@ -118,7 +118,9 @@ enterprise-rag-agent/
 │   ├── bootstrap_env.ps1     # Native virtual environment installer and system dependency fixer.
 │   ├── full_reset_and_bootstrap.ps1 # The MASTER execute script. Rebuilds venv, wipes caches, installs architecture.
 │   ├── start_api.ps1         # Standalone FastAPI Uvicorn engine execution script ensuring explicit PYTHONPATH.
-│   ├── start_celery_worker.ps1 # Standalone worker initialization for concurrent playright background crawls.
+│   ├── start_celery_worker.ps1 # Legacy alias (Windows-safe pool).
+│   ├── start_celery_worker_dev.ps1 # Explicit dev worker (Windows / solo).
+│   ├── start_celery_worker_prod.sh # Explicit prod worker (Linux / prefork).
 │   └── start_stack.ps1       # Concurrent multiplexer triggering `start_api` and `start_celery_worker` simultaneously.
 │
 ├── data/                     # Root Data Persistence Storage
@@ -162,6 +164,15 @@ enterprise-rag-agent/
 
 ## 🚀 Installation & Usage
 
+**Runbooks & CI**
+- Deployment runbook: `docs/final_delivery_runbook.md`
+- CI gates: `docs/ci_gates.md`
+- Phase test artifact template: `docs/phase_test_artifact_template.md`
+
+**Few-Shot Generation**
+- Generator: `scripts/generate_few_shots.py`
+- Specs: `app/prompt_engine/groq_prompts/few_shot_specs.py`
+
 ### ⚠️ Critical Prerequisites for Windows Users
 If running on Windows, you **MUST** install the **Microsoft Visual C++ Redistributables (2015-2022)** before running the setup. Failure to do so will result in unrecoverable `[WinError 127]` DLL crashes due to PyTorch, SentenceTransformers, and EasyOCR expecting native C++ architecture libraries that do not exist out-of-the-box on Windows 11.
 *(A packaged installer `VC_redist.x64_2013_2017_to_2026.rar` is available in the `/assets/` directory for immediate use).*
@@ -179,7 +190,8 @@ You must define the exact `.env` configuration file in the primary project root 
 # --- SaaS API Intelligent Routing Configuration ---
 CORE_LLM_PROVIDER=sarvam
 VISION_LLM_PROVIDER=gemini
-AUDIO_LLM_PROVIDER=faster-whisper
+STT_BACKEND=groq
+STT_MODEL_NAME=openai/whisper-small
 
 # --- API & Authentication Keys ---
 HF_TOKEN=your_hf_token_here
@@ -212,7 +224,8 @@ HF_HUB_DISABLE_SYMLINKS_WARNING=1
 # --- Multimodality Configuration ---
 OCR_ENGINE=easyocr
 OCR_LANG=en
-VISION_BACKEND=blip           # Use 'llava' for High VRAM, 'blip' for Low VRAM (4GB) 
+VISION_BACKEND=auto           # auto -> LLaVA on >=8GB VRAM else BLIP
+VISION_LLAVA_MIN_VRAM_GB=8
 VISION_MODEL_NAME=Salesforce/blip-image-captioning-base
 VISION_FALLBACK_MODEL=Salesforce/blip-image-captioning-base
 VISION_ALLOW_FALLBACK=true

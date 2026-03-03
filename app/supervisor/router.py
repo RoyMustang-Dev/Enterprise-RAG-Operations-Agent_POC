@@ -92,9 +92,9 @@ class ExecutionGraph:
             "optimizations": {},
             "optimized_prompts": {},
             "answer": "",
-            "sources": [],
             "reasoning_effort": "low",
-            "latency_optimizations": {}
+            "latency_optimizations": {},
+            "active_persona": None
         }
         selected_provider = self.provider_router.select_provider(model_provider)
         state["optimizations"]["model_provider"] = selected_provider
@@ -117,16 +117,19 @@ class ExecutionGraph:
         if safety_report.get("is_malicious", False):
             guard_strict = os.getenv("GUARD_STRICT", "false").lower() == "true"
             if not guard_strict:
-                safe_phrases = [
-                    "summarize", "summary", "read the text", "extract text", "ocr",
-                    "describe the image", "what is in the image", "list the text"
-                ]
-                risky_phrases = [
-                    "ignore previous", "system prompt", "developer message", "jailbreak",
-                    "exfiltrate", "bypass", "override", "policy"
-                ]
+                soft_allow = os.getenv("GUARD_SOFT_ALLOW", "true").lower() == "true"
+                safe_phrases_env = os.getenv(
+                    "GUARD_SOFT_ALLOW_PHRASES",
+                    "summarize,summary,read the text,extract text,ocr,describe the image,what is in the image,list the text"
+                )
+                risky_phrases_env = os.getenv(
+                    "GUARD_SOFT_ALLOW_RISKY_PHRASES",
+                    "ignore previous,system prompt,developer message,jailbreak,exfiltrate,bypass,override,policy"
+                )
+                safe_phrases = [p.strip().lower() for p in safe_phrases_env.split(",") if p.strip()]
+                risky_phrases = [p.strip().lower() for p in risky_phrases_env.split(",") if p.strip()]
                 q = (query or "").lower()
-                if any(s in q for s in safe_phrases) and not any(r in q for r in risky_phrases):
+                if soft_allow and any(s in q for s in safe_phrases) and not any(r in q for r in risky_phrases):
                     logger.warning("[ROUTER] Guard flagged safe-looking prompt; soft-allow enabled.")
                 else:
                     logger.warning(f"[ROUTER] Guard intercepted payload. Flagged as: {safety_report.get('categories')}")
@@ -198,25 +201,27 @@ class ExecutionGraph:
             return state
              
         elif plan.get("route") == "smalltalk":
-             # Bypass the expensive 70B logic completely.
-             logger.info("[ROUTER] Smalltalk Bypass executing via Llama-8B.")
-             state["optimizations"]["agent_routed"] = "smalltalk_bypass"
-             state["answer"] = "Hello! I am the Enterprise RAG System. How can I help you today?"
-             state["confidence"] = 0.99
-             state["answer"] = self._strip_think(state.get("answer", ""))
-             state["chat_history"].append({"role": "assistant", "content": state["answer"]})
+             logger.info("[ROUTER] Smalltalk Routed. Invoking dynamically...")
+             from app.agents.smalltalk import SmalltalkAgent
+             smalltalk_agent = SmalltalkAgent()
+             final_state = await smalltalk_agent.ainvoke(state)
+             final_state["chat_history"].append({"role": "assistant", "content": final_state.get("answer", "")})
              if session_id:
                  try:
-                     save_chat_turn(session_id, "assistant", state["answer"])
+                     save_chat_turn(session_id, "assistant", final_state.get("answer", ""))
                  except Exception:
                      pass
-             return state
+             return final_state
              
         elif plan.get("route") == "coder_agent":
              logger.info(f"[ROUTER] Dispatching payload to the {state['intent']} Coder Agent.")
              state["optimizations"]["agent_routed"] = "coder_agent"
              # We execute solely against the Coder MoE ignoring dense 70B RAG chains
              final_state = await self.coder_agent.ainvoke(state)
+             if not final_state.get("verifier_verdict"):
+                 final_state["verifier_verdict"] = "N/A"
+             if "sources" not in final_state:
+                 final_state["sources"] = []
              final_state["answer"] = self._strip_think(final_state.get("answer", ""))
              final_state["chat_history"].append({"role": "assistant", "content": final_state.get("answer", "")})
              if session_id:

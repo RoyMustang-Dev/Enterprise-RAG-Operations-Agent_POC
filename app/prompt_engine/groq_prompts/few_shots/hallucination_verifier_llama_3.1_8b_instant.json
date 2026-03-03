@@ -1,0 +1,1261 @@
+[
+  {
+    "context": "What is the capital of France?",
+    "answer": "Paris",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for gold?",
+    "answer": "Au",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who wrote the book 'To Kill a Mockingbird'?",
+    "answer": "Harper Lee",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest mammal on Earth?",
+    "answer": "Blue whale",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the smallest country in the world?",
+    "answer": "Vatican City",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Tesla?",
+    "answer": "Elon Musk",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest living species of lizard?",
+    "answer": "Komodo dragon",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of the book 'The Great Gatsby'?",
+    "answer": "F. Scott Fitzgerald",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for silver?",
+    "answer": "Ag",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of the band Queen?",
+    "answer": "Freddie Mercury",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest city in Australia?",
+    "answer": "Sydney",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Amazon?",
+    "answer": "Jeff Bezos",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest waterfall in the world?",
+    "answer": "Angel Falls",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest species of shark?",
+    "answer": "Whale shark",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of the book 'Pride and Prejudice'?",
+    "answer": "Jane Austen",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for copper?",
+    "answer": "Cu",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of the band The Beatles?",
+    "answer": "John Lennon",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest city in China?",
+    "answer": "Shanghai",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Google?",
+    "answer": "Sundar Pichai",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain peak in North America?",
+    "answer": "Denali",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest species of cat?",
+    "answer": "Lion",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of the book 'The Lord of the Rings'?",
+    "answer": "J.R.R. Tolkien",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for mercury?",
+    "answer": "Hg",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of the band AC/DC?",
+    "answer": "Brian Johnson",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest city in India?",
+    "answer": "Mumbai",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Microsoft?",
+    "answer": "Satya Nadella",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain peak in South America?",
+    "answer": "Aconcagua",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "context": "Geography",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Tesla?",
+    "answer": "Elon Musk",
+    "context": "Business",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "context": "Astronomy",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who wrote Romeo and Juliet?",
+    "answer": "William Shakespeare",
+    "context": "Literature",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the chemical symbol for gold?",
+    "answer": "Au",
+    "context": "Chemistry",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of Queen?",
+    "answer": "Freddie Mercury",
+    "context": "Music",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest living species of lizard?",
+    "answer": "Komodo dragon",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the author of To Kill a Mockingbird?",
+    "answer": "Harper Lee",
+    "context": "Literature",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the chemical symbol for silver?",
+    "answer": "Ag",
+    "context": "Chemistry",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Amazon?",
+    "answer": "Jeff Bezos",
+    "context": "Business",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest mammal on Earth?",
+    "answer": "Blue whale",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of The Beatles?",
+    "answer": "John Lennon",
+    "context": "Music",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the chemical symbol for copper?",
+    "answer": "Cu",
+    "context": "Chemistry",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the author of The Great Gatsby?",
+    "answer": "F. Scott Fitzgerald",
+    "context": "Literature",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest country in the world by land area?",
+    "answer": "Russia",
+    "context": "Geography",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Google?",
+    "answer": "Sundar Pichai",
+    "context": "Business",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest species of shark?",
+    "answer": "Whale shark",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of AC/DC?",
+    "answer": "Brian Johnson",
+    "context": "Music",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the chemical symbol for mercury?",
+    "answer": "Hg",
+    "context": "Chemistry",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the author of The Catcher in the Rye?",
+    "answer": "J.D. Salinger",
+    "context": "Literature",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest species of cat?",
+    "answer": "Siberian tiger",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Microsoft?",
+    "answer": "Satya Nadella",
+    "context": "Business",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest species of bear?",
+    "answer": "Polar bear",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of Guns N' Roses?",
+    "answer": "Axl Rose",
+    "context": "Music",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the chemical symbol for lead?",
+    "answer": "Pb",
+    "context": "Chemistry",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the author of The Lord of the Rings?",
+    "answer": "J.R.R. Tolkien",
+    "context": "Literature",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest species of deer?",
+    "answer": "Moose",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Facebook?",
+    "answer": "Mark Zuckerberg",
+    "context": "Business",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest species of snake?",
+    "answer": "Green anaconda",
+    "context": "Biology",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of The Rolling Stones?",
+    "answer": "Mick Jagger",
+    "context": "Music",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the capital of France?",
+    "answer": "Paris",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for gold?",
+    "answer": "Au",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who wrote Romeo and Juliet?",
+    "answer": "William Shakespeare",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest living species of lizard?",
+    "answer": "Komodo dragon",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the smallest country in the world?",
+    "answer": "Vatican City",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Tesla?",
+    "answer": "Elon Musk",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest mammal?",
+    "answer": "Blue whale",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the founder of Google?",
+    "answer": "Larry Page and Sergey Brin",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for silver?",
+    "answer": "Ag",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who wrote The Lord of the Rings?",
+    "answer": "J.R.R. Tolkien",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest city in the world?",
+    "answer": "Tokyo",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Amazon?",
+    "answer": "Andy Jassy",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest temperature ever recorded on Earth?",
+    "answer": "56.7°C",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who painted the Starry Night?",
+    "answer": "Vincent van Gogh",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest species of shark?",
+    "answer": "Whale shark",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Microsoft?",
+    "answer": "Satya Nadella",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain peak in North America?",
+    "answer": "Denali",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who wrote To Kill a Mockingbird?",
+    "answer": "Harper Lee",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest species of cat?",
+    "answer": "Siberian tiger",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Facebook?",
+    "answer": "Mark Zuckerberg",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest temperature ever recorded in space?",
+    "answer": "1,000°C",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who painted The Scream?",
+    "answer": "Edvard Munch",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest species of bird?",
+    "answer": "Ostrich",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Apple?",
+    "answer": "Tim Cook",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain peak in South America?",
+    "answer": "Aconcagua",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who wrote The Great Gatsby?",
+    "answer": "F. Scott Fitzgerald",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest species of fish?",
+    "answer": "Whale shark",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Twitter?",
+    "answer": "Parag Agrawal",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the capital of France?",
+    "answer": "Paris",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Tesla?",
+    "answer": "Elon Musk",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for gold?",
+    "answer": "Au",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the smallest country in the world?",
+    "answer": "Vatican City",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of To Kill a Mockingbird?",
+    "answer": "Harper Lee",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest living species of lizard?",
+    "answer": "Komodo dragon",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for silver?",
+    "answer": "Ag",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of Queen?",
+    "answer": "Freddie Mercury",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest city in Australia?",
+    "answer": "Sydney",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Amazon?",
+    "answer": "Jeff Bezos",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest waterfall in the world?",
+    "answer": "Angel Falls",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of The Lord of the Rings?",
+    "answer": "J.R.R. Tolkien",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest mammal on Earth?",
+    "answer": "Blue whale",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of The Beatles?",
+    "answer": "John Lennon",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for copper?",
+    "answer": "Cu",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Google?",
+    "answer": "Sundar Pichai",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain peak in North America?",
+    "answer": "Denali",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of The Hunger Games?",
+    "answer": "Suzanne Collins",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest river in South America?",
+    "answer": "Amazon River",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of AC/DC?",
+    "answer": "Bon Scott",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the chemical symbol for mercury?",
+    "answer": "Hg",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the CEO of Microsoft?",
+    "answer": "Satya Nadella",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the highest mountain peak in Europe?",
+    "answer": "Mount Elbrus",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the author of The Catcher in the Rye?",
+    "answer": "J.D. Salinger",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest city in China?",
+    "answer": "Shanghai",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "Who is the lead singer of Guns N' Roses?",
+    "answer": "Axl Rose",
+    "expected_verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "context": "France is a country located in Western Europe.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Tesla?",
+    "answer": "Elon Musk",
+    "context": "Tesla is an electric vehicle and clean energy company.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "context": "Mount Everest is located in the Himalayas between Nepal and Tibet.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "context": "Jupiter is a gas giant and the fifth planet from the Sun.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "context": "The Mona Lisa is a famous painting by the Italian artist Leonardo da Vinci.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the chemical symbol for gold?",
+    "answer": "Au",
+    "context": "Gold is a chemical element with the symbol Au and atomic number 79.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who wrote Romeo and Juliet?",
+    "answer": "William Shakespeare",
+    "context": "Romeo and Juliet is a tragic love story by the English playwright William Shakespeare.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest living species of lizard?",
+    "answer": "Komodo dragon",
+    "context": "The Komodo dragon is a species of lizard found in the Indonesian islands of Komodo, Rinca, Flores, and Gili Motang.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the founder of Google?",
+    "answer": "Larry Page and Sergey Brin",
+    "context": "Google is a multinational technology company founded by Larry Page and Sergey Brin.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the deepest part of the ocean?",
+    "answer": "Mariana Trench",
+    "context": "The Mariana Trench is a deep-sea trench located in the Pacific Ocean.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of Queen?",
+    "answer": "Freddie Mercury",
+    "context": "Queen is a British rock band known for their iconic music and performances.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest city in Australia?",
+    "answer": "Sydney",
+    "context": "Sydney is the capital of New South Wales and the largest city in Australia.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the author of To Kill a Mockingbird?",
+    "answer": "Harper Lee",
+    "context": "To Kill a Mockingbird is a Pulitzer Prize-winning novel by the American author Harper Lee.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the highest mountain peak in North America?",
+    "answer": "Denali",
+    "context": "Denali is a mountain located in Alaska, formerly known as Mount McKinley.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the CEO of Amazon?",
+    "answer": "Jeff Bezos",
+    "context": "Amazon is a multinational technology company founded by Jeff Bezos.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest island in the Mediterranean Sea?",
+    "answer": "Sicily",
+    "context": "Sicily is an autonomous region of Italy and the largest island in the Mediterranean Sea.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of The Beatles?",
+    "answer": "John Lennon and Paul McCartney",
+    "context": "The Beatles are a British rock band known for their iconic music and performances.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the highest waterfall in the world?",
+    "answer": "Angel Falls",
+    "context": "Angel Falls is a waterfall located in Venezuela, South America.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the founder of Microsoft?",
+    "answer": "Bill Gates",
+    "context": "Microsoft is a multinational technology company founded by Bill Gates and Paul Allen.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest desert in the world?",
+    "answer": "Sahara Desert",
+    "context": "The Sahara Desert is a large desert region in North Africa.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of AC/DC?",
+    "answer": "Brian Johnson and Bon Scott",
+    "context": "AC/DC is a hard rock band known for their iconic music and performances.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the highest temperature ever recorded on Earth?",
+    "answer": "56.7°C",
+    "context": "The highest temperature ever recorded on Earth was 56.7°C in Death Valley, California.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the founder of Facebook?",
+    "answer": "Mark Zuckerberg",
+    "context": "Facebook is a social media platform founded by Mark Zuckerberg, along with his college roommates and fellow Harvard University students Eduardo Saverin, Andrew McCollum, Dustin Moskovitz, and Chris Hughes.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest river in South America?",
+    "answer": "Amazon River",
+    "context": "The Amazon River is the largest river in South America and the world's largest river by discharge volume.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of Guns N' Roses?",
+    "answer": "Axl Rose",
+    "context": "Guns N' Roses is a hard rock band known for their iconic music and performances.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the highest mountain peak in South America?",
+    "answer": "Aconcagua",
+    "context": "Aconcagua is a mountain located in Argentina, South America.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the founder of Apple?",
+    "answer": "Steve Jobs, Steve Wozniak, and Ronald Wayne",
+    "context": "Apple is a multinational technology company founded by Steve Jobs, Steve Wozniak, and Ronald Wayne.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "What is the largest city in China?",
+    "answer": "Shanghai",
+    "context": "Shanghai is the largest city in China and a major financial hub.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "question": "Who is the lead singer of The Rolling Stones?",
+    "answer": "Mick Jagger",
+    "context": "The Rolling Stones are a British rock band known for their iconic music and performances.",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the capital of France?",
+    "answer": "Paris",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  },
+  {
+    "context": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "verifier": {
+      "hallucinated": false,
+      "unsupported_claims": []
+    }
+  }
+]

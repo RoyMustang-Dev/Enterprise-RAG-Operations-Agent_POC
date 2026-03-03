@@ -1,0 +1,1445 @@
+[
+  {
+    "user": "Find cheap flights from New York to London next week",
+    "assistant_output": {
+      "intent": "search_flights",
+      "origin": "New York",
+      "destination": "London",
+      "date_range": "next week",
+      "price_category": "cheap",
+      "max_results": 5
+    }
+  },
+  {
+    "user": "What will the weather be like in Paris tomorrow?",
+    "assistant_output": {
+      "intent": "get_weather",
+      "location": "Paris",
+      "date": "tomorrow"
+    }
+  },
+  {
+    "user": "Show me Italian restaurants in San Francisco with a rating above 4.5",
+    "assistant_output": {
+      "intent": "search_restaurants",
+      "cuisine": "Italian",
+      "city": "San Francisco",
+      "min_rating": 4.5
+    }
+  },
+  {
+    "user": "Give me a summary of the latest earnings report for Apple",
+    "assistant_output": {
+      "intent": "summarize_earnings",
+      "company": "Apple",
+      "report_type": "latest"
+    }
+  },
+  {
+    "user": "Translate the sentence 'Good morning' to Japanese",
+    "assistant_output": {
+      "intent": "translate_text",
+      "source_text": "Good morning",
+      "target_language": "ja"
+    }
+  },
+  {
+    "user": "Book a table for two at a sushi place in Tokyo for Saturday night",
+    "assistant_output": {
+      "intent": "make_reservation",
+      "cuisine": "sushi",
+      "city": "Tokyo",
+      "party_size": 2,
+      "date": "Saturday",
+      "time": "night"
+    }
+  },
+  {
+    "user": "Find me a 4‑star hotel in Berlin under $150 per night",
+    "assistant_output": {
+      "intent": "search_hotels",
+      "city": "Berlin",
+      "star_rating": 4,
+      "max_price_per_night": 150
+    }
+  },
+  {
+    "user": "What are the top‑rated movies released in 2023?",
+    "assistant_output": {
+      "intent": "list_movies",
+      "release_year": 2023,
+      "sort_by": "rating",
+      "order": "desc"
+    }
+  },
+  {
+    "user": "Show me the current stock price for Tesla",
+    "assistant_output": {
+      "intent": "get_stock_price",
+      "ticker": "TSLA"
+    }
+  },
+  {
+    "user": "How do I reset my password on the company VPN?",
+    "assistant_output": {
+      "intent": "tech_support",
+      "issue": "password_reset",
+      "service": "VPN"
+    }
+  },
+  {
+    "user": "Find a yoga class near me on weekends",
+    "assistant_output": {
+      "intent": "search_classes",
+      "type": "yoga",
+      "day_of_week": "weekend",
+      "location": "current"
+    }
+  },
+  {
+    "user": "Give me a recipe for vegan chocolate cake",
+    "assistant_output": {
+      "intent": "get_recipe",
+      "diet": "vegan",
+      "dish": "chocolate cake"
+    }
+  },
+  {
+    "user": "What is the exchange rate from USD to EUR today?",
+    "assistant_output": {
+      "intent": "get_exchange_rate",
+      "from_currency": "USD",
+      "to_currency": "EUR",
+      "date": "today"
+    }
+  },
+  {
+    "user": "List all upcoming concerts in Los Angeles next month",
+    "assistant_output": {
+      "intent": "list_events",
+      "city": "Los Angeles",
+      "event_type": "concert",
+      "date_range": "next month"
+    }
+  },
+  {
+    "user": "Show me the latest articles about quantum computing",
+    "assistant_output": {
+      "intent": "search_articles",
+      "topic": "quantum computing",
+      "sort_by": "date",
+      "order": "desc"
+    }
+  },
+  {
+    "user": "Find a used 2018 Toyota Camry under $15,000 in Chicago",
+    "assistant_output": {
+      "intent": "search_cars",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2018,
+      "max_price": 15000,
+      "city": "Chicago"
+    }
+  },
+  {
+    "user": "What are the symptoms of vitamin D deficiency?",
+    "assistant_output": {
+      "intent": "medical_info",
+      "condition": "vitamin D deficiency",
+      "info_type": "symptoms"
+    }
+  },
+  {
+    "user": "Schedule a meeting with the marketing team next Wednesday at 10 am",
+    "assistant_output": {
+      "intent": "schedule_meeting",
+      "participants": [
+        "marketing team"
+      ],
+      "date": "next Wednesday",
+      "time": "10:00"
+    }
+  },
+  {
+    "user": "Find me a podcast about personal finance that releases weekly",
+    "assistant_output": {
+      "intent": "search_podcasts",
+      "topic": "personal finance",
+      "frequency": "weekly"
+    }
+  },
+  {
+    "user": "Show me the best-selling books in the mystery genre this month",
+    "assistant_output": {
+      "intent": "list_books",
+      "genre": "mystery",
+      "time_frame": "this month",
+      "sort_by": "sales",
+      "order": "desc"
+    }
+  },
+  {
+    "user": "How many calories are in a medium avocado?",
+    "assistant_output": {
+      "intent": "nutrition_info",
+      "food_item": "avocado",
+      "portion_size": "medium",
+      "info_type": "calories"
+    }
+  },
+  {
+    "user": "Get me directions from my home to the nearest pharmacy",
+    "assistant_output": {
+      "intent": "get_directions",
+      "origin": "current_location",
+      "destination_type": "pharmacy",
+      "mode": "driving"
+    }
+  },
+  {
+    "user": "What is the latest version of the Python programming language?",
+    "assistant_output": {
+      "intent": "software_version",
+      "software": "Python"
+    }
+  },
+  {
+    "user": "Find a discount code for Nike shoes",
+    "assistant_output": {
+      "intent": "search_discounts",
+      "brand": "Nike",
+      "product_category": "shoes"
+    }
+  },
+  {
+    "user": "Show me the schedule for the 2024 Olympic Games opening ceremony",
+    "assistant_output": {
+      "intent": "event_schedule",
+      "event": "2024 Olympic Games",
+      "session": "opening ceremony"
+    }
+  },
+  {
+    "user": "Translate the paragraph 'La vida es bella' from Spanish to English",
+    "assistant_output": {
+      "intent": "translate_text",
+      "source_text": "La vida es bella",
+      "source_language": "es",
+      "target_language": "en"
+    }
+  },
+  {
+    "user": "Find cheap flights to Tokyo next month",
+    "assistant_output": {
+      "rewritten_query": "Cheapest flights to Tokyo in the next month",
+      "intent": "search_flights",
+      "parameters": {
+        "destination": "Tokyo",
+        "date_range": "next month",
+        "sort": "price_asc"
+      }
+    }
+  },
+  {
+    "user": "Show me Italian restaurants open now near me",
+    "assistant_output": {
+      "rewritten_query": "Italian restaurants currently open near my location",
+      "intent": "search_restaurants",
+      "parameters": {
+        "cuisine": "Italian",
+        "open_now": true,
+        "proximity": "nearby"
+      }
+    }
+  },
+  {
+    "user": "What’s the weather forecast for New York this weekend?",
+    "assistant_output": {
+      "rewritten_query": "New York weather forecast for this weekend",
+      "intent": "get_weather",
+      "parameters": {
+        "location": "New York",
+        "date_range": "this weekend"
+      }
+    }
+  },
+  {
+    "user": "How do I reset my password on the company portal?",
+    "assistant_output": {
+      "rewritten_query": "Instructions to reset password on company portal",
+      "intent": "tech_support",
+      "parameters": {
+        "task": "reset_password",
+        "platform": "company_portal"
+      }
+    }
+  },
+  {
+    "user": "Best laptops under $1000 for programming",
+    "assistant_output": {
+      "rewritten_query": "Top laptops under $1000 suitable for programming",
+      "intent": "product_research",
+      "parameters": {
+        "category": "laptops",
+        "price_max": 1000,
+        "use_case": "programming"
+      }
+    }
+  },
+  {
+    "user": "Translate 'good morning' to French",
+    "assistant_output": {
+      "rewritten_query": "Translate phrase 'good morning' into French",
+      "intent": "translation",
+      "parameters": {
+        "source_text": "good morning",
+        "target_language": "French"
+      }
+    }
+  },
+  {
+    "user": "Set a reminder to call Mom at 6pm tomorrow",
+    "assistant_output": {
+      "rewritten_query": "Create reminder to call Mom at 6 PM tomorrow",
+      "intent": "create_reminder",
+      "parameters": {
+        "title": "Call Mom",
+        "datetime": "2026-03-03T18:00:00"
+      }
+    }
+  },
+  {
+    "user": "Find recent news articles about electric vehicles",
+    "assistant_output": {
+      "rewritten_query": "Latest news articles on electric vehicles",
+      "intent": "search_news",
+      "parameters": {
+        "topic": "electric vehicles",
+        "recency": "recent"
+      }
+    }
+  },
+  {
+    "user": "Show me how to tie a bow tie step by step",
+    "assistant_output": {
+      "rewritten_query": "Step‑by‑step guide to tying a bow tie",
+      "intent": "instruction",
+      "parameters": {
+        "task": "tie bow tie"
+      }
+    }
+  },
+  {
+    "user": "What are the top 5 tourist attractions in Barcelona?",
+    "assistant_output": {
+      "rewritten_query": "Top five tourist attractions in Barcelona",
+      "intent": "travel_info",
+      "parameters": {
+        "location": "Barcelona",
+        "list_limit": 5
+      }
+    }
+  },
+  {
+    "user": "Convert 150 miles to kilometers",
+    "assistant_output": {
+      "rewritten_query": "Convert 150 miles into kilometers",
+      "intent": "unit_conversion",
+      "parameters": {
+        "value": 150,
+        "from_unit": "miles",
+        "to_unit": "kilometers"
+      }
+    }
+  },
+  {
+    "user": "Book a table for two at a sushi place on Saturday night",
+    "assistant_output": {
+      "rewritten_query": "Reserve a table for two at a sushi restaurant for Saturday night",
+      "intent": "restaurant_reservation",
+      "parameters": {
+        "cuisine": "sushi",
+        "party_size": 2,
+        "datetime": "2026-03-07T20:00:00"
+      }
+    }
+  },
+  {
+    "user": "How many calories are in a medium avocado?",
+    "assistant_output": {
+      "rewritten_query": "Calorie count for a medium avocado",
+      "intent": "nutrition_info",
+      "parameters": {
+        "food_item": "avocado",
+        "size": "medium"
+      }
+    }
+  },
+  {
+    "user": "Play the song 'Imagine' by John Lennon",
+    "assistant_output": {
+      "rewritten_query": "Play John Lennon's song 'Imagine'",
+      "intent": "media_playback",
+      "parameters": {
+        "artist": "John Lennon",
+        "track": "Imagine"
+      }
+    }
+  },
+  {
+    "user": "Show me the stock price of Apple for the past week",
+    "assistant_output": {
+      "rewritten_query": "Apple stock price history for the last 7 days",
+      "intent": "financial_data",
+      "parameters": {
+        "ticker": "AAPL",
+        "date_range": "last_week"
+      }
+    }
+  },
+  {
+    "user": "Find a DIY tutorial for building a wooden coffee table",
+    "assistant_output": {
+      "rewritten_query": "DIY tutorial to build a wooden coffee table",
+      "intent": "search_tutorials",
+      "parameters": {
+        "project": "wooden coffee table"
+      }
+    }
+  },
+  {
+    "user": "What is the capital city of Kenya?",
+    "assistant_output": {
+      "rewritten_query": "Capital city of Kenya",
+      "intent": "general_knowledge",
+      "parameters": {
+        "question": "capital of Kenya"
+      }
+    }
+  },
+  {
+    "user": "Schedule a meeting with the marketing team next Wednesday at 10am",
+    "assistant_output": {
+      "rewritten_query": "Create meeting with marketing team on next Wednesday at 10 AM",
+      "intent": "schedule_meeting",
+      "parameters": {
+        "participants": "marketing team",
+        "datetime": "2026-03-05T10:00:00"
+      }
+    }
+  },
+  {
+    "user": "How do I enable two‑factor authentication on Gmail?",
+    "assistant_output": {
+      "rewritten_query": "Enable two‑factor authentication for Gmail account",
+      "intent": "security_setup",
+      "parameters": {
+        "service": "Gmail",
+        "feature": "two_factor_authentication"
+      }
+    }
+  },
+  {
+    "user": "List all movies directed by Christopher Nolan released after 2010",
+    "assistant_output": {
+      "rewritten_query": "Christopher Nolan movies released after 2010",
+      "intent": "media_search",
+      "parameters": {
+        "director": "Christopher Nolan",
+        "release_year_min": 2011
+      }
+    }
+  },
+  {
+    "user": "What’s the exchange rate from USD to EUR today?",
+    "assistant_output": {
+      "rewritten_query": "Current USD to EUR exchange rate",
+      "intent": "currency_conversion",
+      "parameters": {
+        "from_currency": "USD",
+        "to_currency": "EUR",
+        "date": "today"
+      }
+    }
+  },
+  {
+    "user": "Find a vegan chocolate cake recipe with less than 5 ingredients",
+    "assistant_output": {
+      "rewritten_query": "Vegan chocolate cake recipe using fewer than five ingredients",
+      "intent": "recipe_search",
+      "parameters": {
+        "diet": "vegan",
+        "dish": "chocolate cake",
+        "max_ingredients": 5
+      }
+    }
+  },
+  {
+    "user": "Show me nearby electric vehicle charging stations",
+    "assistant_output": {
+      "rewritten_query": "Electric vehicle charging stations near my location",
+      "intent": "location_search",
+      "parameters": {
+        "facility_type": "EV charging",
+        "proximity": "nearby"
+      }
+    }
+  },
+  {
+    "user": "How long does it take to boil an egg soft‑boiled?",
+    "assistant_output": {
+      "rewritten_query": "Time required to soft‑boil an egg",
+      "intent": "cooking_question",
+      "parameters": {
+        "food_item": "egg",
+        "preparation": "soft boiled"
+      }
+    }
+  },
+  {
+    "user": "Create a grocery list for a week of Mediterranean meals",
+    "assistant_output": {
+      "rewritten_query": "Generate grocery list for a week of Mediterranean cuisine",
+      "intent": "list_generation",
+      "parameters": {
+        "diet": "Mediterranean",
+        "duration": "1 week"
+      }
+    }
+  },
+  {
+    "user": "What are the symptoms of vitamin D deficiency?",
+    "assistant_output": {
+      "rewritten_query": "Symptoms associated with vitamin D deficiency",
+      "intent": "health_information",
+      "parameters": {
+        "condition": "vitamin D deficiency"
+      }
+    }
+  },
+  {
+    "user": "Find cheap flights to NYC next month",
+    "assistant_output": {
+      "rewritten_query": "search_flights(destination='NYC', date='next month', price='low')"
+    }
+  },
+  {
+    "user": "Show me Italian restaurants open now near me",
+    "assistant_output": {
+      "rewritten_query": "search_restaurants(cuisine='Italian', open_now=true, location='current')"
+    }
+  },
+  {
+    "user": "What's the weather like in Tokyo tomorrow?",
+    "assistant_output": {
+      "rewritten_query": "get_weather(city='Tokyo', date='tomorrow')"
+    }
+  },
+  {
+    "user": "Book a hotel in Paris for two people from 5th to 10th June",
+    "assistant_output": {
+      "rewritten_query": "book_hotel(city='Paris', check_in='2024-06-05', check_out='2024-06-10', guests=2)"
+    }
+  },
+  {
+    "user": "Translate 'good morning' to French",
+    "assistant_output": {
+      "rewritten_query": "translate(text='good morning', target_language='French')"
+    }
+  },
+  {
+    "user": "How many calories are in a medium avocado?",
+    "assistant_output": {
+      "rewritten_query": "get_nutrition(food='avocado', size='medium', metric='calories')"
+    }
+  },
+  {
+    "user": "Set a reminder to call Mom at 7pm tomorrow",
+    "assistant_output": {
+      "rewritten_query": "create_reminder(action='call Mom', datetime='2024-03-03T19:00')"
+    }
+  },
+  {
+    "user": "Play some relaxing jazz music",
+    "assistant_output": {
+      "rewritten_query": "play_music(genre='jazz', mood='relaxing')"
+    }
+  },
+  {
+    "user": "What are the top 5 tech stocks to watch this quarter?",
+    "assistant_output": {
+      "rewritten_query": "list_stocks(sector='technology', rank='top5', timeframe='Q1 2024')"
+    }
+  },
+  {
+    "user": "Find a yoga class for beginners on Saturday morning",
+    "assistant_output": {
+      "rewritten_query": "search_classes(activity='yoga', level='beginner', day='Saturday', time='morning')"
+    }
+  },
+  {
+    "user": "Convert 150 miles to kilometers",
+    "assistant_output": {
+      "rewritten_query": "convert_units(value=150, from='miles', to='kilometers')"
+    }
+  },
+  {
+    "user": "Show me the latest news about climate change",
+    "assistant_output": {
+      "rewritten_query": "search_news(topic='climate change', sort='latest')"
+    }
+  },
+  {
+    "user": "How do I reset my router?",
+    "assistant_output": {
+      "rewritten_query": "provide_guide(task='reset router')"
+    }
+  },
+  {
+    "user": "Order a pepperoni pizza from the nearest pizzeria",
+    "assistant_output": {
+      "rewritten_query": "order_food(item='pepperoni pizza', location='nearest')"
+    }
+  },
+  {
+    "user": "What movies are playing at the downtown cinema tonight?",
+    "assistant_output": {
+      "rewritten_query": "list_showtimes(cinema='downtown', date='today')"
+    }
+  },
+  {
+    "user": "Calculate the mortgage payment for a $300,000 loan at 3.5% over 30 years",
+    "assistant_output": {
+      "rewritten_query": "calculate_mortgage(principal=300000, rate=3.5, term_years=30)"
+    }
+  },
+  {
+    "user": "Find a flight from Los Angeles to Tokyo departing on 15th August and returning on 22nd August",
+    "assistant_output": {
+      "rewritten_query": "search_flights(origin='Los Angeles', destination='Tokyo', depart='2024-08-15', return='2024-08-22')"
+    }
+  },
+  {
+    "user": "What is the capital of Kenya?",
+    "assistant_output": {
+      "rewritten_query": "get_capital(country='Kenya')"
+    }
+  },
+  {
+    "user": "Set the thermostat to 72 degrees Fahrenheit",
+    "assistant_output": {
+      "rewritten_query": "set_thermostat(temperature=72, unit='F')"
+    }
+  },
+  {
+    "user": "Show me reviews for the Samsung Galaxy S24",
+    "assistant_output": {
+      "rewritten_query": "search_reviews(product='Samsung Galaxy S24')"
+    }
+  },
+  {
+    "user": "Find a 4-star hotel in Barcelona with free Wi-Fi",
+    "assistant_output": {
+      "rewritten_query": "search_hotels(city='Barcelona', rating=4, amenities='free Wi-Fi')"
+    }
+  },
+  {
+    "user": "Create a calendar event for a dentist appointment on March 10 at 10am",
+    "assistant_output": {
+      "rewritten_query": "create_event(title='Dentist Appointment', date='2024-03-10', time='10:00')"
+    }
+  },
+  {
+    "user": "What are the symptoms of vitamin D deficiency?",
+    "assistant_output": {
+      "rewritten_query": "list_symptoms(condition='vitamin D deficiency')"
+    }
+  },
+  {
+    "user": "Show me the stock price of Apple for the past week",
+    "assistant_output": {
+      "rewritten_query": "get_stock_history(ticker='AAPL', period='7d')"
+    }
+  },
+  {
+    "user": "Find a grocery store that sells almond milk near my location",
+    "assistant_output": {
+      "rewritten_query": "search_stores(product='almond milk', location='current')"
+    }
+  },
+  {
+    "user": "How long does it take to boil an egg soft?",
+    "assistant_output": {
+      "rewritten_query": "get_cooking_time(item='egg', style='soft boiled')"
+    }
+  },
+  {
+    "user": "Set an alarm for 6:30 AM tomorrow",
+    "assistant_output": {
+      "rewritten_query": "create_alarm(time='06:30', date='2024-03-03')"
+    }
+  },
+  {
+    "user": "Find cheap flights from New York to London next month",
+    "assistant_output": {
+      "search_query": "flights",
+      "filters": {
+        "origin": "New York",
+        "destination": "London",
+        "date_range": "next month",
+        "price_max": "cheap"
+      },
+      "sort_by": "price_asc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Show me the top-rated Italian restaurants in San Francisco",
+    "assistant_output": {
+      "search_query": "restaurants",
+      "filters": {
+        "cuisine": "Italian",
+        "city": "San Francisco",
+        "rating_min": 4.5
+      },
+      "sort_by": "rating_desc",
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "user": "What are the latest iPhone models released in 2023?",
+    "assistant_output": {
+      "search_query": "iPhone models",
+      "filters": {
+        "release_year": 2023
+      },
+      "sort_by": "release_date_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Give me a list of 2022 electric cars with a range over 300 miles",
+    "assistant_output": {
+      "search_query": "electric cars",
+      "filters": {
+        "model_year": 2022,
+        "range_min": 300
+      },
+      "sort_by": "range_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Find tutorials on Python data visualization using Matplotlib",
+    "assistant_output": {
+      "search_query": "tutorials",
+      "filters": {
+        "topic": "Python data visualization",
+        "tool": "Matplotlib"
+      },
+      "sort_by": "relevance_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Show recent news articles about climate change legislation in Europe",
+    "assistant_output": {
+      "search_query": "news articles",
+      "filters": {
+        "topic": "climate change legislation",
+        "region": "Europe",
+        "date_range": "last 30 days"
+      },
+      "sort_by": "date_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Search for budget-friendly hotels in Tokyo with free Wi‑Fi",
+    "assistant_output": {
+      "search_query": "hotels",
+      "filters": {
+        "city": "Tokyo",
+        "price_range": "budget",
+        "amenities": [
+          "free Wi-Fi"
+        ]
+      },
+      "sort_by": "price_asc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "List all open-source JavaScript frameworks released after 2020",
+    "assistant_output": {
+      "search_query": "JavaScript frameworks",
+      "filters": {
+        "license": "open source",
+        "release_year_min": 2021
+      },
+      "sort_by": "release_date_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Find podcasts about personal finance that are under 30 minutes per episode",
+    "assistant_output": {
+      "search_query": "podcasts",
+      "filters": {
+        "topic": "personal finance",
+        "duration_max": 30
+      },
+      "sort_by": "popularity_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Show me upcoming concerts in Chicago next weekend",
+    "assistant_output": {
+      "search_query": "concerts",
+      "filters": {
+        "city": "Chicago",
+        "date_range": "next weekend"
+      },
+      "sort_by": "date_asc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Get me the recipe for a gluten‑free chocolate cake",
+    "assistant_output": {
+      "search_query": "recipes",
+      "filters": {
+        "dish": "chocolate cake",
+        "diet": "gluten-free"
+      },
+      "sort_by": "rating_desc",
+      "page": 1,
+      "page_size": 1
+    }
+  },
+  {
+    "user": "Find scholarly articles on machine learning for healthcare published in 2022",
+    "assistant_output": {
+      "search_query": "scholarly articles",
+      "filters": {
+        "topic": "machine learning for healthcare",
+        "publication_year": 2022
+      },
+      "sort_by": "citation_count_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Show me the best-selling books on mindfulness from the past year",
+    "assistant_output": {
+      "search_query": "books",
+      "filters": {
+        "topic": "mindfulness",
+        "sales_period": "last year"
+      },
+      "sort_by": "sales_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Search for job openings for senior data analyst positions in remote work",
+    "assistant_output": {
+      "search_query": "job openings",
+      "filters": {
+        "title": "senior data analyst",
+        "location": "remote"
+      },
+      "sort_by": "date_posted_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Find YouTube videos teaching how to play the guitar for beginners",
+    "assistant_output": {
+      "search_query": "YouTube videos",
+      "filters": {
+        "topic": "guitar lessons",
+        "skill_level": "beginner"
+      },
+      "sort_by": "view_count_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "List the top 5 most visited tourist attractions in Paris",
+    "assistant_output": {
+      "search_query": "tourist attractions",
+      "filters": {
+        "city": "Paris"
+      },
+      "sort_by": "visitor_count_desc",
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "user": "Show me the latest stock price for Apple Inc.",
+    "assistant_output": {
+      "search_query": "stock price",
+      "filters": {
+        "ticker": "AAPL"
+      },
+      "sort_by": "date_desc",
+      "page": 1,
+      "page_size": 1
+    }
+  },
+  {
+    "user": "Find free online courses about blockchain technology",
+    "assistant_output": {
+      "search_query": "online courses",
+      "filters": {
+        "topic": "blockchain technology",
+        "price": "free"
+      },
+      "sort_by": "rating_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Search for recipes that use quinoa and are vegan",
+    "assistant_output": {
+      "search_query": "recipes",
+      "filters": {
+        "ingredient": "quinoa",
+        "diet": "vegan"
+      },
+      "sort_by": "rating_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Give me a list of upcoming tech conferences in 2024 in the United States",
+    "assistant_output": {
+      "search_query": "tech conferences",
+      "filters": {
+        "region": "United States",
+        "date_year": 2024
+      },
+      "sort_by": "date_asc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Find the weather forecast for Seattle for the next 5 days",
+    "assistant_output": {
+      "search_query": "weather forecast",
+      "filters": {
+        "city": "Seattle",
+        "date_range": "next 5 days"
+      },
+      "sort_by": "date_asc",
+      "page": 1,
+      "page_size": 5
+    }
+  },
+  {
+    "user": "Show me the best-rated DSLR cameras under $1000",
+    "assistant_output": {
+      "search_query": "DSLR cameras",
+      "filters": {
+        "price_max": 1000
+      },
+      "sort_by": "rating_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Search for academic conferences on renewable energy in Asia in 2023",
+    "assistant_output": {
+      "search_query": "academic conferences",
+      "filters": {
+        "topic": "renewable energy",
+        "region": "Asia",
+        "date_year": 2023
+      },
+      "sort_by": "date_asc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Find the most recent blog posts about minimalistic interior design",
+    "assistant_output": {
+      "search_query": "blog posts",
+      "filters": {
+        "topic": "minimalistic interior design",
+        "date_range": "last 7 days"
+      },
+      "sort_by": "date_desc",
+      "page": 1,
+      "page_size": 10
+    }
+  },
+  {
+    "user": "Find cheap flights to Tokyo next month",
+    "assistant_output": {
+      "rewritten_query": "search flights to Tokyo departing next month with lowest price",
+      "intent": "search_flights",
+      "entities": {
+        "destination": "Tokyo",
+        "timeframe": "next month",
+        "sort_by": "price",
+        "price": "lowest"
+      }
+    }
+  },
+  {
+    "user": "Show me the weather forecast for New York tomorrow",
+    "assistant_output": {
+      "rewritten_query": "weather forecast for New York on 2026-03-03",
+      "intent": "weather_forecast",
+      "entities": {
+        "location": "New York",
+        "date": "2026-03-03"
+      }
+    }
+  },
+  {
+    "user": "I need a new laptop under $800 with at least 16GB RAM",
+    "assistant_output": {
+      "rewritten_query": "search laptops priced under $800 with minimum 16GB RAM",
+      "intent": "product_search",
+      "entities": {
+        "category": "laptop",
+        "price_max": "800",
+        "ram_min": "16GB"
+      }
+    }
+  },
+  {
+    "user": "Book a table for two at an Italian restaurant in Chicago tonight at 7pm",
+    "assistant_output": {
+      "rewritten_query": "reserve table for 2 at Italian restaurant in Chicago tonight 19:00",
+      "intent": "restaurant_reservation",
+      "entities": {
+        "party_size": "2",
+        "cuisine": "Italian",
+        "city": "Chicago",
+        "date": "2026-03-02",
+        "time": "19:00"
+      }
+    }
+  },
+  {
+    "user": "What movies are playing near me this weekend?",
+    "assistant_output": {
+      "rewritten_query": "list movies showing near my location this weekend",
+      "intent": "movie_showtimes",
+      "entities": {
+        "location": "current",
+        "date_range": "2026-03-02 to 2026-03-03"
+      }
+    }
+  },
+  {
+    "user": "Give me the latest headlines about the stock market",
+    "assistant_output": {
+      "rewritten_query": "latest news headlines about stock market",
+      "intent": "news_headlines",
+      "entities": {
+        "topic": "stock market",
+        "recency": "latest"
+      }
+    }
+  },
+  {
+    "user": "What is the current price of Apple stock?",
+    "assistant_output": {
+      "rewritten_query": "current price of AAPL stock",
+      "intent": "stock_price",
+      "entities": {
+        "ticker": "AAPL"
+      }
+    }
+  },
+  {
+    "user": "My printer is not connecting to Wi‑Fi, how can I fix it?",
+    "assistant_output": {
+      "rewritten_query": "troubleshoot printer Wi‑Fi connection issue",
+      "intent": "technical_support",
+      "entities": {
+        "device": "printer",
+        "issue": "Wi‑Fi connection"
+      }
+    }
+  },
+  {
+    "user": "Add a meeting with Sarah on Thursday at 3pm to my calendar",
+    "assistant_output": {
+      "rewritten_query": "create calendar event meeting with Sarah on Thursday 15:00",
+      "intent": "calendar_event",
+      "entities": {
+        "title": "Meeting with Sarah",
+        "date": "2026-03-05",
+        "time": "15:00"
+      }
+    }
+  },
+  {
+    "user": "Remind me to take my medication at 8am tomorrow",
+    "assistant_output": {
+      "rewritten_query": "set reminder to take medication at 08:00 on 2026-03-03",
+      "intent": "reminder",
+      "entities": {
+        "action": "take medication",
+        "date": "2026-03-03",
+        "time": "08:00"
+      }
+    }
+  },
+  {
+    "user": "Translate 'Good morning' to French",
+    "assistant_output": {
+      "rewritten_query": "translate phrase 'Good morning' to French",
+      "intent": "translation",
+      "entities": {
+        "source_text": "Good morning",
+        "target_language": "French"
+      }
+    }
+  },
+  {
+    "user": "Convert 150 miles to kilometers",
+    "assistant_output": {
+      "rewritten_query": "convert 150 miles to kilometers",
+      "intent": "unit_conversion",
+      "entities": {
+        "value": "150",
+        "from_unit": "miles",
+        "to_unit": "kilometers"
+      }
+    }
+  },
+  {
+    "user": "Plan a 5‑day itinerary for a trip to Barcelona with museum visits",
+    "assistant_output": {
+      "rewritten_query": "create 5‑day travel itinerary for Barcelona focusing on museums",
+      "intent": "travel_itinerary",
+      "entities": {
+        "destination": "Barcelona",
+        "duration_days": "5",
+        "interest": "museums"
+      }
+    }
+  },
+  {
+    "user": "Show me software engineering jobs in Seattle paying over $120k",
+    "assistant_output": {
+      "rewritten_query": "search software engineering jobs in Seattle with salary > $120000",
+      "intent": "job_search",
+      "entities": {
+        "role": "software engineer",
+        "location": "Seattle",
+        "salary_min": "120000"
+      }
+    }
+  },
+  {
+    "user": "Create a 30‑minute HIIT workout for beginners",
+    "assistant_output": {
+      "rewritten_query": "generate 30‑minute beginner HIIT workout plan",
+      "intent": "fitness_plan",
+      "entities": {
+        "duration": "30 minutes",
+        "type": "HIIT",
+        "level": "beginner"
+      }
+    }
+  },
+  {
+    "user": "Recommend some relaxing jazz playlists",
+    "assistant_output": {
+      "rewritten_query": "suggest relaxing jazz playlists",
+      "intent": "music_recommendation",
+      "entities": {
+        "genre": "jazz",
+        "mood": "relaxing"
+      }
+    }
+  },
+  {
+    "user": "Summarize the plot of 'Pride and Prejudice'",
+    "assistant_output": {
+      "rewritten_query": "provide summary of plot for Pride and Prejudice",
+      "intent": "book_summary",
+      "entities": {
+        "title": "Pride and Prejudice"
+      }
+    }
+  },
+  {
+    "user": "Give me a recipe for vegan chocolate cake",
+    "assistant_output": {
+      "rewritten_query": "vegan chocolate cake recipe",
+      "intent": "recipe_suggestion",
+      "entities": {
+        "diet": "vegan",
+        "dish": "chocolate cake"
+      }
+    }
+  },
+  {
+    "user": "What’s the traffic like on I‑95 heading north from Boston right now?",
+    "assistant_output": {
+      "rewritten_query": "current traffic conditions on I‑95 northbound from Boston",
+      "intent": "traffic_update",
+      "entities": {
+        "highway": "I‑95",
+        "direction": "north",
+        "origin": "Boston"
+      }
+    }
+  },
+  {
+    "user": "Find a 4‑star hotel in Paris with free Wi‑Fi for 3 nights starting March 10",
+    "assistant_output": {
+      "rewritten_query": "search 4‑star hotels in Paris with free Wi‑Fi for 3 nights from 2026-03-10",
+      "intent": "hotel_booking",
+      "entities": {
+        "city": "Paris",
+        "star_rating": "4",
+        "amenities": "free Wi‑Fi",
+        "checkin": "2026-03-10",
+        "nights": "3"
+      }
+    }
+  },
+  {
+    "user": "Check the status of flight AA123 today",
+    "assistant_output": {
+      "rewritten_query": "flight status for AA123 on 2026-03-02",
+      "intent": "flight_status",
+      "entities": {
+        "airline": "American Airlines",
+        "flight_number": "AA123",
+        "date": "2026-03-02"
+      }
+    }
+  },
+  {
+    "user": "Convert 250 euros to US dollars",
+    "assistant_output": {
+      "rewritten_query": "convert 250 EUR to USD",
+      "intent": "currency_conversion",
+      "entities": {
+        "amount": "250",
+        "from_currency": "EUR",
+        "to_currency": "USD"
+      }
+    }
+  },
+  {
+    "user": "Buy tickets for the concert of The Rolling Stones next Friday",
+    "assistant_output": {
+      "rewritten_query": "purchase tickets for The Rolling Stones concert on 2026-03-05",
+      "intent": "event_ticket",
+      "entities": {
+        "artist": "The Rolling Stones",
+        "date": "2026-03-05"
+      }
+    }
+  },
+  {
+    "user": "What was the final score of the Lakers game last night?",
+    "assistant_output": {
+      "rewritten_query": "final score of Los Angeles Lakers game on 2026-03-01",
+      "intent": "sports_score",
+      "entities": {
+        "team": "Los Angeles Lakers",
+        "date": "2026-03-01"
+      }
+    }
+  },
+  {
+    "user": "Draft an email to my boss asking for a day off next week",
+    "assistant_output": {
+      "rewritten_query": "compose email requesting a day off next week to boss",
+      "intent": "email_draft",
+      "entities": {
+        "recipient": "boss",
+        "request": "day off",
+        "timeframe": "next week"
+      }
+    }
+  },
+  {
+    "user": "Find cheap flights to Tokyo next month.",
+    "assistant_output": {
+      "original_query": "Find cheap flights to Tokyo next month.",
+      "rewritten_query": "cheap flights to Tokyo in the next month sorted by lowest price"
+    }
+  },
+  {
+    "user": "Show me recipes with chicken and broccoli.",
+    "assistant_output": {
+      "original_query": "Show me recipes with chicken and broccoli.",
+      "rewritten_query": "chicken and broccoli recipes"
+    }
+  },
+  {
+    "user": "What's the weather like in Paris tomorrow?",
+    "assistant_output": {
+      "original_query": "What's the weather like in Paris tomorrow?",
+      "rewritten_query": "Paris weather forecast for tomorrow"
+    }
+  },
+  {
+    "user": "Locate nearby coffee shops open now.",
+    "assistant_output": {
+      "original_query": "Locate nearby coffee shops open now.",
+      "rewritten_query": "coffee shops near me open now"
+    }
+  },
+  {
+    "user": "How to fix a leaking faucet?",
+    "assistant_output": {
+      "original_query": "How to fix a leaking faucet?",
+      "rewritten_query": "step by step guide to repair a leaking faucet"
+    }
+  },
+  {
+    "user": "Best laptops under $1000 for gaming.",
+    "assistant_output": {
+      "original_query": "Best laptops under $1000 for gaming.",
+      "rewritten_query": "gaming laptops under $1000 best performance"
+    }
+  },
+  {
+    "user": "Upcoming concerts in New York this weekend.",
+    "assistant_output": {
+      "original_query": "Upcoming concerts in New York this weekend.",
+      "rewritten_query": "New York concerts this weekend"
+    }
+  },
+  {
+    "user": "Translate 'good morning' to Spanish.",
+    "assistant_output": {
+      "original_query": "Translate 'good morning' to Spanish.",
+      "rewritten_query": "Spanish translation of 'good morning'"
+    }
+  },
+  {
+    "user": "Explain quantum entanglement in simple terms.",
+    "assistant_output": {
+      "original_query": "Explain quantum entanglement in simple terms.",
+      "rewritten_query": "simple explanation of quantum entanglement"
+    }
+  },
+  {
+    "user": "Find PDF versions of 'Pride and Prejudice'.",
+    "assistant_output": {
+      "original_query": "Find PDF versions of 'Pride and Prejudice'.",
+      "rewritten_query": "Pride and Prejudice PDF download"
+    }
+  },
+  {
+    "user": "What are the side effects of ibuprofen?",
+    "assistant_output": {
+      "original_query": "What are the side effects of ibuprofen?",
+      "rewritten_query": "ibuprofen side effects list"
+    }
+  },
+  {
+    "user": "How many calories are in a banana?",
+    "assistant_output": {
+      "original_query": "How many calories are in a banana?",
+      "rewritten_query": "calorie count of a banana"
+    }
+  },
+  {
+    "user": "Schedule a meeting with John next Tuesday at 3pm.",
+    "assistant_output": {
+      "original_query": "Schedule a meeting with John next Tuesday at 3pm.",
+      "rewritten_query": "create calendar event meeting with John Tuesday 3pm"
+    }
+  },
+  {
+    "user": "Show me the latest iPhone reviews.",
+    "assistant_output": {
+      "original_query": "Show me the latest iPhone reviews.",
+      "rewritten_query": "latest iPhone reviews 2024"
+    }
+  },
+  {
+    "user": "Find me a vegan restaurant in San Francisco.",
+    "assistant_output": {
+      "original_query": "Find me a vegan restaurant in San Francisco.",
+      "rewritten_query": "vegan restaurants San Francisco"
+    }
+  },
+  {
+    "user": "How to change a tire on a car?",
+    "assistant_output": {
+      "original_query": "How to change a tire on a car?",
+      "rewritten_query": "step by step guide to change a car tire"
+    }
+  },
+  {
+    "user": "What is the stock price of Tesla today?",
+    "assistant_output": {
+      "original_query": "What is the stock price of Tesla today?",
+      "rewritten_query": "Tesla stock price today"
+    }
+  },
+  {
+    "user": "List the top 10 tourist attractions in Rome.",
+    "assistant_output": {
+      "original_query": "List the top 10 tourist attractions in Rome.",
+      "rewritten_query": "top 10 tourist attractions Rome"
+    }
+  },
+  {
+    "user": "Convert 150 miles to kilometers.",
+    "assistant_output": {
+      "original_query": "Convert 150 miles to kilometers.",
+      "rewritten_query": "150 miles in kilometers"
+    }
+  },
+  {
+    "user": "What movies are playing near me?",
+    "assistant_output": {
+      "original_query": "What movies are playing near me?",
+      "rewritten_query": "current movie showtimes near me"
+    }
+  },
+  {
+    "user": "How to write a professional resignation letter?",
+    "assistant_output": {
+      "original_query": "How to write a professional resignation letter?",
+      "rewritten_query": "professional resignation letter template"
+    }
+  },
+  {
+    "user": "Find the definition of 'serendipity'.",
+    "assistant_output": {
+      "original_query": "Find the definition of 'serendipity'.",
+      "rewritten_query": "definition of serendipity"
+    }
+  }
+]

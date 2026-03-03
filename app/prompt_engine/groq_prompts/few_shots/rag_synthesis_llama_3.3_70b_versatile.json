@@ -1,0 +1,752 @@
+[
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "confidence": 0.95
+  },
+  {
+    "question": "Who wrote 'To Kill a Mockingbird'?",
+    "answer": "Nelle Harper Lee",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "confidence": 0.99
+  },
+  {
+    "question": "When did the Titanic sink?",
+    "answer": "April 15, 1912",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the chemical symbol for water?",
+    "answer": "H2O",
+    "confidence": 0.99
+  },
+  {
+    "question": "Who is the current President of the United States?",
+    "answer": "Joe Biden",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "answer": "Japanese Yen",
+    "confidence": 0.96
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the administrative and political capital of India?",
+    "answer": "New Delhi",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the largest lake in the world by surface area?",
+    "answer": "Caspian Sea",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the first President of the United States?",
+    "answer": "George Washington",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the river that flows through the Grand Canyon?",
+    "answer": "Colorado River",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the author of '1984'?",
+    "answer": "George Orwell",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the first man to walk on the moon?",
+    "answer": "Neil Armstrong",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the current Pope?",
+    "answer": "Pope Francis",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest ocean on Earth?",
+    "answer": "Pacific Ocean",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the company that developed the iPhone?",
+    "answer": "Apple Inc.",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the longest river in the world?",
+    "answer": "Nile River",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the name of the current Prime Minister of the United Kingdom?",
+    "answer": "Rishi Sunak",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest country in the world by area?",
+    "answer": "Russia",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the smallest country in the world by area?",
+    "answer": "Vatican City",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest country by population?",
+    "answer": "India",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the currency used in China?",
+    "answer": "Chinese Yuan",
+    "confidence": 0.96
+  },
+  {
+    "question": "What is the name of the largest city in the world by population?",
+    "answer": "Tokyo",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the author of 'Pride and Prejudice'?",
+    "answer": "Jane Austen",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the current Prime Minister of Canada?",
+    "answer": "Justin Trudeau",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest desert in the world?",
+    "answer": "Antarctic Desert",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the river that flows through the city of Paris?",
+    "answer": "Seine River",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "confidence": 0.95
+  },
+  {
+    "question": "Who wrote 'To Kill a Mockingbird'?",
+    "answer": "Nelle Harper Lee",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "confidence": 0.99
+  },
+  {
+    "question": "When did the Titanic sink?",
+    "answer": "April 15, 1912",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the chemical symbol for water?",
+    "answer": "H2O",
+    "confidence": 0.99
+  },
+  {
+    "question": "Who is the current President of the United States?",
+    "answer": "Joe Biden",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "answer": "Japanese Yen",
+    "confidence": 0.96
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the administrative and political capital of India?",
+    "answer": "New Delhi",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the largest lake in the world by surface area?",
+    "answer": "Caspian Sea",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the first President of the United States?",
+    "answer": "George Washington",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the river that flows through the Grand Canyon?",
+    "answer": "Colorado River",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the author of '1984'?",
+    "answer": "George Orwell",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the first man to walk on the moon?",
+    "answer": "Neil Armstrong",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the current Pope?",
+    "answer": "Pope Francis",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest ocean on Earth?",
+    "answer": "Pacific Ocean",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the company that developed the iPhone?",
+    "answer": "Apple Inc.",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the longest river in the world?",
+    "answer": "Nile River",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the name of the current Prime Minister of the United Kingdom?",
+    "answer": "Rishi Sunak",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest country in the world by area?",
+    "answer": "Russia",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the smallest country in the world by area?",
+    "answer": "Vatican City",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest country by population?",
+    "answer": "India",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the currency used in China?",
+    "answer": "Chinese Yuan",
+    "confidence": 0.96
+  },
+  {
+    "question": "What is the name of the largest city in the world by population?",
+    "answer": "Tokyo",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the author of 'Pride and Prejudice'?",
+    "answer": "Jane Austen",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the current Prime Minister of Canada?",
+    "answer": "Justin Trudeau",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest desert in the world?",
+    "answer": "Antarctic Desert",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the river that flows through the city of Paris?",
+    "answer": "Seine River",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "confidence": 0.95
+  },
+  {
+    "question": "Who wrote 'To Kill a Mockingbird'?",
+    "answer": "Nelle Harper Lee",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "confidence": 0.99
+  },
+  {
+    "question": "When did the Titanic sink?",
+    "answer": "April 15, 1912",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the chemical symbol for water?",
+    "answer": "H2O",
+    "confidence": 0.99
+  },
+  {
+    "question": "Who is the current President of the United States?",
+    "answer": "Joe Biden",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "answer": "Japanese Yen",
+    "confidence": 0.96
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the administrative and political capital of India?",
+    "answer": "New Delhi",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the largest lake in the world by surface area?",
+    "answer": "Caspian Sea",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the first President of the United States?",
+    "answer": "George Washington",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the river that flows through the Grand Canyon?",
+    "answer": "Colorado River",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the author of '1984'?",
+    "answer": "George Orwell",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the first man to walk on the moon?",
+    "answer": "Neil Armstrong",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the current Pope?",
+    "answer": "Pope Francis",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest ocean on Earth?",
+    "answer": "Pacific Ocean",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the company that developed the iPhone?",
+    "answer": "Apple Inc.",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the longest river in the world?",
+    "answer": "Nile River",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the name of the first Prime Minister of India?",
+    "answer": "Jawaharlal Nehru",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the current Prime Minister of India?",
+    "answer": "Narendra Modi",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest city in India?",
+    "answer": "Mumbai",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the largest city in the world by population?",
+    "answer": "Tokyo",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest desert in the world?",
+    "answer": "Antarctic Desert",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the largest country by land area?",
+    "answer": "Russia",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the smallest country in the world?",
+    "answer": "Vatican City",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "confidence": 0.95
+  },
+  {
+    "question": "Who wrote 'To Kill a Mockingbird'?",
+    "answer": "Nelle Harper Lee",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "confidence": 0.99
+  },
+  {
+    "question": "When did the Titanic sink?",
+    "answer": "April 15, 1912",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the chemical symbol for water?",
+    "answer": "H2O",
+    "confidence": 0.99
+  },
+  {
+    "question": "Who is the current President of the United States?",
+    "answer": "Joe Biden",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the highest mountain in the world?",
+    "answer": "Mount Everest",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "answer": "Japanese Yen",
+    "confidence": 0.96
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the administrative and political capital of India?",
+    "answer": "New Delhi",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the largest lake in the world by surface area?",
+    "answer": "Caspian Sea",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the name of the first President of the United States?",
+    "answer": "George Washington",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the river that flows through the Grand Canyon?",
+    "answer": "Colorado River",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the author of '1984'?",
+    "answer": "George Orwell",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the first man to walk on the moon?",
+    "answer": "Neil Armstrong",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the current Pope?",
+    "answer": "Pope Francis",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest ocean on Earth?",
+    "answer": "Pacific Ocean",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the company that developed the iPhone?",
+    "answer": "Apple Inc.",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the longest river in the world?",
+    "answer": "Nile River",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the name of the current Prime Minister of the United Kingdom?",
+    "answer": "Rishi Sunak",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest country in the world by area?",
+    "answer": "Russia",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the smallest country in the world by area?",
+    "answer": "Vatican City",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest country by population?",
+    "answer": "China",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the name of the currency of China?",
+    "answer": "Chinese Yuan",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the name of the largest city in the world by population?",
+    "answer": "Tokyo",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the name of the largest city in the United States by population?",
+    "answer": "New York City",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the name of the largest desert in the world?",
+    "answer": "Antarctic Desert",
+    "confidence": 0.9
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "confidence": 0.95
+  },
+  {
+    "question": "Who wrote 'To Kill a Mockingbird'?",
+    "answer": "Nelle Harper Lee",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "confidence": 0.99
+  },
+  {
+    "question": "When did the Titanic sink?",
+    "answer": "April 15, 1912",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the chemical symbol for water?",
+    "answer": "H2O",
+    "confidence": 1.0
+  },
+  {
+    "question": "Who is the current President of the United States?",
+    "answer": "Joe Biden",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the administrative and political capital of India?",
+    "answer": "New Delhi",
+    "confidence": 0.98
+  },
+  {
+    "question": "Which river is considered the holiest in Hinduism?",
+    "answer": "Ganges",
+    "confidence": 0.99
+  },
+  {
+    "question": "What is the tallest mountain in the world?",
+    "answer": "Mount Everest",
+    "confidence": 1.0
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "answer": "Leonardo da Vinci",
+    "confidence": 0.98
+  },
+  {
+    "question": "What year did India gain independence from British rule?",
+    "answer": "1947",
+    "confidence": 1.0
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "answer": "Japanese Yen",
+    "confidence": 0.97
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "answer": "Mars",
+    "confidence": 0.99
+  },
+  {
+    "question": "Who wrote 'The God of Small Things'?",
+    "answer": "Arundhati Roy",
+    "confidence": 0.96
+  },
+  {
+    "question": "What is the largest ocean on Earth?",
+    "answer": "Pacific Ocean",
+    "confidence": 1.0
+  },
+  {
+    "question": "What is the administrative and political capital of China?",
+    "answer": "Beijing",
+    "confidence": 0.98
+  },
+  {
+    "question": "Who is the founder of Microsoft?",
+    "answer": "Bill Gates and Paul Allen",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the currency of India?",
+    "answer": "Indian Rupee",
+    "confidence": 1.0
+  },
+  {
+    "question": "What is the capital of Australia?",
+    "answer": "Canberra",
+    "confidence": 0.95
+  },
+  {
+    "question": "Which country is known as the Land of the Swiss?",
+    "answer": "Switzerland",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the currency of the United Kingdom?",
+    "answer": "British Pound Sterling",
+    "confidence": 0.97
+  },
+  {
+    "question": "Who is the current Prime Minister of India?",
+    "answer": "Narendra Modi",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the largest country by area in the world?",
+    "answer": "Russia",
+    "confidence": 1.0
+  },
+  {
+    "question": "What is the currency of China?",
+    "answer": "Chinese Yuan",
+    "confidence": 0.98
+  },
+  {
+    "question": "Who wrote 'The Guide'?",
+    "answer": "R.K. Narayan",
+    "confidence": 0.93
+  },
+  {
+    "question": "What is the administrative and political capital of South Korea?",
+    "answer": "Seoul",
+    "confidence": 0.97
+  },
+  {
+    "question": "What is the currency of Brazil?",
+    "answer": "Brazilian Real",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "confidence": 1.0
+  },
+  {
+    "question": "Who wrote the Declaration of Independence?",
+    "answer": "Thomas Jefferson, with input from John Adams, Benjamin Franklin, and others",
+    "confidence": 0.95
+  },
+  {
+    "question": "What is the largest planet in our solar system?",
+    "answer": "Jupiter",
+    "confidence": 1.0
+  },
+  {
+    "question": "When did the Titanic sink?",
+    "answer": "April 15, 1912",
+    "confidence": 1.0
+  },
+  {
+    "question": "What is the administrative and political capital of India?",
+    "answer": "New Delhi",
+    "confidence": 1.0
+  },
+  {
+    "question": "Who is known as the Father of the Indian Constitution?",
+    "answer": "Dr. B.R. Ambedkar",
+    "confidence": 0.98
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "answer": "Japanese Yen (JPY)",
+    "confidence": 1.0
+  },
+  {
+    "question": "Which river is considered the holiest in Hinduism?",
+    "answer": "Ganges (Ganga)",
+    "confidence": 1.0
+  },
+  {
+    "question": "What year did India gain independence from British rule?",
+    "answer": "1947",
+    "confidence": 1.0
+  },
+  {
+    "question": "Who was the first Prime Minister of India?",
+    "answer": "Jawaharlal Nehru",
+    "confidence": 1.0
+  },
+  {
+    "question": "What is the national animal of India?",
+    "answer": "Bengal Tiger",
+    "confidence": 1.0
+  },
+  {
+    "question": "Which festival is known as the Festival of Lights in India?",
+    "answer": "Diwali",
+    "confidence": 1.0
+  }
+]

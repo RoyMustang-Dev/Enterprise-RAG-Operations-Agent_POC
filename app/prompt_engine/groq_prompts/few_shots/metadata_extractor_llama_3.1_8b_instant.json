@@ -1,0 +1,2527 @@
+[
+  {
+    "user": "John Doe",
+    "assistant_output": {
+      "name": "John Doe",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Invoice"
+    }
+  },
+  {
+    "user": "Jane Smith",
+    "assistant_output": {
+      "name": "Jane Smith",
+      "date": "2022-02-15",
+      "department": "Marketing",
+      "doc_type": "Report"
+    }
+  },
+  {
+    "user": "Bob Johnson",
+    "assistant_output": {
+      "name": "Bob Johnson",
+      "date": "2022-03-20",
+      "department": "HR",
+      "doc_type": "Policy"
+    }
+  },
+  {
+    "user": "Alice Williams",
+    "assistant_output": {
+      "name": "Alice Williams",
+      "date": "2022-04-05",
+      "department": "Finance",
+      "doc_type": "Budget"
+    }
+  },
+  {
+    "user": "Mike Davis",
+    "assistant_output": {
+      "name": "Mike Davis",
+      "date": "2022-05-10",
+      "department": "IT",
+      "doc_type": "Ticket"
+    }
+  },
+  {
+    "user": "Emma Taylor",
+    "assistant_output": {
+      "name": "Emma Taylor",
+      "date": "2022-06-15",
+      "department": "Operations",
+      "doc_type": "Meeting Notes"
+    }
+  },
+  {
+    "user": "David Lee",
+    "assistant_output": {
+      "name": "David Lee",
+      "date": "2022-07-20",
+      "department": "Customer Service",
+      "doc_type": "Complaint"
+    }
+  },
+  {
+    "user": "Sophia Brown",
+    "assistant_output": {
+      "name": "Sophia Brown",
+      "date": "2022-08-05",
+      "department": "Supply Chain",
+      "doc_type": "Order"
+    }
+  },
+  {
+    "user": "Oliver Martin",
+    "assistant_output": {
+      "name": "Oliver Martin",
+      "date": "2022-09-10",
+      "department": "Research and Development",
+      "doc_type": "Prototype"
+    }
+  },
+  {
+    "user": "Ava White",
+    "assistant_output": {
+      "name": "Ava White",
+      "date": "2022-10-15",
+      "department": "Product Management",
+      "doc_type": "Product Launch"
+    }
+  },
+  {
+    "user": "Liam Hall",
+    "assistant_output": {
+      "name": "Liam Hall",
+      "date": "2022-11-20",
+      "department": "Sales Engineering",
+      "doc_type": "Demo"
+    }
+  },
+  {
+    "user": "Isabella Patel",
+    "assistant_output": {
+      "name": "Isabella Patel",
+      "date": "2022-12-05",
+      "department": "Business Development",
+      "doc_type": "Partnership"
+    }
+  },
+  {
+    "user": "Noah Brooks",
+    "assistant_output": {
+      "name": "Noah Brooks",
+      "date": "2023-01-10",
+      "department": "Strategy",
+      "doc_type": "Roadmap"
+    }
+  },
+  {
+    "user": "Mia Russell",
+    "assistant_output": {
+      "name": "Mia Russell",
+      "date": "2023-02-15",
+      "department": "Data Science",
+      "doc_type": "Analysis"
+    }
+  },
+  {
+    "user": "Elijah Walker",
+    "assistant_output": {
+      "name": "Elijah Walker",
+      "date": "2023-03-20",
+      "department": "Marketing Analytics",
+      "doc_type": "Campaign"
+    }
+  },
+  {
+    "user": "Harper Kim",
+    "assistant_output": {
+      "name": "Harper Kim",
+      "date": "2023-04-05",
+      "department": "Product Design",
+      "doc_type": "Wireframe"
+    }
+  },
+  {
+    "user": "Logan Harris",
+    "assistant_output": {
+      "name": "Logan Harris",
+      "date": "2023-05-10",
+      "department": "UX Research",
+      "doc_type": "User Study"
+    }
+  },
+  {
+    "user": "Charlotte Martin",
+    "assistant_output": {
+      "name": "Charlotte Martin",
+      "date": "2023-06-15",
+      "department": "Content Creation",
+      "doc_type": "Blog Post"
+    }
+  },
+  {
+    "user": "Alexander Lee",
+    "assistant_output": {
+      "name": "Alexander Lee",
+      "date": "2023-07-20",
+      "department": "Social Media",
+      "doc_type": "Post"
+    }
+  },
+  {
+    "user": "Amelia Davis",
+    "assistant_output": {
+      "name": "Amelia Davis",
+      "date": "2023-08-05",
+      "department": "Email Marketing",
+      "doc_type": "Campaign"
+    }
+  },
+  {
+    "user": "Benjamin Hall",
+    "assistant_output": {
+      "name": "Benjamin Hall",
+      "date": "2023-09-10",
+      "department": "Event Planning",
+      "doc_type": "Agenda"
+    }
+  },
+  {
+    "user": "Abigail White",
+    "assistant_output": {
+      "name": "Abigail White",
+      "date": "2023-10-15",
+      "department": "Graphic Design",
+      "doc_type": "Brochure"
+    }
+  },
+  {
+    "user": "Caleb Brooks",
+    "assistant_output": {
+      "name": "Caleb Brooks",
+      "date": "2023-11-20",
+      "department": "Video Production",
+      "doc_type": "Script"
+    }
+  },
+  {
+    "user": "Emily Russell",
+    "assistant_output": {
+      "name": "Emily Russell",
+      "date": "2023-12-05",
+      "department": "Photography",
+      "doc_type": "Shoot Plan"
+    }
+  },
+  {
+    "user": "Julian Walker",
+    "assistant_output": {
+      "name": "Julian Walker",
+      "date": "2024-01-10",
+      "department": "Audio Production",
+      "doc_type": "Mixing Notes"
+    }
+  },
+  {
+    "user": {
+      "name": "John Doe",
+      "query": "What are the sales figures for the marketing department in Q2 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-07-15",
+        "department": "Marketing",
+        "doc_type": "Report",
+        "extracted_info": {
+          "sales_figures": "$1.2M"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Jane Smith",
+      "query": "Can you provide the employee list for the IT department in 2021?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2021-12-31",
+        "department": "IT",
+        "doc_type": "List",
+        "extracted_info": {
+          "employees": [
+            "John Johnson",
+            "Jane Doe",
+            "Bob Brown"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Bob Brown",
+      "query": "What are the project deadlines for the sales team in Q3 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-09-15",
+        "department": "Sales",
+        "doc_type": "Calendar",
+        "extracted_info": {
+          "project_deadlines": [
+            "2022-09-01",
+            "2022-09-15",
+            "2022-10-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Alice Johnson",
+      "query": "Can you provide the budget allocation for the marketing department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "Marketing",
+        "doc_type": "Budget",
+        "extracted_info": {
+          "budget_allocation": "$500K"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Mike Davis",
+      "query": "What are the customer satisfaction ratings for the IT department in Q4 2021?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2021-12-31",
+        "department": "IT",
+        "doc_type": "Survey",
+        "extracted_info": {
+          "customer_satisfaction_ratings": "4.5/5"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Emily Chen",
+      "query": "Can you provide the employee handbook for the sales team?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "Sales",
+        "doc_type": "Handbook",
+        "extracted_info": {
+          "employee_handbook": "https://example.com/sales-handbook.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "David Lee",
+      "query": "What are the product launch dates for the marketing department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "Marketing",
+        "doc_type": "Calendar",
+        "extracted_info": {
+          "product_launch_dates": [
+            "2022-03-01",
+            "2022-06-15",
+            "2022-09-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Sarah Kim",
+      "query": "Can you provide the company policy for data protection?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "HR",
+        "doc_type": "Policy",
+        "extracted_info": {
+          "company_policy": "https://example.com/data-protection-policy.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Kevin White",
+      "query": "What are the sales targets for the IT department in Q1 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-15",
+        "department": "IT",
+        "doc_type": "Target",
+        "extracted_info": {
+          "sales_targets": "$200K"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Lisa Nguyen",
+      "query": "Can you provide the employee training schedule for the marketing department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "Marketing",
+        "doc_type": "Schedule",
+        "extracted_info": {
+          "employee_training_schedule": [
+            "2022-03-01",
+            "2022-06-15",
+            "2022-09-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "James Hall",
+      "query": "What are the customer service ratings for the sales team in Q2 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-07-15",
+        "department": "Sales",
+        "doc_type": "Survey",
+        "extracted_info": {
+          "customer_service_ratings": "4.5/5"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Hannah Martin",
+      "query": "Can you provide the company org chart?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "HR",
+        "doc_type": "Chart",
+        "extracted_info": {
+          "company_org_chart": "https://example.com/org-chart.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Oliver Brown",
+      "query": "What are the product development timelines for the IT department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "IT",
+        "doc_type": "Timeline",
+        "extracted_info": {
+          "product_development_timelines": [
+            "2022-03-01",
+            "2022-06-15",
+            "2022-09-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Ava Taylor",
+      "query": "Can you provide the employee performance reviews for the marketing department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "Marketing",
+        "doc_type": "Review",
+        "extracted_info": {
+          "employee_performance_reviews": [
+            "John Johnson",
+            "Jane Doe",
+            "Bob Brown"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Ethan Lee",
+      "query": "What are the sales performance metrics for the IT department in Q3 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-09-15",
+        "department": "IT",
+        "doc_type": "Metrics",
+        "extracted_info": {
+          "sales_performance_metrics": "$1.5M"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Mia Kim",
+      "query": "Can you provide the company benefits package?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "HR",
+        "doc_type": "Package",
+        "extracted_info": {
+          "company_benefits_package": "https://example.com/benefits-package.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Liam White",
+      "query": "What are the product launch plans for the marketing department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "Marketing",
+        "doc_type": "Plan",
+        "extracted_info": {
+          "product_launch_plans": [
+            "2022-03-01",
+            "2022-06-15",
+            "2022-09-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Charlotte Davis",
+      "query": "Can you provide the employee handbook for the IT department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "IT",
+        "doc_type": "Handbook",
+        "extracted_info": {
+          "employee_handbook": "https://example.com/it-handbook.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "William Hall",
+      "query": "What are the sales performance targets for the sales team in Q1 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-15",
+        "department": "Sales",
+        "doc_type": "Target",
+        "extracted_info": {
+          "sales_performance_targets": "$300K"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Sophia Martin",
+      "query": "Can you provide the company org chart for 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "HR",
+        "doc_type": "Chart",
+        "extracted_info": {
+          "company_org_chart": "https://example.com/2022-org-chart.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Alexander Brown",
+      "query": "What are the product development timelines for the marketing department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "Marketing",
+        "doc_type": "Timeline",
+        "extracted_info": {
+          "product_development_timelines": [
+            "2022-03-01",
+            "2022-06-15",
+            "2022-09-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Isabella White",
+      "query": "Can you provide the employee performance reviews for the IT department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "IT",
+        "doc_type": "Review",
+        "extracted_info": {
+          "employee_performance_reviews": [
+            "John Johnson",
+            "Jane Doe",
+            "Bob Brown"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Benjamin Lee",
+      "query": "What are the sales performance metrics for the marketing department in Q3 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-09-15",
+        "department": "Marketing",
+        "doc_type": "Metrics",
+        "extracted_info": {
+          "sales_performance_metrics": "$2M"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Gabriella Kim",
+      "query": "Can you provide the company benefits package for 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "HR",
+        "doc_type": "Package",
+        "extracted_info": {
+          "company_benefits_package": "https://example.com/2022-benefits-package.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Michael Davis",
+      "query": "What are the product launch plans for the IT department in 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-06-30",
+        "department": "IT",
+        "doc_type": "Plan",
+        "extracted_info": {
+          "product_launch_plans": [
+            "2022-03-01",
+            "2022-06-15",
+            "2022-09-01"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Jessica Martin",
+      "query": "Can you provide the employee handbook for the sales team?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01",
+        "department": "Sales",
+        "doc_type": "Handbook",
+        "extracted_info": {
+          "employee_handbook": "https://example.com/sales-handbook.pdf"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "name": "Oliver Brown",
+      "query": "What are the sales performance targets for the marketing department in Q1 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-15",
+        "department": "Marketing",
+        "doc_type": "Target",
+        "extracted_info": {
+          "sales_performance_targets": "$400K"
+        }
+      }
+    }
+  },
+  {
+    "user": {
+      "query": "Find all employees in the sales department who were hired in 2018.",
+      "name": "John Doe",
+      "date": "2023-02-20"
+    },
+    "assistant_output": {
+      "employee_id": 123,
+      "department": "Sales",
+      "hire_date": "2018-01-01",
+      "name": "Jane Smith"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all documents of type 'contract' from the last 6 months.",
+      "name": "Jane Doe",
+      "date": "2023-02-15"
+    },
+    "assistant_output": {
+      "document_id": 456,
+      "type": "Contract",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "List all employees in the marketing department who were hired before 2015.",
+      "name": "Bob Smith",
+      "date": "2023-02-22"
+    },
+    "assistant_output": {
+      "employee_id": 789,
+      "department": "Marketing",
+      "hire_date": "2010-01-01",
+      "name": "Alice Johnson"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all documents of type 'invoice' from the last year.",
+      "name": "Mike Brown",
+      "date": "2023-02-18"
+    },
+    "assistant_output": {
+      "document_id": 101,
+      "type": "Invoice",
+      "date": "2022-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all employees in the IT department who were hired in 2019.",
+      "name": "Emily Davis",
+      "date": "2023-02-25"
+    },
+    "assistant_output": {
+      "employee_id": 234,
+      "department": "IT",
+      "hire_date": "2019-01-01",
+      "name": "David Lee"
+    }
+  },
+  {
+    "user": {
+      "query": "List all documents of type 'report' from the last 3 months.",
+      "name": "Sarah Taylor",
+      "date": "2023-02-12"
+    },
+    "assistant_output": {
+      "document_id": 345,
+      "type": "Report",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all employees in the finance department who were hired after 2020.",
+      "name": "Kevin White",
+      "date": "2023-02-28"
+    },
+    "assistant_output": {
+      "employee_id": 678,
+      "department": "Finance",
+      "hire_date": "2021-01-01",
+      "name": "Olivia Martin"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all documents of type 'memo' from the last 2 months.",
+      "name": "Jessica Nguyen",
+      "date": "2023-02-05"
+    },
+    "assistant_output": {
+      "document_id": 456,
+      "type": "Memo",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "List all employees in the HR department who were hired in 2016.",
+      "name": "Matthew Kim",
+      "date": "2023-02-19"
+    },
+    "assistant_output": {
+      "employee_id": 789,
+      "department": "HR",
+      "hire_date": "2016-01-01",
+      "name": "Hannah Brooks"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all documents of type 'proposal' from the last year.",
+      "name": "Amanda Hall",
+      "date": "2023-02-14"
+    },
+    "assistant_output": {
+      "document_id": 101,
+      "type": "Proposal",
+      "date": "2022-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all employees in the operations department who were hired after 2017.",
+      "name": "Lauren Price",
+      "date": "2023-02-21"
+    },
+    "assistant_output": {
+      "employee_id": 234,
+      "department": "Operations",
+      "hire_date": "2018-01-01",
+      "name": "Michael Hall"
+    }
+  },
+  {
+    "user": {
+      "query": "List all documents of type 'agreement' from the last 4 months.",
+      "name": "Rebecca Sanchez",
+      "date": "2023-02-16"
+    },
+    "assistant_output": {
+      "document_id": 345,
+      "type": "Agreement",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all employees in the research department who were hired in 2014.",
+      "name": "Daniel Lee",
+      "date": "2023-02-23"
+    },
+    "assistant_output": {
+      "employee_id": 678,
+      "department": "Research",
+      "hire_date": "2014-01-01",
+      "name": "Sophia Patel"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all documents of type 'statement' from the last 5 months.",
+      "name": "Isabella Brown",
+      "date": "2023-02-09"
+    },
+    "assistant_output": {
+      "document_id": 456,
+      "type": "Statement",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "List all employees in the development department who were hired after 2019.",
+      "name": "Ethan White",
+      "date": "2023-02-24"
+    },
+    "assistant_output": {
+      "employee_id": 789,
+      "department": "Development",
+      "hire_date": "2020-01-01",
+      "name": "Lily Chen"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all documents of type 'certificate' from the last year.",
+      "name": "Mia Hall",
+      "date": "2023-02-11"
+    },
+    "assistant_output": {
+      "document_id": 101,
+      "type": "Certificate",
+      "date": "2022-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all employees in the engineering department who were hired in 2015.",
+      "name": "Alexander Kim",
+      "date": "2023-02-26"
+    },
+    "assistant_output": {
+      "employee_id": 234,
+      "department": "Engineering",
+      "hire_date": "2015-01-01",
+      "name": "Ava Martin"
+    }
+  },
+  {
+    "user": {
+      "query": "List all documents of type 'letter' from the last 3 months.",
+      "name": "Julian Sanchez",
+      "date": "2023-02-17"
+    },
+    "assistant_output": {
+      "document_id": 345,
+      "type": "Letter",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all employees in the quality department who were hired after 2021.",
+      "name": "Gabriel Brown",
+      "date": "2023-02-10"
+    },
+    "assistant_output": {
+      "employee_id": 678,
+      "department": "Quality",
+      "hire_date": "2022-01-01",
+      "name": "Emily Chen"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all documents of type 'memo' from the last 2 months.",
+      "name": "Natalie Hall",
+      "date": "2023-02-06"
+    },
+    "assistant_output": {
+      "document_id": 456,
+      "type": "Memo",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "List all employees in the design department who were hired in 2017.",
+      "name": "Benjamin White",
+      "date": "2023-02-27"
+    },
+    "assistant_output": {
+      "employee_id": 789,
+      "department": "Design",
+      "hire_date": "2017-01-01",
+      "name": "Charlotte Brooks"
+    }
+  },
+  {
+    "user": {
+      "query": "Find all documents of type 'report' from the last year.",
+      "name": "Olivia Taylor",
+      "date": "2023-02-13"
+    },
+    "assistant_output": {
+      "document_id": 101,
+      "type": "Report",
+      "date": "2022-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "Get all employees in the customer service department who were hired after 2018.",
+      "name": "Hannah Lee",
+      "date": "2023-02-20"
+    },
+    "assistant_output": {
+      "employee_id": 234,
+      "department": "Customer Service",
+      "hire_date": "2019-01-01",
+      "name": "William Martin"
+    }
+  },
+  {
+    "user": {
+      "query": "List all documents of type 'agreement' from the last 4 months.",
+      "name": "Ava Brooks",
+      "date": "2023-02-07"
+    },
+    "assistant_output": {
+      "document_id": 345,
+      "type": "Agreement",
+      "date": "2023-01-01"
+    }
+  },
+  {
+    "user": {
+      "query": "What are the names of employees in the sales department?",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Sales",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "employee_id": "1234"
+        },
+        {
+          "name": "Jane Doe",
+          "employee_id": "5678"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the sales figures for Q1 2022?",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Sales Report"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Sales",
+        "doc_type": "Sales Report",
+        "date": "Q1 2022"
+      },
+      "results": [
+        {
+          "sales_figure": "$100,000",
+          "product": "Product A"
+        },
+        {
+          "sales_figure": "$80,000",
+          "product": "Product B"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team leaders in the marketing department?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Bob Smith",
+          "employee_id": "9012",
+          "role": "Team Leader"
+        },
+        {
+          "name": "Alice Johnson",
+          "employee_id": "3456",
+          "role": "Team Leader"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the customer demographics for the US market?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Customer Demographics"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Customer Demographics",
+        "market": "US"
+      },
+      "results": [
+        {
+          "age_range": "18-24",
+          "gender": "Female"
+        },
+        {
+          "age_range": "25-34",
+          "gender": "Male"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the product offerings for the enterprise plan?",
+      "date": "2022-01-01",
+      "department": "Product",
+      "doc_type": "Product Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Product",
+        "doc_type": "Product Info",
+        "plan": "Enterprise"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "feature": "Feature 1"
+        },
+        {
+          "product": "Product B",
+          "feature": "Feature 2"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the sales figures for the past quarter?",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Sales Report"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Sales",
+        "doc_type": "Sales Report",
+        "date": "Q4 2021"
+      },
+      "results": [
+        {
+          "sales_figure": "$150,000",
+          "product": "Product A"
+        },
+        {
+          "sales_figure": "$120,000",
+          "product": "Product B"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team members in the IT department?",
+      "date": "2022-01-01",
+      "department": "IT",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "IT",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Mike Brown",
+          "employee_id": "7890"
+        },
+        {
+          "name": "Emily Davis",
+          "employee_id": "2468"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the customer pain points for the US market?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Customer Pain Points"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Customer Pain Points",
+        "market": "US"
+      },
+      "results": [
+        {
+          "pain_point": "Difficulty with product setup"
+        },
+        {
+          "pain_point": "Limited product features"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the product roadmaps for the next quarter?",
+      "date": "2022-01-01",
+      "department": "Product",
+      "doc_type": "Product Roadmap"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Product",
+        "doc_type": "Product Roadmap",
+        "date": "Q1 2022"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "feature": "Feature 1"
+        },
+        {
+          "product": "Product B",
+          "feature": "Feature 2"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team leaders in the customer success department?",
+      "date": "2022-01-01",
+      "department": "Customer Success",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Customer Success",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Sarah Lee",
+          "employee_id": "1357",
+          "role": "Team Leader"
+        },
+        {
+          "name": "Kevin White",
+          "employee_id": "9021",
+          "role": "Team Leader"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the sales figures for the past year?",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Sales Report"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Sales",
+        "doc_type": "Sales Report",
+        "date": "2021"
+      },
+      "results": [
+        {
+          "sales_figure": "$500,000",
+          "product": "Product A"
+        },
+        {
+          "sales_figure": "$400,000",
+          "product": "Product B"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team members in the marketing department?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "David Kim",
+          "employee_id": "9012"
+        },
+        {
+          "name": "Lisa Nguyen",
+          "employee_id": "3456"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the customer demographics for the European market?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Customer Demographics"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Customer Demographics",
+        "market": "Europe"
+      },
+      "results": [
+        {
+          "age_range": "18-24",
+          "gender": "Female"
+        },
+        {
+          "age_range": "25-34",
+          "gender": "Male"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the product offerings for the basic plan?",
+      "date": "2022-01-01",
+      "department": "Product",
+      "doc_type": "Product Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Product",
+        "doc_type": "Product Info",
+        "plan": "Basic"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "feature": "Feature 1"
+        },
+        {
+          "product": "Product B",
+          "feature": "Feature 2"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team leaders in the IT department?",
+      "date": "2022-01-01",
+      "department": "IT",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "IT",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Tom Harris",
+          "employee_id": "9012",
+          "role": "Team Leader"
+        },
+        {
+          "name": "Rebecca Martin",
+          "employee_id": "3456",
+          "role": "Team Leader"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the customer pain points for the European market?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Customer Pain Points"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Customer Pain Points",
+        "market": "Europe"
+      },
+      "results": [
+        {
+          "pain_point": "Difficulty with product setup"
+        },
+        {
+          "pain_point": "Limited product features"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the product roadmaps for the next quarter?",
+      "date": "2022-01-01",
+      "department": "Product",
+      "doc_type": "Product Roadmap"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Product",
+        "doc_type": "Product Roadmap",
+        "date": "Q1 2022"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "feature": "Feature 1"
+        },
+        {
+          "product": "Product B",
+          "feature": "Feature 2"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team members in the customer success department?",
+      "date": "2022-01-01",
+      "department": "Customer Success",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Customer Success",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Jessica Hall",
+          "employee_id": "9012"
+        },
+        {
+          "name": "Michael Davis",
+          "employee_id": "3456"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the sales figures for the past half year?",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Sales Report"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Sales",
+        "doc_type": "Sales Report",
+        "date": "H1 2021"
+      },
+      "results": [
+        {
+          "sales_figure": "$200,000",
+          "product": "Product A"
+        },
+        {
+          "sales_figure": "$160,000",
+          "product": "Product B"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team leaders in the marketing department?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Emily Chen",
+          "employee_id": "9012",
+          "role": "Team Leader"
+        },
+        {
+          "name": "Kevin Lee",
+          "employee_id": "3456",
+          "role": "Team Leader"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the customer demographics for the Asian market?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Customer Demographics"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Customer Demographics",
+        "market": "Asia"
+      },
+      "results": [
+        {
+          "age_range": "18-24",
+          "gender": "Female"
+        },
+        {
+          "age_range": "25-34",
+          "gender": "Male"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the product offerings for the enterprise plan?",
+      "date": "2022-01-01",
+      "department": "Product",
+      "doc_type": "Product Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Product",
+        "doc_type": "Product Info",
+        "plan": "Enterprise"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "feature": "Feature 1"
+        },
+        {
+          "product": "Product B",
+          "feature": "Feature 2"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team members in the IT department?",
+      "date": "2022-01-01",
+      "department": "IT",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "IT",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Sarah Taylor",
+          "employee_id": "9012"
+        },
+        {
+          "name": "Michael Brown",
+          "employee_id": "3456"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the customer pain points for the Asian market?",
+      "date": "2022-01-01",
+      "department": "Marketing",
+      "doc_type": "Customer Pain Points"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Customer Pain Points",
+        "market": "Asia"
+      },
+      "results": [
+        {
+          "pain_point": "Difficulty with product setup"
+        },
+        {
+          "pain_point": "Limited product features"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "What are the product roadmaps for the next quarter?",
+      "date": "2022-01-01",
+      "department": "Product",
+      "doc_type": "Product Roadmap"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Product",
+        "doc_type": "Product Roadmap",
+        "date": "Q1 2022"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "feature": "Feature 1"
+        },
+        {
+          "product": "Product B",
+          "feature": "Feature 2"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "query": "Who are the team leaders in the customer success department?",
+      "date": "2022-01-01",
+      "department": "Customer Success",
+      "doc_type": "Employee Info"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Customer Success",
+        "doc_type": "Employee Info"
+      },
+      "results": [
+        {
+          "name": "Jessica Martin",
+          "employee_id": "9012",
+          "role": "Team Leader"
+        },
+        {
+          "name": "Kevin White",
+          "employee_id": "3456",
+          "role": "Team Leader"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "John Doe",
+      "query": "What were the top 5 sales for Q1 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-01-01/2022-03-31",
+        "department": "Sales",
+        "doc_type": "Report"
+      },
+      "results": [
+        {
+          "sale": 10000,
+          "region": "North America"
+        },
+        {
+          "sale": 8000,
+          "region": "Europe"
+        },
+        {
+          "sale": 6000,
+          "region": "Asia"
+        },
+        {
+          "sale": 5000,
+          "region": "South America"
+        },
+        {
+          "sale": 4000,
+          "region": "Africa"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Jane Smith",
+      "query": "Who are the top 3 employees in the marketing department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Employee List"
+      },
+      "results": [
+        {
+          "name": "Emily Johnson",
+          "position": "Marketing Manager"
+        },
+        {
+          "name": "Michael Brown",
+          "position": "Marketing Specialist"
+        },
+        {
+          "name": "Sarah Lee",
+          "position": "Marketing Coordinator"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Bob Johnson",
+      "query": "What were the top 5 products sold in Q2 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-04-01/2022-06-30",
+        "department": "Sales",
+        "doc_type": "Product Report"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "sales": 20000
+        },
+        {
+          "product": "Product B",
+          "sales": 15000
+        },
+        {
+          "product": "Product C",
+          "sales": 10000
+        },
+        {
+          "product": "Product D",
+          "sales": 8000
+        },
+        {
+          "product": "Product E",
+          "sales": 6000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Alice Williams",
+      "query": "What are the average salaries for employees in the IT department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "IT",
+        "doc_type": "Salary Report"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "salary": 80000
+        },
+        {
+          "name": "Jane Smith",
+          "salary": 70000
+        },
+        {
+          "name": "Bob Johnson",
+          "salary": 60000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Mike Davis",
+      "query": "What were the top 3 customer complaints in Q3 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-07-01/2022-09-30",
+        "department": "Customer Service",
+        "doc_type": "Complaint Report"
+      },
+      "results": [
+        {
+          "complaint": "Product defect",
+          "count": 10
+        },
+        {
+          "complaint": "Poor customer service",
+          "count": 8
+        },
+        {
+          "complaint": "Late delivery",
+          "count": 6
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Emily Chen",
+      "query": "What are the top 5 products in the electronics category?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "category": "Electronics",
+        "doc_type": "Product List"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "rating": 4.5
+        },
+        {
+          "product": "Product B",
+          "rating": 4.2
+        },
+        {
+          "product": "Product C",
+          "rating": 4.0
+        },
+        {
+          "product": "Product D",
+          "rating": 3.8
+        },
+        {
+          "product": "Product E",
+          "rating": 3.5
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "David Lee",
+      "query": "What were the top 3 sales regions in Q4 2022?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2022-10-01/2022-12-31",
+        "department": "Sales",
+        "doc_type": "Region Report"
+      },
+      "results": [
+        {
+          "region": "North America",
+          "sales": 100000
+        },
+        {
+          "region": "Europe",
+          "sales": 80000
+        },
+        {
+          "region": "Asia",
+          "sales": 60000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Sarah Taylor",
+      "query": "What are the average salaries for employees in the finance department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Finance",
+        "doc_type": "Salary Report"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "salary": 90000
+        },
+        {
+          "name": "Jane Smith",
+          "salary": 80000
+        },
+        {
+          "name": "Bob Johnson",
+          "salary": 70000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Kevin White",
+      "query": "What were the top 5 products sold in Q1 2023?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2023-01-01/2023-03-31",
+        "department": "Sales",
+        "doc_type": "Product Report"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "sales": 20000
+        },
+        {
+          "product": "Product B",
+          "sales": 15000
+        },
+        {
+          "product": "Product C",
+          "sales": 10000
+        },
+        {
+          "product": "Product D",
+          "sales": 8000
+        },
+        {
+          "product": "Product E",
+          "sales": 6000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Lisa Nguyen",
+      "query": "What are the top 3 customer complaints in Q2 2023?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2023-04-01/2023-06-30",
+        "department": "Customer Service",
+        "doc_type": "Complaint Report"
+      },
+      "results": [
+        {
+          "complaint": "Product defect",
+          "count": 10
+        },
+        {
+          "complaint": "Poor customer service",
+          "count": 8
+        },
+        {
+          "complaint": "Late delivery",
+          "count": 6
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Michael Hall",
+      "query": "What were the top 5 sales regions in Q3 2023?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2023-07-01/2023-09-30",
+        "department": "Sales",
+        "doc_type": "Region Report"
+      },
+      "results": [
+        {
+          "region": "North America",
+          "sales": 100000
+        },
+        {
+          "region": "Europe",
+          "sales": 80000
+        },
+        {
+          "region": "Asia",
+          "sales": 60000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Emily Patel",
+      "query": "What are the average salaries for employees in the HR department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "HR",
+        "doc_type": "Salary Report"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "salary": 70000
+        },
+        {
+          "name": "Jane Smith",
+          "salary": 60000
+        },
+        {
+          "name": "Bob Johnson",
+          "salary": 50000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "David Kim",
+      "query": "What were the top 3 products in the electronics category?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "category": "Electronics",
+        "doc_type": "Product List"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "rating": 4.5
+        },
+        {
+          "product": "Product B",
+          "rating": 4.2
+        },
+        {
+          "product": "Product C",
+          "rating": 4.0
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Sarah Brooks",
+      "query": "What are the top 5 sales for Q4 2023?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2023-10-01/2023-12-31",
+        "department": "Sales",
+        "doc_type": "Report"
+      },
+      "results": [
+        {
+          "sale": 10000,
+          "region": "North America"
+        },
+        {
+          "sale": 8000,
+          "region": "Europe"
+        },
+        {
+          "sale": 6000,
+          "region": "Asia"
+        },
+        {
+          "sale": 5000,
+          "region": "South America"
+        },
+        {
+          "sale": 4000,
+          "region": "Africa"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Kevin Martin",
+      "query": "What are the average salaries for employees in the marketing department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Marketing",
+        "doc_type": "Salary Report"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "salary": 80000
+        },
+        {
+          "name": "Jane Smith",
+          "salary": 70000
+        },
+        {
+          "name": "Bob Johnson",
+          "salary": 60000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Lisa Hall",
+      "query": "What were the top 3 customer complaints in Q1 2024?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2024-01-01/2024-03-31",
+        "department": "Customer Service",
+        "doc_type": "Complaint Report"
+      },
+      "results": [
+        {
+          "complaint": "Product defect",
+          "count": 10
+        },
+        {
+          "complaint": "Poor customer service",
+          "count": 8
+        },
+        {
+          "complaint": "Late delivery",
+          "count": 6
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Michael Davis",
+      "query": "What were the top 5 sales regions in Q2 2024?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2024-04-01/2024-06-30",
+        "department": "Sales",
+        "doc_type": "Region Report"
+      },
+      "results": [
+        {
+          "region": "North America",
+          "sales": 100000
+        },
+        {
+          "region": "Europe",
+          "sales": 80000
+        },
+        {
+          "region": "Asia",
+          "sales": 60000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Emily White",
+      "query": "What are the average salaries for employees in the finance department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "Finance",
+        "doc_type": "Salary Report"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "salary": 90000
+        },
+        {
+          "name": "Jane Smith",
+          "salary": 80000
+        },
+        {
+          "name": "Bob Johnson",
+          "salary": 70000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "David Brooks",
+      "query": "What were the top 3 products in the electronics category?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "category": "Electronics",
+        "doc_type": "Product List"
+      },
+      "results": [
+        {
+          "product": "Product A",
+          "rating": 4.5
+        },
+        {
+          "product": "Product B",
+          "rating": 4.2
+        },
+        {
+          "product": "Product C",
+          "rating": 4.0
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Sarah Kim",
+      "query": "What are the top 5 sales for Q3 2024?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2024-07-01/2024-09-30",
+        "department": "Sales",
+        "doc_type": "Report"
+      },
+      "results": [
+        {
+          "sale": 10000,
+          "region": "North America"
+        },
+        {
+          "sale": 8000,
+          "region": "Europe"
+        },
+        {
+          "sale": 6000,
+          "region": "Asia"
+        },
+        {
+          "sale": 5000,
+          "region": "South America"
+        },
+        {
+          "sale": 4000,
+          "region": "Africa"
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Kevin Martin",
+      "query": "What are the average salaries for employees in the HR department?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "department": "HR",
+        "doc_type": "Salary Report"
+      },
+      "results": [
+        {
+          "name": "John Doe",
+          "salary": 70000
+        },
+        {
+          "name": "Jane Smith",
+          "salary": 60000
+        },
+        {
+          "name": "Bob Johnson",
+          "salary": 50000
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Lisa Hall",
+      "query": "What were the top 3 customer complaints in Q4 2024?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2024-10-01/2024-12-31",
+        "department": "Customer Service",
+        "doc_type": "Complaint Report"
+      },
+      "results": [
+        {
+          "complaint": "Product defect",
+          "count": 10
+        },
+        {
+          "complaint": "Poor customer service",
+          "count": 8
+        },
+        {
+          "complaint": "Late delivery",
+          "count": 6
+        }
+      ]
+    }
+  },
+  {
+    "user": {
+      "name": "Michael Davis",
+      "query": "What were the top 5 sales regions in Q1 2025?"
+    },
+    "assistant_output": {
+      "metadata": {
+        "date": "2025-01-01/2025-03-31",
+        "department": "Sales",
+        "doc_type": "Region Report"
+      },
+      "results": [
+        {
+          "region": "North America",
+          "sales": 100000
+        },
+        {
+          "region": "Europe",
+          "sales": 80000
+        },
+        {
+          "region": "Asia",
+          "sales": 60000
+        }
+      ]
+    }
+  },
+  {
+    "user": "John Doe",
+    "assistant_output": {
+      "name": "John Doe",
+      "date": "2022-01-01",
+      "department": "Sales",
+      "doc_type": "Contract"
+    }
+  },
+  {
+    "user": "Jane Smith",
+    "assistant_output": {
+      "name": "Jane Smith",
+      "date": "2021-07-15",
+      "department": "Marketing",
+      "doc_type": "Report"
+    }
+  },
+  {
+    "user": "Bob Johnson",
+    "assistant_output": {
+      "name": "Bob Johnson",
+      "date": "2020-03-20",
+      "department": "HR",
+      "doc_type": "Policy"
+    }
+  },
+  {
+    "user": "Alice Williams",
+    "assistant_output": {
+      "name": "Alice Williams",
+      "date": "2019-11-05",
+      "department": "Finance",
+      "doc_type": "Budget"
+    }
+  },
+  {
+    "user": "Mike Brown",
+    "assistant_output": {
+      "name": "Mike Brown",
+      "date": "2018-09-01",
+      "department": "IT",
+      "doc_type": "Manual"
+    }
+  },
+  {
+    "user": "Emily Davis",
+    "assistant_output": {
+      "name": "Emily Davis",
+      "date": "2017-06-15",
+      "department": "Operations",
+      "doc_type": "Procedure"
+    }
+  },
+  {
+    "user": "David Lee",
+    "assistant_output": {
+      "name": "David Lee",
+      "date": "2016-04-20",
+      "department": "Customer Service",
+      "doc_type": "FAQ"
+    }
+  },
+  {
+    "user": "Sarah Taylor",
+    "assistant_output": {
+      "name": "Sarah Taylor",
+      "date": "2015-02-01",
+      "department": "Research and Development",
+      "doc_type": "Whitepaper"
+    }
+  },
+  {
+    "user": "Kevin White",
+    "assistant_output": {
+      "name": "Kevin White",
+      "date": "2014-10-15",
+      "department": "Quality Assurance",
+      "doc_type": "Test Plan"
+    }
+  },
+  {
+    "user": "Laura Martin",
+    "assistant_output": {
+      "name": "Laura Martin",
+      "date": "2013-08-20",
+      "department": "Supply Chain Management",
+      "doc_type": "Inventory Report"
+    }
+  },
+  {
+    "user": "James Wilson",
+    "assistant_output": {
+      "name": "James Wilson",
+      "date": "2012-06-01",
+      "department": "Business Development",
+      "doc_type": "Proposal"
+    }
+  },
+  {
+    "user": "Hannah Brown",
+    "assistant_output": {
+      "name": "Hannah Brown",
+      "date": "2011-04-15",
+      "department": "Executive Management",
+      "doc_type": "Strategic Plan"
+    }
+  },
+  {
+    "user": "William Davis",
+    "assistant_output": {
+      "name": "William Davis",
+      "date": "2010-02-20",
+      "department": "Risk Management",
+      "doc_type": "Compliance Report"
+    }
+  },
+  {
+    "user": "Olivia Lee",
+    "assistant_output": {
+      "name": "Olivia Lee",
+      "date": "2009-01-01",
+      "department": "Internal Audit",
+      "doc_type": "Audit Report"
+    }
+  },
+  {
+    "user": "Alexander Martin",
+    "assistant_output": {
+      "name": "Alexander Martin",
+      "date": "2008-09-15",
+      "department": "Compliance",
+      "doc_type": "Regulatory Update"
+    }
+  },
+  {
+    "user": "Sophia Taylor",
+    "assistant_output": {
+      "name": "Sophia Taylor",
+      "date": "2007-07-20",
+      "department": "Security",
+      "doc_type": "Incident Report"
+    }
+  },
+  {
+    "user": "Benjamin White",
+    "assistant_output": {
+      "name": "Benjamin White",
+      "date": "2006-05-01",
+      "department": "Network Administration",
+      "doc_type": "Network Diagram"
+    }
+  },
+  {
+    "user": "Ava Johnson",
+    "assistant_output": {
+      "name": "Ava Johnson",
+      "date": "2005-03-15",
+      "department": "Database Administration",
+      "doc_type": "Database Schema"
+    }
+  },
+  {
+    "user": "Elijah Brown",
+    "assistant_output": {
+      "name": "Elijah Brown",
+      "date": "2004-01-20",
+      "department": "Web Development",
+      "doc_type": "Website Design"
+    }
+  },
+  {
+    "user": "Isabella Davis",
+    "assistant_output": {
+      "name": "Isabella Davis",
+      "date": "2003-09-01",
+      "department": "Graphic Design",
+      "doc_type": "Logo Design"
+    }
+  },
+  {
+    "user": "Logan Lee",
+    "assistant_output": {
+      "name": "Logan Lee",
+      "date": "2002-07-15",
+      "department": "Video Production",
+      "doc_type": "Script"
+    }
+  },
+  {
+    "user": "Mia Martin",
+    "assistant_output": {
+      "name": "Mia Martin",
+      "date": "2001-05-20",
+      "department": "Photography",
+      "doc_type": "Photo Shoot Plan"
+    }
+  },
+  {
+    "user": "Caleb Taylor",
+    "assistant_output": {
+      "name": "Caleb Taylor",
+      "date": "2000-03-01",
+      "department": "Event Planning",
+      "doc_type": "Event Schedule"
+    }
+  },
+  {
+    "user": "Julia White",
+    "assistant_output": {
+      "name": "Julia White",
+      "date": "1999-01-15",
+      "department": "Public Relations",
+      "doc_type": "Press Release"
+    }
+  },
+  {
+    "user": "Gabriel Brown",
+    "assistant_output": {
+      "name": "Gabriel Brown",
+      "date": "1998-09-20",
+      "department": "Social Media",
+      "doc_type": "Social Media Strategy"
+    }
+  }
+]

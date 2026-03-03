@@ -44,7 +44,7 @@ class QdrantStore:
                 cls._instances[actual_collection] = instance
             return cls._instances[actual_collection]
 
-    def __init__(self, dimension: int = 1024, collection_name: str = None, path: str = "data/qdrant_storage", tenant_id: str = None, *args, **kwargs):
+    def __init__(self, dimension: int = 1024, collection_name: str = None, path: str = "data/qdrant_storage", *args, **kwargs):
         if self._initialized:
             return
 
@@ -52,7 +52,6 @@ class QdrantStore:
         actual_collection = collection_name or os.getenv("QDRANT_COLLECTION") or "enterprise_rag"
         self.collection_name = actual_collection
         self.path = path
-        self.tenant_id = tenant_id
         self.multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
 
         self.qdrant_url = os.getenv("QDRANT_URL")
@@ -132,7 +131,7 @@ class QdrantStore:
         if target in QdrantStore._instances:
             QdrantStore._instances.pop(target, None)
 
-    def get_all_documents(self) -> List[str]:
+    def get_all_documents(self, tenant_id: str = None) -> List[str]:
         """Returns unique source names currently stored in vector payloads."""
         sources = set()
         offset = None
@@ -146,7 +145,12 @@ class QdrantStore:
                     with_vectors=False,
                 )
                 for record in records:
-                    if record.payload and "source" in record.payload:
+                    if not record.payload:
+                        continue
+                    if tenant_id and self.multi_tenant:
+                        if record.payload.get("tenant_id") != tenant_id:
+                            continue
+                    if "source" in record.payload:
                         sources.add(record.payload["source"])
                 if offset is None:
                     break
@@ -161,7 +165,42 @@ class QdrantStore:
         except Exception:
             return 0
 
-    def stats(self) -> Dict[str, Any]:
+    def _count_for_tenant(self, tenant_id: str) -> int:
+        if not tenant_id or not self.multi_tenant:
+            return self.ntotal
+        try:
+            query_filter = self._build_qdrant_filter({}, tenant_id=tenant_id)
+            return self.client.count(collection_name=self.collection_name, count_filter=query_filter).count
+        except Exception:
+            # Fallback: count by scrolling when filtered count isn't supported.
+            count = 0
+            offset = None
+            try:
+                while True:
+                    records, offset = self.client.scroll(
+                        collection_name=self.collection_name,
+                        limit=1000,
+                        offset=offset,
+                        with_payload=True,
+                        with_vectors=False,
+                    )
+                    for record in records:
+                        if record.payload and record.payload.get("tenant_id") == tenant_id:
+                            count += 1
+                    if offset is None:
+                        break
+            except Exception:
+                return 0
+            return count
+
+    def stats(self, tenant_id: str = None) -> Dict[str, Any]:
+        if tenant_id and self.multi_tenant:
+            return {
+                "collection": tenant_id,
+                "mode": "cloud" if self.is_cloud else "local",
+                "total_vectors": self._count_for_tenant(tenant_id),
+                "documents": self.get_all_documents(tenant_id=tenant_id),
+            }
         return {
             "collection": self.collection_name,
             "mode": "cloud" if self.is_cloud else "local",
@@ -169,15 +208,15 @@ class QdrantStore:
             "documents": self.get_all_documents(),
         }
 
-    def add_documents(self, chunks: List[str], embeddings: List[List[float]], metadatas: List[Dict]):
+    def add_documents(self, chunks: List[str], embeddings: List[List[float]], metadatas: List[Dict], tenant_id: str = None):
         if not chunks or not embeddings:
             return
 
         points = []
         for i, chunk in enumerate(chunks):
             meta = metadatas[i] if i < len(metadatas) else {}
-            if self.multi_tenant and self.tenant_id:
-                meta["tenant_id"] = self.tenant_id
+            if self.multi_tenant and tenant_id:
+                meta["tenant_id"] = tenant_id
             meta["page_content"] = chunk
 
             points.append(
@@ -192,13 +231,13 @@ class QdrantStore:
             self.client.upsert(collection_name=self.collection_name, points=points)
             logger.info(f"[QDRANT] Added {len(chunks)} documents. Total: {self.ntotal}")
 
-    def _build_qdrant_filter(self, metadata_filters: Optional[Dict[str, Dict[str, Any]]]) -> Optional[Filter]:
+    def _build_qdrant_filter(self, metadata_filters: Optional[Dict[str, Dict[str, Any]]], tenant_id: str = None) -> Optional[Filter]:
         if not metadata_filters:
             metadata_filters = {}
 
         conditions = []
-        if self.multi_tenant and self.tenant_id:
-            conditions.append(FieldCondition(key="tenant_id", match=MatchValue(value=self.tenant_id)))
+        if self.multi_tenant and tenant_id:
+            conditions.append(FieldCondition(key="tenant_id", match=MatchValue(value=tenant_id)))
         for field, cfg in metadata_filters.items():
             if not isinstance(cfg, dict):
                 continue
@@ -216,12 +255,12 @@ class QdrantStore:
             return None
         return Filter(must=conditions)
 
-    def search(self, query_embedding: List[float], k: int = 5, metadata_filters: Optional[Dict[str, Dict[str, Any]]] = None) -> List[Dict]:
+    def search(self, query_embedding: List[float], k: int = 5, metadata_filters: Optional[Dict[str, Dict[str, Any]]] = None, tenant_id: str = None) -> List[Dict]:
         """Executes vector search over current collection with optional metadata filters."""
         if not query_embedding:
             return []
 
-        query_filter = self._build_qdrant_filter(metadata_filters)
+        query_filter = self._build_qdrant_filter(metadata_filters, tenant_id=tenant_id)
         with self._lock:
             search_result = self.client.query_points(
                 collection_name=self.collection_name,

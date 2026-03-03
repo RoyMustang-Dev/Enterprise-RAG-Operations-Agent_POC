@@ -30,8 +30,9 @@ This guide explains how to configure `.env` for production. Use `.env-copy` as a
   - `CELERY_ENABLED=true`
   - `CELERY_BROKER_URL=redis://:password@redis-host:6379/0`
   - `CELERY_RESULT_BACKEND=redis://:password@redis-host:6379/0`
-- Run a separate worker process:
-  - `celery -A app.infra.celery_app.celery_app worker --loglevel=info`
+- Run a separate worker process explicitly:
+  - Dev (Windows): `scripts/start_celery_worker_dev.ps1`
+  - Prod (Linux): `scripts/start_celery_worker_prod.sh`
 
 ## 7. Security & CORS
 - Use explicit origins if `CORS_ALLOW_CREDENTIALS=true`.

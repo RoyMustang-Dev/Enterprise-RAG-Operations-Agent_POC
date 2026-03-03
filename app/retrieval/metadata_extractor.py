@@ -37,23 +37,9 @@ class MetadataExtractor:
             "source"
         ]
         
-        self.system_prompt = f'''SYSTEM: You are a high-precision metadata extractor. Given the USER QUERY and the AVAILABLE_METADATA_FIELDS list, extract structured filters as JSON following this EXACT schema:
-
-{{
-  "filters": {{
-     "<field_name>": {{"op":"$eq" | "$in", "value": <string|array>}}
-  }},
-  "confidence": 0.00-1.00,
-  "extracted_from": "<which phrase in user prompt, <=50 chars>"
-}}
-
-AVAILABLE_METADATA_FIELDS: {self.available_fields}
-
-Rules:
-- Only include fields explicitly present in AVAILABLE_METADATA_FIELDS.
-- If the user does not specify a field organically, omit it. Do not guess.
-- Example: "Show 2022 revenue from the wiki" -> {{"filters": {{"creation_year": {{"op": "$eq", "value": "2022"}}, "source_domain": {{"op": "$eq", "value": "internal_wiki"}}}}}}
-'''
+        from app.prompt_engine.groq_prompts.config import get_compiled_prompt
+        base_prompt = get_compiled_prompt("metadata_extractor", self.model_id)
+        self.system_prompt = f"{base_prompt}\n\nAVAILABLE_METADATA_FIELDS: {self.available_fields}\n"
 
     @retry(wait=wait_exponential(multiplier=1, min=2, max=6), stop=stop_after_attempt(3))
     async def extract_filters(self, user_prompt: str) -> Dict[str, Any]:

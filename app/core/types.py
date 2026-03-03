@@ -60,6 +60,7 @@ class AgentState(TypedDict):
     optimized_prompts: Dict[str, Any]       # The low/med/high synthesized dynamic prompts
     reasoning_effort: str                   # dynamically computed 'low', 'medium', or 'high'
     latency_optimizations: Dict[str, Any]   # dynamic routing metrics and latency saves
+    active_persona: Optional[str]           # Evaluated/Injected Agent Bootstrapper Brand
     
     # Final Output Outputs
     answer: str

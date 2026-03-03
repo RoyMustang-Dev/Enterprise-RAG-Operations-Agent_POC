@@ -28,27 +28,8 @@ class HallucinationVerifier:
         self.sarvam_key = os.getenv("SARVAM_API_KEY")
         self.groq_key = os.getenv("GROQ_API_KEY")
         
-        self.system_prompt = '''SYSTEM: You are an enterprise evidence verifier. Given a candidate answer and the securely retrieved CONTEXT_CHUNKS, perform the following logic:
-
-1) Break the draft answer down into an array of isolated, Line-by-Line factual claims.
-2) For each factual claim, check if the CONTEXT_CHUNKS contain supporting evidence. 
-3) Provide a "verdict" for each claim: SUPPORTED / PARTIALLY_SUPPORTED / UNSUPPORTED.
-4) Calculate the "overall_verdict" based on the array of claims.
-
-Output exactly one JSON object with fields: 
-{
-  "claims": [
-     {"claim": "<exact sentence from draft>", "verdict": "SUPPORTED"}
-  ],
-  "overall_verdict": "SUPPORTED",
-  "score": 1.0,
-  "is_hallucinated": false
-}
-
-Constraints:
-- If ANY single claim is UNSUPPORTED or missing from the chunks, flag "is_hallucinated": true.
-- Do not modify the text of the claim. Copy it exactly as written including punctuation and trailing brackets.
-'''
+        from app.prompt_engine.groq_prompts.config import get_compiled_prompt
+        self.system_prompt = get_compiled_prompt("hallucination_verifier", "sarvam-m")
 
     def verify(self, draft_answer: str, context_chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
         """

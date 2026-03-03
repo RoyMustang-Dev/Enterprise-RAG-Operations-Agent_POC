@@ -28,17 +28,8 @@ class CoderAgent:
         if not self.api_key:
             logger.warning("[SECURITY] GROQ_API_KEY not found. Coder Agent Offline.")
             
-        self.system_prompt = """SYSTEM: You are an elite, deterministic Enterprise Software Engineer. 
-Your objective is to generate syntactically perfect, highly structured Python, JavaScript, or Shell code.
-Do not provide excessive conversational padding.
-Do NOT include chain-of-thought or internal reasoning. Never output <think> blocks.
-
-OUTPUT FORMAT:
-Provide a concise explanation of the logic, followed immediately by the runnable code block. 
-All code blocks MUST specify the language syntax (e.g., ```python). 
-
-If the user provides context chunks or structural data, you MUST utilize that context exclusively to ground your programmatic variables.
-"""
+        from app.prompt_engine.groq_prompts.config import get_compiled_prompt
+        self.system_prompt = get_compiled_prompt("coder_agent", self.model_id)
 
     @retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(3))
     async def ainvoke(self, state: Dict[str, Any]) -> Dict[str, Any]:
@@ -58,10 +49,25 @@ If the user provides context chunks or structural data, you MUST utilize that co
         user_payload = f"USER QUERY: {query}\n\n"
         if context_chunks:
             user_payload += "PROVIDED SYSTEM CONTEXT:\n"
+            coder_context_max_chars = int(os.getenv("CODER_CONTEXT_MAX_CHARS", "8000"))
+            current_chars = 0
+            
             for chunk in context_chunks:
-                user_payload += f"- {chunk.get('page_content', '')}\n"
+                chunk_text = f"- {chunk.get('page_content', '')}\n"
+                if current_chars + len(chunk_text) > coder_context_max_chars:
+                    logger.info(f"[MoE - CODER AGENT] Context truncated at {current_chars} chars to prevent payload overflow.")
+                    break
+                user_payload += chunk_text
+                current_chars += len(chunk_text)
 
         logger.info(f"[MoE - CODER AGENT] Invoking {self.model_id} for code synthesis...")
+        max_total_chars = int(os.getenv("CODER_MAX_INPUT_CHARS", "12000"))
+        if len(self.system_prompt) + len(user_payload) > max_total_chars:
+            # Aggressively trim context to stay within safe bounds.
+            overflow = (len(self.system_prompt) + len(user_payload)) - max_total_chars
+            if overflow > 0 and "PROVIDED SYSTEM CONTEXT" in user_payload:
+                user_payload = user_payload[:-overflow]
+                user_payload = user_payload.rsplit("\n", 1)[0] + "\n[Context truncated for safety]\n"
         
         headers = {
             "Authorization": f"Bearer {self.api_key}",

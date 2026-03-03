@@ -13,4 +13,4 @@ $env:PYTHONEXECUTABLE = $py
 $env:PATH = (Join-Path $repo "venv\Scripts") + ";" + $env:PATH
 $env:TORCH_DISABLE_SHM = "1"
 
-& $py -c "import os,sys, multiprocessing as mp; os.environ['PYTHONEXECUTABLE']=sys.executable; mp.set_executable(sys.executable); import uvicorn; uvicorn.run('app.main:app', host='0.0.0.0', port=8000)"
+& $py -c "import os,sys, multiprocessing as mp; os.environ['PYTHONEXECUTABLE']=sys.executable; mp.set_executable(sys.executable); import uvicorn; uvicorn.run('app.main:app', host='0.0.0.0', port=8000, reload=True)"

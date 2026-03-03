@@ -1,0 +1,602 @@
+[
+  {
+    "score": 90,
+    "rationale": "The response was accurate, complete, and well-explained, addressing all aspects of the question."
+  },
+  {
+    "score": 85,
+    "rationale": "The response was mostly correct but missed some minor details in the explanation."
+  },
+  {
+    "score": 80,
+    "rationale": "The response was generally correct but lacked depth in the rationale."
+  },
+  {
+    "score": 75,
+    "rationale": "The response contained some inaccuracies but demonstrated a basic understanding of the topic."
+  },
+  {
+    "score": 70,
+    "rationale": "The response was partially correct but missed key points and had some factual errors."
+  },
+  {
+    "score": 65,
+    "rationale": "The response showed some understanding but was incomplete and had significant errors."
+  },
+  {
+    "score": 60,
+    "rationale": "The response was largely incorrect but had a few correct elements."
+  },
+  {
+    "score": 55,
+    "rationale": "The response was mostly incorrect and lacked a clear understanding of the topic."
+  },
+  {
+    "score": 50,
+    "rationale": "The response was incorrect and showed a lack of understanding of the topic."
+  },
+  {
+    "score": 45,
+    "rationale": "The response was irrelevant to the question and showed no understanding."
+  },
+  {
+    "score": 95,
+    "rationale": "The response was highly accurate, comprehensive, and insightful, exceeding expectations."
+  },
+  {
+    "score": 92,
+    "rationale": "The response was correct and well-explained, with only minor areas for improvement."
+  },
+  {
+    "score": 88,
+    "rationale": "The response was correct and clear but slightly brief in explanation."
+  },
+  {
+    "score": 83,
+    "rationale": "The response was correct but had some minor inaccuracies in the rationale."
+  },
+  {
+    "score": 78,
+    "rationale": "The response was mostly correct but lacked some detail and depth."
+  },
+  {
+    "score": 73,
+    "rationale": "The response was partially correct but had several inaccuracies and omissions."
+  },
+  {
+    "score": 68,
+    "rationale": "The response was partially correct but had significant errors and lacked clarity."
+  },
+  {
+    "score": 63,
+    "rationale": "The response was mostly incorrect but had a few correct elements with little explanation."
+  },
+  {
+    "score": 58,
+    "rationale": "The response was largely incorrect and showed poor understanding."
+  },
+  {
+    "score": 53,
+    "rationale": "The response was incorrect and demonstrated a lack of knowledge on the topic."
+  },
+  {
+    "score": 48,
+    "rationale": "The response was irrelevant and showed no understanding of the topic."
+  },
+  {
+    "score": 97,
+    "rationale": "The response was exceptionally accurate, thorough, and insightful, demonstrating a deep understanding."
+  },
+  {
+    "score": 94,
+    "rationale": "The response was correct and very well-explained, with only minor errors."
+  },
+  {
+    "score": 91,
+    "rationale": "The response was correct and clear but slightly lacked in-depth analysis."
+  },
+  {
+    "score": 87,
+    "rationale": "The response was correct but had some inaccuracies in the rationale and missed key points."
+  },
+  {
+    "score": 82,
+    "rationale": "The response was mostly correct but lacked sufficient explanation and detail."
+  },
+  {
+    "score": 77,
+    "rationale": "The response was partially correct but had several inaccuracies and was not well-explained."
+  },
+  {
+    "score": 90,
+    "rationale": "The response was accurate, complete, and well-explained, addressing all aspects of the question."
+  },
+  {
+    "score": 85,
+    "rationale": "The response was mostly correct but missed some minor details in the explanation."
+  },
+  {
+    "score": 80,
+    "rationale": "The response was generally correct but lacked depth in the rationale."
+  },
+  {
+    "score": 75,
+    "rationale": "The response contained some inaccuracies but demonstrated a basic understanding of the topic."
+  },
+  {
+    "score": 70,
+    "rationale": "The response was partially correct but missed key points and had some factual errors."
+  },
+  {
+    "score": 65,
+    "rationale": "The response showed some understanding but was incomplete and had significant errors."
+  },
+  {
+    "score": 60,
+    "rationale": "The response was largely incorrect but had a few correct elements."
+  },
+  {
+    "score": 55,
+    "rationale": "The response was mostly incorrect and lacked a clear understanding of the topic."
+  },
+  {
+    "score": 50,
+    "rationale": "The response was incorrect and showed a lack of understanding of the topic."
+  },
+  {
+    "score": 45,
+    "rationale": "The response was irrelevant to the question and showed no understanding."
+  },
+  {
+    "score": 95,
+    "rationale": "The response was highly accurate, comprehensive, and insightful, exceeding expectations."
+  },
+  {
+    "score": 92,
+    "rationale": "The response was correct and well-explained, with only minor areas for improvement."
+  },
+  {
+    "score": 88,
+    "rationale": "The response was correct and clear but slightly brief in explanation."
+  },
+  {
+    "score": 83,
+    "rationale": "The response was correct but had some minor inaccuracies in the rationale."
+  },
+  {
+    "score": 78,
+    "rationale": "The response was mostly correct but lacked some detail and depth."
+  },
+  {
+    "score": 73,
+    "rationale": "The response was partially correct but had several inaccuracies and omissions."
+  },
+  {
+    "score": 68,
+    "rationale": "The response was mostly incorrect but had a few correct elements."
+  },
+  {
+    "score": 63,
+    "rationale": "The response was largely irrelevant and showed limited understanding."
+  },
+  {
+    "score": 58,
+    "rationale": "The response was incorrect and lacked any substantial understanding of the topic."
+  },
+  {
+    "score": 53,
+    "rationale": "The response was incorrect and showed confusion about the topic."
+  },
+  {
+    "score": 48,
+    "rationale": "The response was completely incorrect and irrelevant to the question."
+  },
+  {
+    "score": 97,
+    "rationale": "The response was exceptionally accurate, thorough, and insightful, demonstrating a high level of expertise."
+  },
+  {
+    "score": 94,
+    "rationale": "The response was correct and very well-explained, with excellent insight."
+  },
+  {
+    "score": 91,
+    "rationale": "The response was correct and comprehensive but slightly verbose."
+  },
+  {
+    "score": 87,
+    "rationale": "The response was correct and clear but had minor areas for improvement in clarity."
+  },
+  {
+    "score": 82,
+    "rationale": "The response was mostly correct but had some inaccuracies in the explanation."
+  },
+  {
+    "score": 77,
+    "rationale": "The response was partially correct but lacked detail and had some errors."
+  },
+  {
+    "score": 72,
+    "rationale": "The response was mostly incorrect but had a few correct points."
+  },
+  {
+    "score": 67,
+    "rationale": "The response was largely irrelevant and showed limited understanding."
+  },
+  {
+    "score": 62,
+    "rationale": "The response was incorrect and lacked any substantial understanding of the topic."
+  },
+  {
+    "score": 57,
+    "rationale": "The response was incorrect and showed confusion about the topic."
+  },
+  {
+    "score": 52,
+    "rationale": "The response was completely incorrect and irrelevant to the question."
+  },
+  {
+    "score": 90,
+    "rationale": "The response is accurate, well-structured, and demonstrates a clear understanding of the topic."
+  },
+  {
+    "score": 85,
+    "rationale": "The response is mostly correct but has some minor inaccuracies and could be more detailed."
+  },
+  {
+    "score": 80,
+    "rationale": "The response is generally correct but lacks depth and has some significant errors."
+  },
+  {
+    "score": 75,
+    "rationale": "The response has both correct and incorrect information, with some relevant details."
+  },
+  {
+    "score": 70,
+    "rationale": "The response is partially correct but has several significant errors and lacks clarity."
+  },
+  {
+    "score": 65,
+    "rationale": "The response has some correct information but is largely inaccurate and disorganized."
+  },
+  {
+    "score": 60,
+    "rationale": "The response is mostly incorrect with only minor correct elements and lacks coherence."
+  },
+  {
+    "score": 55,
+    "rationale": "The response contains very little correct information and is poorly structured."
+  },
+  {
+    "score": 50,
+    "rationale": "The response is incorrect and lacks any relevant or accurate information."
+  },
+  {
+    "score": 95,
+    "rationale": "The response is highly accurate, comprehensive, and demonstrates expert knowledge."
+  },
+  {
+    "score": 92,
+    "rationale": "The response is accurate and thorough but has some minor issues in clarity."
+  },
+  {
+    "score": 88,
+    "rationale": "The response is correct and detailed but has some minor inaccuracies."
+  },
+  {
+    "score": 85,
+    "rationale": "The response is mostly correct with some good points but has some significant errors."
+  },
+  {
+    "score": 82,
+    "rationale": "The response is generally correct but lacks some important details and depth."
+  },
+  {
+    "score": 78,
+    "rationale": "The response has both correct and incorrect information, with some relevant details."
+  },
+  {
+    "score": 75,
+    "rationale": "The response is partially correct but has several significant errors and lacks clarity."
+  },
+  {
+    "score": 72,
+    "rationale": "The response has some correct information but is largely inaccurate and disorganized."
+  },
+  {
+    "score": 68,
+    "rationale": "The response is mostly incorrect with only minor correct elements and lacks coherence."
+  },
+  {
+    "score": 65,
+    "rationale": "The response contains very little correct information and is poorly structured."
+  },
+  {
+    "score": 60,
+    "rationale": "The response is incorrect and lacks any relevant or accurate information."
+  },
+  {
+    "score": 55,
+    "rationale": "The response is highly inaccurate and lacks any coherent structure."
+  },
+  {
+    "score": 50,
+    "rationale": "The response is completely incorrect and irrelevant to the topic."
+  },
+  {
+    "score": 45,
+    "rationale": "The response is nonsensical and shows no understanding of the topic."
+  },
+  {
+    "score": 40,
+    "rationale": "The response is entirely incorrect and demonstrates a lack of comprehension."
+  },
+  {
+    "score": 35,
+    "rationale": "The response is completely off-topic and shows no relevant knowledge."
+  },
+  {
+    "score": 30,
+    "rationale": "The response is incoherent and does not address the topic at all."
+  },
+  {
+    "score": 25,
+    "rationale": "The response is nonsensical and shows no understanding of the subject matter."
+  },
+  {
+    "score": 20,
+    "rationale": "The response is completely irrelevant and demonstrates a total lack of comprehension."
+  },
+  {
+    "score": 15,
+    "rationale": "The response is entirely incorrect and shows no attempt to address the topic."
+  },
+  {
+    "score": 10,
+    "rationale": "The response is completely nonsensical and irrelevant to the topic."
+  },
+  {
+    "score": 5,
+    "rationale": "The response is entirely incorrect and demonstrates no understanding of the topic."
+  },
+  {
+    "score": 0,
+    "rationale": "The response is completely blank or irrelevant and shows no understanding of the topic."
+  },
+  {
+    "score": 90,
+    "rationale": "The response is accurate, well-structured, and demonstrates a clear understanding of the topic."
+  },
+  {
+    "score": 85,
+    "rationale": "The response is mostly correct but has some minor inaccuracies and could be more detailed."
+  },
+  {
+    "score": 80,
+    "rationale": "The response is generally correct but lacks depth and has some significant errors."
+  },
+  {
+    "score": 75,
+    "rationale": "The response has both correct and incorrect information, with some relevant details."
+  },
+  {
+    "score": 70,
+    "rationale": "The response is partially correct but has several significant errors and lacks clarity."
+  },
+  {
+    "score": 65,
+    "rationale": "The response has some correct information but is largely inaccurate and disorganized."
+  },
+  {
+    "score": 60,
+    "rationale": "The response is mostly incorrect with only minor correct elements and lacks coherence."
+  },
+  {
+    "score": 55,
+    "rationale": "The response contains very little correct information and is poorly structured."
+  },
+  {
+    "score": 50,
+    "rationale": "The response is incorrect and lacks any relevant or accurate information."
+  },
+  {
+    "score": 95,
+    "rationale": "The response is highly accurate, comprehensive, and demonstrates expert knowledge."
+  },
+  {
+    "score": 92,
+    "rationale": "The response is accurate and thorough but has some minor issues in clarity."
+  },
+  {
+    "score": 88,
+    "rationale": "The response is correct and detailed but has some minor inaccuracies."
+  },
+  {
+    "score": 85,
+    "rationale": "The response is mostly correct with some good points but has some significant errors."
+  },
+  {
+    "score": 82,
+    "rationale": "The response is generally correct but lacks some important details and depth."
+  },
+  {
+    "score": 78,
+    "rationale": "The response has both correct and incorrect information, with some relevant details."
+  },
+  {
+    "score": 75,
+    "rationale": "The response is partially correct but has several significant errors and lacks clarity."
+  },
+  {
+    "score": 72,
+    "rationale": "The response has some correct information but is largely inaccurate and disorganized."
+  },
+  {
+    "score": 68,
+    "rationale": "The response is mostly incorrect with only minor correct elements and lacks coherence."
+  },
+  {
+    "score": 65,
+    "rationale": "The response contains very little correct information and is poorly structured."
+  },
+  {
+    "score": 60,
+    "rationale": "The response is incorrect and lacks any relevant or accurate information."
+  },
+  {
+    "score": 55,
+    "rationale": "The response is highly inaccurate and lacks any coherent structure."
+  },
+  {
+    "score": 50,
+    "rationale": "The response is completely incorrect and irrelevant to the topic."
+  },
+  {
+    "score": 45,
+    "rationale": "The response is not only incorrect but also demonstrates a lack of understanding."
+  },
+  {
+    "score": 40,
+    "rationale": "The response is entirely incorrect and shows no grasp of the subject matter."
+  },
+  {
+    "score": 35,
+    "rationale": "The response is not only incorrect but also nonsensical and incoherent."
+  },
+  {
+    "score": 30,
+    "rationale": "The response is completely irrelevant and demonstrates no understanding of the topic."
+  },
+  {
+    "score": 25,
+    "rationale": "The response is entirely incorrect and shows no engagement with the subject."
+  },
+  {
+    "score": 20,
+    "rationale": "The response is not only incorrect but also demonstrates a complete lack of effort."
+  },
+  {
+    "score": 15,
+    "rationale": "The response is entirely blank or irrelevant to the topic."
+  },
+  {
+    "score": 10,
+    "rationale": "The response is completely incorrect and demonstrates a total lack of understanding."
+  },
+  {
+    "score": 5,
+    "rationale": "The response is not only incorrect but also shows a lack of any attempt to address the topic."
+  },
+  {
+    "score": 0,
+    "rationale": "The response is entirely absent or completely irrelevant to the topic."
+  },
+  {
+    "score": 90,
+    "rationale": "The response is accurate, well-structured, and demonstrates a clear understanding of the topic."
+  },
+  {
+    "score": 85,
+    "rationale": "The response is mostly correct but has some minor inaccuracies and could be more detailed."
+  },
+  {
+    "score": 80,
+    "rationale": "The response is generally correct but lacks depth and has some significant errors."
+  },
+  {
+    "score": 75,
+    "rationale": "The response has both correct and incorrect information, with some relevant details."
+  },
+  {
+    "score": 70,
+    "rationale": "The response is partially correct but has several significant errors and lacks clarity."
+  },
+  {
+    "score": 65,
+    "rationale": "The response has some correct information but is largely inaccurate and disorganized."
+  },
+  {
+    "score": 60,
+    "rationale": "The response is mostly incorrect with only minor correct elements and lacks coherence."
+  },
+  {
+    "score": 55,
+    "rationale": "The response contains very little correct information and is poorly structured."
+  },
+  {
+    "score": 50,
+    "rationale": "The response is incorrect and lacks any relevant or accurate information."
+  },
+  {
+    "score": 95,
+    "rationale": "The response is highly accurate, comprehensive, and demonstrates expert knowledge."
+  },
+  {
+    "score": 92,
+    "rationale": "The response is accurate and thorough but has some minor issues in clarity."
+  },
+  {
+    "score": 88,
+    "rationale": "The response is correct and detailed but has some minor inaccuracies."
+  },
+  {
+    "score": 85,
+    "rationale": "The response is mostly correct with some good points but has some significant errors."
+  },
+  {
+    "score": 82,
+    "rationale": "The response is generally correct but lacks some important details and depth."
+  },
+  {
+    "score": 78,
+    "rationale": "The response has both correct and incorrect information, with some relevant details."
+  },
+  {
+    "score": 75,
+    "rationale": "The response is partially correct but has several significant errors and lacks clarity."
+  },
+  {
+    "score": 72,
+    "rationale": "The response has some correct information but is largely inaccurate and disorganized."
+  },
+  {
+    "score": 68,
+    "rationale": "The response is mostly incorrect with only minor correct elements and lacks coherence."
+  },
+  {
+    "score": 65,
+    "rationale": "The response contains very little correct information and is poorly structured."
+  },
+  {
+    "score": 60,
+    "rationale": "The response is incorrect and lacks any relevant or accurate information."
+  },
+  {
+    "score": 55,
+    "rationale": "The response is highly inaccurate and lacks any coherent structure."
+  },
+  {
+    "score": 50,
+    "rationale": "The response is completely incorrect and irrelevant to the topic."
+  },
+  {
+    "score": 45,
+    "rationale": "The response is not only incorrect but also demonstrates a lack of understanding."
+  },
+  {
+    "score": 40,
+    "rationale": "The response is entirely incorrect and shows no grasp of the subject matter."
+  },
+  {
+    "score": 35,
+    "rationale": "The response is completely irrelevant and demonstrates a lack of knowledge."
+  },
+  {
+    "score": 30,
+    "rationale": "The response is not only incorrect but also nonsensical and confusing."
+  },
+  {
+    "score": 25,
+    "rationale": "The response is entirely incorrect and shows no understanding of the topic."
+  }
+]

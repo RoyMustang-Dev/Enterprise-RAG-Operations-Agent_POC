@@ -91,7 +91,12 @@ class RAGAgent:
         """
         logger.info(f"[RAG AGENT] Commencing Execution DAG for query: {state['query'][:50]}...")
         # Deep copy to ensure immutable updates structurally
-        result = self.graph.invoke(state)
+        try:
+            result = self.graph.invoke(state)
+        except Exception as e:
+            import traceback
+            logger.error(f'[RAG AGENT DAG CRASH] {traceback.format_exc()}')
+            raise
         return result
         
     async def ainvoke(self, state: AgentState) -> AgentState:
@@ -125,16 +130,22 @@ class RAGAgent:
         t0 = time.perf_counter()
         query = state["search_query"] or state["query"]
         filters = state.get("optimizations", {}).get("metadata_filters", {})
-        # Apply tenant scoping if enabled
-        if os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true" and state.get("tenant_id"):
-            self.vector_store.tenant_id = state.get("tenant_id")
+        tenant_id = state.get("tenant_id")
+        use_multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
+        # If multi-tenant is disabled, we route to a per-tenant collection when provided.
+        store = self.vector_store
+        tenant_filter = None
+        if use_multi_tenant:
+            tenant_filter = tenant_id
+        elif tenant_id:
+            store = QdrantStore(collection_name=tenant_id, dimension=self.vector_store.dimension)
         
         # 1. Generate Query Embedding
         query_tensor = self.embedding_model.generate_embedding(query)
         
         # 2. Primary Search (Filtered)
         # We attempt retrieval using the dynamically extracted metadata filters (e.g. author, doc_type)
-        chunks = self.vector_store.search(query_tensor, k=30, metadata_filters=filters)
+        chunks = store.search(query_tensor, k=30, metadata_filters=filters, tenant_id=tenant_filter)
 
         # Optional: merge in retrieval results from extra ephemeral collections (uploaded files)
         extra_collections = state.get("extra_collections", []) or []
@@ -142,8 +153,8 @@ class RAGAgent:
             for collection_name in extra_collections:
                 try:
                     extra_store = QdrantStore(collection_name=collection_name, dimension=self.vector_store.dimension)
-                    # Avoid applying KB metadata filters to uploaded files (they may not contain those fields).
-                    extra_results = extra_store.search(query_tensor, k=30, metadata_filters=None)
+                    # Avoid applying KB metadata filters or tenant filters to uploaded session collections.
+                    extra_results = extra_store.search(query_tensor, k=30, metadata_filters=None, tenant_id=None)
                     for item in extra_results:
                         item["_collection"] = collection_name
                     chunks.extend(extra_results)
@@ -154,7 +165,7 @@ class RAGAgent:
         # This prevents over-restrictive metadata from causing 0-result failures.
         if not chunks and filters:
             logger.info(f"[RAG AGENT] Filtered search returned 0 chunks (Filters: {filters}). Executing smart fallback to unfiltered semantic search.")
-            chunks = self.vector_store.search(query_tensor, k=30, metadata_filters=None)
+            chunks = store.search(query_tensor, k=30, metadata_filters=None, tenant_id=tenant_filter)
             state["optimizations"]["fallback_triggered"] = True
             state["optimizations"]["original_filters"] = filters
         
@@ -169,6 +180,8 @@ class RAGAgent:
             logger.warning("[RAG AGENT] Retrieval yielded 0 chunks even after fallback. Bypassing synthesis.")
             state["answer"] = "DATA_NOT_FOUND"
             state["confidence"] = 1.0
+            state["verifier_verdict"] = "NOT_RUN"
+            state["sources"] = []
             
         t1 = time.perf_counter()
         state.setdefault("latency_optimizations", {})
@@ -198,12 +211,14 @@ class RAGAgent:
         else:
             if reranker_profile == "fast":
                 model_name = "BAAI/bge-reranker-base"
+            elif reranker_profile == "mid":
+                model_name = "BAAI/bge-reranker-base"
             elif reranker_profile == "accurate":
                 model_name = "BAAI/bge-reranker-large"
             else:
                 model_name = os.getenv("RERANKER_MODEL_NAME", "BAAI/bge-reranker-large")
 
-            if model_override:
+            if model_override and reranker_profile == "custom":
                 model_name = model_override
 
             reranker = SemanticReranker.get_instance(model_name=model_name)
@@ -396,3 +411,5 @@ class RAGAgent:
         state["sources"] = result.get("provenance", state.get("sources", []))
         state["confidence"] = float(result.get("confidence", state.get("confidence", 0.0))) * 0.7
         return state
+
+

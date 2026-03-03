@@ -25,19 +25,8 @@ class ComplexityClassifier:
         self.api_key = os.getenv("GROQ_API_KEY")
         self.model_id = model_override
 
-        self.system_prompt = """SYSTEM: You are a strict query complexity scorer.
-Return EXACTLY one JSON object:
-{
-  "score": 0.0-1.0,
-  "reason": "brief rationale"
-}
-
-Scoring guidance:
-- 0.0-0.3: short, direct, single-fact queries
-- 0.4-0.6: multi-clause or requires synthesis across multiple facts
-- 0.7-1.0: multi-hop, comparison, analysis, or ambiguous requests requiring reasoning
-
-Be deterministic. Do not return any extra text."""
+        from app.prompt_engine.groq_prompts.config import get_compiled_prompt
+        self.system_prompt = get_compiled_prompt("complexity_scorer", self.model_id)
 
     async def score(self, query: str) -> float:
         """

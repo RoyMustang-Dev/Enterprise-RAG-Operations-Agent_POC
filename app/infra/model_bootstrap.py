@@ -37,7 +37,7 @@ def preload_models():
 
     try:
         from app.retrieval.reranker import SemanticReranker
-        _ = SemanticReranker().model
+        _ = SemanticReranker()
     except Exception as e:
         logger.error(f"[MODEL PRELOAD] Reranker preload failed: {e}")
         raise RuntimeError(f"Failed to preload Reranker: {e}")

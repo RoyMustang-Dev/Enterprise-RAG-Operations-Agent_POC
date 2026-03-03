@@ -18,20 +18,41 @@ logger = logging.getLogger(__name__)
 class VisionModel:
     def __init__(self, model_name: str = None):
         self.backend = (os.getenv("VISION_BACKEND", "blip")).lower()
-        self.model_name = model_name or os.getenv(
-            "VISION_MODEL_NAME",
-            "Salesforce/blip-image-captioning-base" if self.backend == "blip" else "llava-hf/llava-1.5-7b-hf",
-        )
+        requested_backend = self.backend
         self.fallback_model = os.getenv(
             "VISION_FALLBACK_MODEL", "Salesforce/blip-image-captioning-base"
         )
         self.allow_fallback = os.getenv("VISION_ALLOW_FALLBACK", "true").lower() == "true"
         profile = HardwareProbe.get_profile()
         self.device = profile.get("primary_device", "cpu")
+        gpu_mem_gb = profile.get("gpu_mem_gb", 0.0) or 0.0
+        min_vram = float(os.getenv("VISION_LLAVA_MIN_VRAM_GB", "8"))
+
+        # Auto-select backend based on VRAM availability
+        if self.backend == "auto":
+            if self.device == "cuda" and gpu_mem_gb >= min_vram:
+                self.backend = "llava"
+            else:
+                self.backend = "blip"
+
+        if self.backend == "llava" and (self.device != "cuda" or gpu_mem_gb < min_vram):
+            logger.warning(
+                f"[VISION] Requested LLaVA but GPU VRAM {gpu_mem_gb}GB < {min_vram}GB. "
+                "Falling back to BLIP."
+            )
+            self.backend = "blip"
+
+        self.model_name = model_name or os.getenv(
+            "VISION_MODEL_NAME",
+            "Salesforce/blip-image-captioning-base" if self.backend == "blip" else "llava-hf/llava-1.5-7b-hf",
+        )
         self._processor = None
         self._model = None
         self._fallback = None
-        logger.info(f"[VISION] Configured backend={self.backend} model={self.model_name} device={self.device}")
+        logger.info(
+            f"[VISION] Configured backend={self.backend} (requested={requested_backend}) "
+            f"model={self.model_name} device={self.device}"
+        )
 
     @property
     def processor(self):

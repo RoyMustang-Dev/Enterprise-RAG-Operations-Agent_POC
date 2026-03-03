@@ -26,22 +26,8 @@ class OnlineRewardModel:
         if not self.api_key:
             logger.warning("[SECURITY] GROQ_API_KEY not found. RLAIF Online Reward offline.")
             
-        self.system_prompt = """SYSTEM: You are an elite, deterministic Evidence Scorer. 
-Your explicit objective is to evaluate two candidate responses against the user's raw query and physical Vector context.
-
-Generate EXACTLY the following JSON schema:
-{
- "candidate_a_score": 0.0,
- "candidate_b_score": 0.0,
- "winner": "A" or "B",
- "rationale": "One brief sentence explaining why."
-}
-
-SCORING CRITERIA (0.0 to 10.0):
-1. Grounding: Does the candidate exclusively use the provided Context? (Penalty if hallucinated).
-2. Conciseness: Is the candidate free of verbose padding and conversational fluff?
-3. Actionability: Does it directly address the user's explicit intent?
-"""
+        from app.prompt_engine.groq_prompts.config import get_compiled_prompt
+        self.system_prompt = get_compiled_prompt("reward_scorer", self.model_id)
 
     @retry(wait=wait_exponential(multiplier=1, min=2, max=6), stop=stop_after_attempt(3))
     async def select_best_candidate(

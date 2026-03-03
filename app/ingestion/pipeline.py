@@ -36,13 +36,14 @@ class IngestionPipeline:
         profile = HardwareProbe.get_profile()
         self.batch_size = int(os.getenv("INGEST_BATCH_SIZE", profile.get("embedding_batch_size", 32)))
         logger.info(f"[INGESTION] Batch size set to {self.batch_size} for embeddings.")
-        if tenant_id:
-            use_multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
-            if use_multi_tenant:
-                self.vector_store = QdrantStore(tenant_id=tenant_id)
-            else:
-                self.vector_store = QdrantStore(collection_name=tenant_id)
+        self.tenant_id = tenant_id
+        
+        use_multi_tenant = os.getenv("QDRANT_MULTI_TENANT", "false").lower() == "true"
+        if not use_multi_tenant and tenant_id:
+            # Legacy dedicated collection mode
+            self.vector_store = QdrantStore(collection_name=tenant_id)
         else:
+            # Multi-tenant mode (or single global base mode) utilizes base enterprise_rag container
             self.vector_store = QdrantStore()
 
     def run_ingestion(self, file_paths: List[str], metadatas: List[Dict] = None, reset_db: bool = False, job_tracker: dict = None, mark_completed: bool = True) -> int:
@@ -163,7 +164,7 @@ class IngestionPipeline:
                 max_retries = 3
                 for attempt in range(max_retries):
                     try:
-                        self.vector_store.add_documents(batch_chunks, embeddings, batch_metas)
+                        self.vector_store.add_documents(batch_chunks, embeddings, batch_metas, tenant_id=self.tenant_id)
                         break
                     except Exception as connection_err:
                         if attempt == max_retries - 1:
