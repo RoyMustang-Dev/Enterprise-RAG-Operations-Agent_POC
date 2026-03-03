@@ -18,13 +18,16 @@ import asyncio
 import os
 import json
 import urllib.robotparser
+from urllib.parse import urlparse, urljoin, urldefrag, urlencode, parse_qs
 import requests
 import uuid
 import math
+import random
+from typing import Optional
 from urllib.parse import urlparse, urljoin, urldefrag
 from datetime import datetime
 from playwright.async_api import async_playwright, Page, BrowserContext
-from bs4 import BeautifulSoup
+from selectolax.parser import HTMLParser
 from difflib import SequenceMatcher
 from app.infra.database import init_db, insert_page_async, get_all_pages, enable_wal
 from app.infra.hardware import HardwareProbe
@@ -39,6 +42,9 @@ class CrawlerService:
         enable_wal()
         self.allowed_links = []
         self.blocked_links = []
+        self._proxy_pool = [
+            p.strip() for p in os.getenv("CRAWLER_PROXY_URLS", "").split(",") if p.strip()
+        ]
 
     # ---------------- SMART URL SCORING (NO KEYWORDS) ---------------- #
 
@@ -131,6 +137,16 @@ class CrawlerService:
         except:
             pass
 
+    async def _auto_scroll(self, page: Page):
+        steps = int(os.getenv("CRAWLER_SCROLL_STEPS", "6"))
+        pause_ms = int(os.getenv("CRAWLER_SCROLL_PAUSE_MS", "350"))
+        for _ in range(steps):
+            try:
+                await page.evaluate("window.scrollBy(0, document.body.scrollHeight)")
+                await asyncio.sleep(pause_ms / 1000)
+            except Exception:
+                break
+
     def _clean_content(self, html: str) -> str:
         """Removes headers, footers, navs to extract main content."""
         soup = BeautifulSoup(html, "html.parser")
@@ -138,8 +154,52 @@ class CrawlerService:
         # Remove distractions
         for tag in soup(["header", "footer", "nav", "aside", "script", "style", "noscript", "iframe"]):
             tag.decompose()
-            
-        return soup.get_text(separator="\n", strip=True)
+        try:
+            from markdownify import markdownify as md
+            content = md(str(soup))
+        except Exception:
+            content = soup.get_text(separator="\n", strip=True)
+        # Normalize excessive whitespace
+        content = "\n".join([line.strip() for line in content.splitlines() if line.strip()])
+        return content
+
+    def _should_fallback_to_browser(self, html: str) -> bool:
+        if not html:
+            return True
+        # Heuristic for SPA shells
+        low_text = len(BeautifulSoup(html, "html.parser").get_text(strip=True)) < int(os.getenv("CRAWLER_HTTP_MIN_CHARS", "500"))
+        spa_markers = ["id=\"root\"", "id=\"app\"", "data-reactroot", "data-v-app"]
+        if any(marker in html for marker in spa_markers) and low_text:
+            return True
+        return low_text
+
+    async def _fetch_static(self, url: str, proxy: str = None) -> Optional[dict]:
+        """Fast-path: attempt SSR HTML fetch via aiohttp before Playwright."""
+        try:
+            import aiohttp
+        except Exception:
+            return None
+
+        headers = {
+            "User-Agent": os.getenv(
+                "CRAWLER_HTTP_USER_AGENT",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            )
+        }
+        timeout = aiohttp.ClientTimeout(total=12)
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.get(url, headers=headers, proxy=proxy) as resp:
+                    if resp.status >= 400:
+                        return None
+                    html = await resp.text(errors="ignore")
+                    if self._should_fallback_to_browser(html):
+                        return None
+                    soup = BeautifulSoup(html, "html.parser")
+                    title = soup.title.string.strip() if soup.title and soup.title.string else url
+                    return {"url": url, "title": title, "html": html}
+        except Exception:
+            return None
 
     # ---------------- ASYNC DB WRITER ---------------- #
 
@@ -201,14 +261,65 @@ class CrawlerService:
                 break
 
             async with visited_lock:
-                if url in visited:
+                from urllib.parse import urlparse, urlencode, parse_qs, urlunparse
+                def normalize_url(u):
+                    parsed = urlparse(u)
+                    # Strip trailing slashes and normalize case
+                    path = parsed.path.rstrip("/")
+                    if not path: path = "/"
+                    # Remove session-id/tracking bloat from queries to prevent infinite spider traps
+                    qs = parse_qs(parsed.query)
+                    for bad in ["session", "ref", "uid", "token", "source", "click"]:
+                        qs.pop(bad, None)
+                    query = urlencode(qs, doseq=True)
+                    return urlunparse((parsed.scheme.lower(), parsed.netloc.lower(), path, parsed.params, query, ""))
+
+                norm_url = normalize_url(url)
+                if norm_url in visited:
                     queue.task_done()
                     continue
-                visited.add(url)
+                visited.add(norm_url)
 
             try:
                 # RACE CONDITION: Navigate OR Stop
                 # We create a task for navigation so we can cancel it if stop is pressed first
+                use_fast_http = os.getenv("CRAWLER_FAST_HTTP", "true").lower() == "true"
+                proxy = None
+                if self._proxy_pool:
+                    proxy = random.choice(self._proxy_pool)
+
+                if use_fast_http:
+                    fast = await self._fetch_static(url, proxy=proxy)
+                    if fast:
+                        content_html = fast["html"]
+                        title = fast["title"]
+                        current_url = fast["url"]
+                        clean_content = self._clean_content(content_html)
+                        await db_queue.put((session_id, current_url, title, clean_content, depth, "success"))
+                        if depth < max_depth and not stop_event.is_set():
+                            tree = HTMLParser(content_html)
+                            discovered = []
+                            for a in tree.css("a"): 
+                                if not a.attributes.get("href"): continue 
+                                a = {"href": a.attributes["href"]}
+                                full = urljoin(current_url, a["href"])
+                                full, _ = urldefrag(full)
+                                if full.startswith("http") and urlparse(full).netloc == urlparse(current_url).netloc:
+                                    if self.is_allowed(full, rp):
+                                        discovered.append(full)
+                                        self.allowed_links.append(full)
+                                    else:
+                                        self.blocked_links.append(full)
+                            if depth < 2:
+                                targets = list(set(discovered))[:50]
+                            else:
+                                async with visited_lock:
+                                    targets = self._get_best_links(list(set(discovered)), visited)
+                            for t in targets:
+                                await queue.put((t, depth + 1, max_depth))
+                        queue.task_done()
+                        continue
+
                 nav_task = asyncio.create_task(page.goto(url, wait_until="domcontentloaded", timeout=20000))
                 stop_wait_task = asyncio.create_task(stop_event.wait())
 
@@ -242,7 +353,25 @@ class CrawlerService:
 
                 title = await page.title()
                 content_html = await page.content()
-                
+
+                # If content looks empty, wait for network idle or selectors.
+                clean_content = self._clean_content(content_html)
+                min_chars = int(os.getenv("CRAWLER_HTTP_MIN_CHARS", "500"))
+                if len(clean_content) < min_chars:
+                    selectors = [s.strip() for s in os.getenv("CRAWLER_WAIT_SELECTORS", "").split(",") if s.strip()]
+                    try:
+                        if selectors:
+                            for sel in selectors:
+                                await page.wait_for_selector(sel, timeout=5000)
+                                break
+                        else:
+                            await page.wait_for_load_state("networkidle", timeout=5000)
+                    except Exception:
+                        pass
+                    if os.getenv("CRAWLER_SCROLL", "true").lower() == "true":
+                        await self._auto_scroll(page)
+                    content_html = await page.content()
+
                 # Check stop again
                 if stop_event.is_set():
                     queue.task_done()
@@ -255,10 +384,12 @@ class CrawlerService:
                 await db_queue.put((session_id, current_url, title, clean_content, depth, "success"))
 
                 if depth < max_depth and not stop_event.is_set():
-                    soup = BeautifulSoup(content_html, "html.parser")
+                    tree = HTMLParser(content_html)
                     discovered = []
 
-                    for a in soup.find_all("a", href=True):
+                    for node in tree.css("a"):
+                        if not node.attributes.get("href"): continue
+                        a = {"href": node.attributes["href"]}
                         full = urljoin(current_url, a["href"]) # Use current_url for relative links
                         full, _ = urldefrag(full) # Remove URL HTML anchor fragments to prevent infinite loop duplication
                         if full.startswith("http") and urlparse(full).netloc == urlparse(current_url).netloc:
@@ -341,6 +472,9 @@ class CrawlerService:
             if not simulate:
                  # Add user agent to avoid basic blocks in headless
                  context_options["user_agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            if self._proxy_pool:
+                # Playwright expects a single proxy per context; rotate per context.
+                context_options["proxy"] = {"server": random.choice(self._proxy_pool)}
 
             contexts = [await browser.new_context(**context_options) for _ in range(NUM)]
 

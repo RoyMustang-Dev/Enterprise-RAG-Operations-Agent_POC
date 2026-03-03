@@ -51,7 +51,7 @@ class ExecutionGraph:
         text = re.sub(r"<think>.*", "", text, flags=re.DOTALL)
         return text.strip()
         
-    async def invoke(self, query: str, chat_history: list = None, session_id: str = "", tenant_id: str = None, model_provider: str = "groq", extra_collections: list = None, reranker_profile: str = "auto", reranker_model_name: str = None) -> AgentState:
+    async def invoke(self, query: str, chat_history: list = None, session_id: str = "", tenant_id: str = None, model_provider: str = "groq", extra_collections: list = None, reranker_profile: str = "auto", reranker_model_name: str = None, force_session_context: bool = False) -> AgentState:
         """
         The formal entrypoint called by `app.api.routes`.
         
@@ -73,6 +73,14 @@ class ExecutionGraph:
 
         safe_history = persisted_history + (chat_history or [])
         safe_history.append({"role": "user", "content": query})
+        # Keep only the most recent N turns (user+assistant pairs)
+        try:
+            max_turns = int(os.getenv("CHAT_HISTORY_MAX_TURNS", "5"))
+        except Exception:
+            max_turns = 5
+        max_messages = max_turns * 2
+        if max_messages > 0 and len(safe_history) > max_messages:
+            safe_history = safe_history[-max_messages:]
         
         state: AgentState = {
             "session_id": session_id,
@@ -85,6 +93,7 @@ class ExecutionGraph:
             "context_chunks": [],
             "context_text": "",
             "extra_collections": extra_collections or [],
+            "force_session_context": bool(force_session_context),
             "confidence": 0.0,
             "verifier_verdict": "PENDING",
             "is_hallucinated": False,

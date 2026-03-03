@@ -103,7 +103,7 @@ class HardwareProbe:
             if os.getenv("RERANK_BATCH_SIZE"):
                 rerank_batch_size = int(os.getenv("RERANK_BATCH_SIZE"))
 
-            crawler_workers = min(max(2, cpu_cores), 8)
+            crawler_workers = min(max(4, cpu_cores), 16)
             if os.getenv("CRAWLER_WORKERS"):
                 crawler_workers = int(os.getenv("CRAWLER_WORKERS"))
 

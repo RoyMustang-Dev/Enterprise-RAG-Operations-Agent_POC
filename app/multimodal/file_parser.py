@@ -1,7 +1,7 @@
 """
 Multimodal File Parser
 
-Supports PDF, DOCX, TXT/MD, and Image OCR extraction (EasyOCR).
+    Supports PDF, DOCX, TXT/MD, CSV/TSV/XLSX, and Image OCR extraction (EasyOCR).
 """
 import io
 import os
@@ -33,6 +33,10 @@ class FileParser:
             return self._parse_pdf(file_bytes)
         if ext == ".docx":
             return self._parse_docx(file_bytes)
+        if ext in [".csv", ".tsv"]:
+            return self._parse_tabular(file_bytes, delimiter="\t" if ext == ".tsv" else ",")
+        if ext == ".xlsx":
+            return self._parse_xlsx(file_bytes)
         if ext in [".txt", ".md"]:
             return self._parse_text(file_bytes)
         if ext in [".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff"]:
@@ -84,6 +88,38 @@ class FileParser:
 
         doc = Document(io.BytesIO(file_bytes))
         return "\n".join([p.text for p in doc.paragraphs])
+
+    def _parse_tabular(self, file_bytes: bytes, delimiter: str = ",") -> str:
+        try:
+            import pandas as pd
+        except Exception as e:
+            raise RuntimeError(f"pandas not installed or failed to import: {e}")
+
+        max_rows = int(os.getenv("TABULAR_MAX_ROWS", "200"))
+        buf = io.BytesIO(file_bytes)
+        try:
+            df = pd.read_csv(buf, sep=delimiter)
+        except Exception:
+            # Fallback to latin-1 if encoding is off
+            buf.seek(0)
+            df = pd.read_csv(buf, sep=delimiter, encoding="latin-1")
+        preview = df.head(max_rows)
+        return preview.to_csv(index=False)
+
+    def _parse_xlsx(self, file_bytes: bytes) -> str:
+        try:
+            import pandas as pd
+        except Exception as e:
+            raise RuntimeError(f"pandas not installed or failed to import: {e}")
+
+        max_rows = int(os.getenv("TABULAR_MAX_ROWS", "200"))
+        buf = io.BytesIO(file_bytes)
+        sheets = pd.read_excel(buf, sheet_name=None)
+        parts = []
+        for sheet_name, df in sheets.items():
+            preview = df.head(max_rows)
+            parts.append(f"[SHEET: {sheet_name}]\n{preview.to_csv(index=False)}")
+        return "\n\n".join(parts).strip()
 
     def _get_easyocr(self):
         if self.ocr_engine != "easyocr":

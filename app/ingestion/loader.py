@@ -2,11 +2,17 @@
 Multi-Format Document Loader Module
 
 Provides dedicated extraction functions for parsing complex enterprise filetypes 
-(PDF, DOCX, TXT) into raw, contiguous strings ready for the chunking pipeline.
+(PDF, DOCX, TXT, MD, CSV/TSV, XLSX) into raw, contiguous strings ready for the chunking pipeline.
 """
 import fitz  # PyMuPDF
 import docx
 import os
+import io
+
+try:
+    import pandas as pd
+except Exception:
+    pd = None
 
 def load_pdf(file_path: str) -> str:
     """
@@ -70,6 +76,36 @@ def load_text(file_path: str) -> str:
         print(f"Error reading TXT {file_path}: {e}")
     return text
 
+def load_markdown(file_path: str) -> str:
+    return load_text(file_path)
+
+def load_csv_tsv(file_path: str, delimiter: str = ",") -> str:
+    """
+    Extracts text from CSV/TSV files using pandas.
+    """
+    if pd is None:
+        raise RuntimeError("pandas is required to parse CSV/TSV files.")
+    max_rows = int(os.getenv("TABULAR_MAX_ROWS", "200"))
+    try:
+        df = pd.read_csv(file_path, sep=delimiter)
+    except Exception:
+        df = pd.read_csv(file_path, sep=delimiter, encoding="latin-1")
+    return df.head(max_rows).to_csv(index=False)
+
+def load_xlsx(file_path: str) -> str:
+    """
+    Extracts text from XLSX files using pandas/openpyxl.
+    """
+    if pd is None:
+        raise RuntimeError("pandas is required to parse XLSX files.")
+    max_rows = int(os.getenv("TABULAR_MAX_ROWS", "200"))
+    sheets = pd.read_excel(file_path, sheet_name=None)
+    parts = []
+    for sheet_name, df in sheets.items():
+        preview = df.head(max_rows)
+        parts.append(f"[SHEET: {sheet_name}]\n{preview.to_csv(index=False)}")
+    return "\n\n".join(parts).strip()
+
 def load_document(file_path: str) -> str:
     """
     Master Dispatcher function to route document loads based on file extension.
@@ -93,5 +129,13 @@ def load_document(file_path: str) -> str:
         return load_docx(file_path)
     elif ext == ".txt":
         return load_text(file_path)
+    elif ext == ".md":
+        return load_markdown(file_path)
+    elif ext == ".csv":
+        return load_csv_tsv(file_path, delimiter=",")
+    elif ext == ".tsv":
+        return load_csv_tsv(file_path, delimiter="\t")
+    elif ext == ".xlsx":
+        return load_xlsx(file_path)
     else:
         raise ValueError(f"Unsupported explicit enterprise file type: {ext}")

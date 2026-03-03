@@ -148,13 +148,9 @@ class ChatRequest(BaseModel):
     )
     session_id: Optional[str] = Field(default=None, description="Optional client session identifier for telemetry correlation.")
     stream: Optional[bool] = Field(default=False, description="Enable server-sent events (SSE) streaming output.")
-    reranker_profile: Optional[Literal["custom", "accurate", "fast", "mid", "off"]] = Field(
-        default="accurate",
-        description="Reranker profile: custom (use model override), accurate (large), fast (base), mid (balanced), or off."
-    )
     reranker_model_name: Optional[str] = Field(
-        default="BAAI/bge-reranker-large",
-        description="Reranker model override (used only when reranker_profile=custom)."
+        default="llama-3.1-8b-instant",
+        description="LLM-as-a-Judge reranker model."
     )
 
     model_config = {
@@ -165,7 +161,7 @@ class ChatRequest(BaseModel):
                 "model_provider": "groq",
                 "session_id": "session-123",
                 "stream": False,
-                "reranker_profile": "auto"
+                "reranker_model_name": "llama-3.1-8b-instant"
             }
         }
     }
@@ -307,17 +303,11 @@ class FeedbackRequest(BaseModel):
                                 "description": "How to handle image inputs."
                             },
                             "stream": {"type": "boolean"},
-                            "reranker_profile": {
-                                "type": "string",
-                                "enum": ["custom", "accurate", "fast", "mid"],
-                                "default": "accurate",
-                                "description": "accurate → bge-reranker-large, fast → bge-reranker-base, mid → balanced, custom → use reranker_model_name."
-                            },
                             "reranker_model_name": {
                                 "type": "string",
-                                "enum": ["BAAI/bge-reranker-large", "BAAI/bge-reranker-base"],
-                                "default": "BAAI/bge-reranker-large",
-                                "description": "Used only when reranker_profile=custom."
+                                "enum": ["llama-3.1-8b-instant"],
+                                "default": "llama-3.1-8b-instant",
+                                "description": "LLM-as-a-Judge reranker model."
                             },
                             "files": {
                                 "type": "array",
@@ -360,8 +350,8 @@ async def chat_endpoint(
     session_id = None
     image_mode = "auto"
     stream = False
-    reranker_profile = None
     reranker_model_name = None
+    force_session_context = False
 
     content_type = (http_request.headers.get("content-type", "") or "").lower()
     if content_type.startswith("application/json"):
@@ -373,7 +363,6 @@ async def chat_endpoint(
             model_provider = parsed.model_provider
             session_id = parsed.session_id or str(uuid.uuid4())
             stream = bool(parsed.stream)
-            reranker_profile = parsed.reranker_profile or "accurate"
             reranker_model_name = parsed.reranker_model_name
         except Exception as e:
             raise HTTPException(status_code=422, detail=f"Invalid JSON payload: {e}")
@@ -386,14 +375,23 @@ async def chat_endpoint(
             session_id = form.get("session_id")
             image_mode = form.get("image_mode") or "auto"
             stream = str(form.get("stream", "false")).lower() == "true"
-            reranker_profile = form.get("reranker_profile")
             reranker_model_name = form.get("reranker_model_name")
 
             raw_files = form.getlist("files") if hasattr(form, "getlist") else []
-            files = [f for f in raw_files if isinstance(f, UploadFile) and getattr(f, "filename", None)]
+            files = []
+            for f in raw_files:
+                if isinstance(f, UploadFile) and getattr(f, "filename", None):
+                    files.append(f)
+                elif hasattr(f, "filename") and hasattr(f, "read") and getattr(f, "filename", None):
+                    files.append(f)
 
             raw_images = form.getlist("images") if hasattr(form, "getlist") else []
-            image_files = [f for f in raw_images if isinstance(f, UploadFile) and getattr(f, "filename", None)]
+            image_files = []
+            for f in raw_images:
+                if isinstance(f, UploadFile) and getattr(f, "filename", None):
+                    image_files.append(f)
+                elif hasattr(f, "filename") and hasattr(f, "read") and getattr(f, "filename", None):
+                    image_files.append(f)
         except Exception as e:
             raise HTTPException(status_code=422, detail=f"Invalid multipart payload: {e}")
     else:
@@ -403,6 +401,15 @@ async def chat_endpoint(
         raise HTTPException(status_code=422, detail="Missing required field: query")
     if isinstance(query, str) and not query.strip():
         raise HTTPException(status_code=422, detail="Query cannot be empty.")
+    logger.info(
+        f"[CHAT DEBUG] Parsed request: content_type={content_type} "
+        f"query_len={len(query or '')} files={len(files)} images={len(image_files)} "
+        f"session_id={session_id} image_mode={image_mode}"
+    )
+    if files:
+        logger.info(f"[CHAT DEBUG] Uploaded files: {[f.filename for f in files]}")
+    if image_files:
+        logger.info(f"[CHAT DEBUG] Uploaded images: {[f.filename for f in image_files]}")
 
     if chat_history:
         try:
@@ -415,10 +422,10 @@ async def chat_endpoint(
     model_provider = (model_provider or "groq").lower()
     session_id = session_id or str(uuid.uuid4())
     image_mode = image_mode or "auto"
-    reranker_profile = (reranker_profile or "accurate").lower()
     reranker_model_name = reranker_model_name or None
-    if reranker_profile != "custom":
-        reranker_model_name = None
+    reranker_profile = "llm_judge"
+    if not reranker_model_name:
+        reranker_model_name = "llama-3.1-8b-instant"
 
     start = time.perf_counter()
     client_id = x_tenant_id or (http_request.client.host if http_request.client else "anonymous")
@@ -427,10 +434,21 @@ async def chat_endpoint(
     try:
         extra_collections = []
         router = _get_multimodal_router()
+        image_payloads = []
 
         # Validate uploads
         allowed_doc_exts = {".csv", ".tsv", ".xlsx", ".docx", ".txt", ".md", ".pdf"}
         allowed_img_exts = {".jpg", ".jpeg", ".png"}
+        # If image files were mistakenly uploaded under "files", re-route them.
+        if files:
+            fixed_files = []
+            for f in files:
+                ext = os.path.splitext(f.filename or "")[1].lower()
+                if ext in allowed_img_exts:
+                    image_files.append(f)
+                else:
+                    fixed_files.append(f)
+            files = fixed_files
         for f in files:
             ext = os.path.splitext(f.filename or "")[1].lower()
             if ext not in allowed_doc_exts:
@@ -449,6 +467,9 @@ async def chat_endpoint(
                 if len(file_bytes) > max_mb * 1024 * 1024:
                     raise HTTPException(status_code=413, detail=f"File too large. Max allowed: {max_mb} MB.")
                 file_payloads.append((f.filename, file_bytes))
+                # Preserve image bytes for direct vision path
+                if f in image_files:
+                    image_payloads.append((f.filename, file_bytes))
 
             ingest_info = router.ingest_files_for_session(
                 question=query,
@@ -457,6 +478,45 @@ async def chat_endpoint(
                 image_mode=image_mode,
             )
             extra_collections = [ingest_info["collection_name"]]
+            force_session_context = True
+            logger.info(
+                f"[CHAT DEBUG] Ingested files: session_id={session_id} "
+                f"collection={ingest_info.get('collection_name')} chunks_added={ingest_info.get('chunks_added')} "
+                f"modes={ingest_info.get('modes')}"
+            )
+            if ingest_info.get("chunks_added", 0) <= 0:
+                raise HTTPException(status_code=400, detail="Uploaded files/images produced no extractable content.")
+
+        # If images are provided and user asks about image, route directly to vision/OCR response.
+        image_keywords = ["image", "photo", "picture", "screenshot", "describe", "what's in the image", "what is in the image"]
+        q_lower = (query or "").lower()
+        if image_files and (image_mode in ["vision", "ocr"] or any(k in q_lower for k in image_keywords)):
+            if not image_payloads:
+                for f in image_files:
+                    if hasattr(f, "read"):
+                        image_payloads.append((f.filename, await f.read()))
+            response = router.answer_images(
+                question=query,
+                image_files=image_payloads,
+                session_id=session_id,
+                image_mode=image_mode,
+            )
+            if stream:
+                async def event_gen():
+                    for chunk in _chunk_text_for_stream(response.get("answer", "")):
+                        yield f"data: {chunk}\n\n"
+                    meta = {
+                        "session_id": response.get("session_id"),
+                        "sources": response.get("sources", []),
+                        "confidence": response.get("confidence", 0.0),
+                        "verifier_verdict": response.get("verifier_verdict", "UNVERIFIED"),
+                        "is_hallucinated": response.get("is_hallucinated", False),
+                        "optimizations": response.get("optimizations", {}),
+                        "latency_optimizations": response.get("latency_optimizations", {}),
+                    }
+                    yield f"event: meta\ndata: {json.dumps(meta)}\n\n"
+                return StreamingResponse(event_gen(), media_type="text/event-stream")
+            return response
         else:
             # No files this turn; reuse prior session collection if available
             if session_id:
@@ -464,8 +524,29 @@ async def chat_endpoint(
                     collection_name = router.session_vectors.get_session_collection(session_id)
                     if collection_name:
                         extra_collections = [collection_name]
+                        file_keywords = [
+                            "file", "files", "document", "documents", "pdf", "excel", "xlsx", "csv", "tsv",
+                            "spreadsheet", "sheet", "docx", "attached", "upload", "image", "photo", "picture"
+                        ]
+                        q_lower = (query or "").lower()
+                        if any(k in q_lower for k in file_keywords):
+                            force_session_context = True
+                        logger.info(
+                            f"[CHAT DEBUG] Reusing session collection: session_id={session_id} "
+                            f"collection={collection_name}"
+                        )
                 except Exception:
                     pass
+
+        # Guard: If query references file/document and no uploaded context exists, return a clear error.
+        file_keywords = [
+            "file", "files", "document", "documents", "pdf", "excel", "xlsx", "csv", "tsv",
+            "spreadsheet", "sheet", "docx", "attached", "upload", "image", "photo", "picture"
+        ]
+        q_lower = (query or "").lower()
+        enforce_file_session = os.getenv("ENFORCE_FILE_SESSION", "false").lower() == "true"
+        if enforce_file_session and any(k in q_lower for k in file_keywords) and not extra_collections:
+            raise HTTPException(status_code=400, detail="No uploaded file detected for this session.")
 
         orchestrator = _get_orchestrator()
         result = await orchestrator.invoke(
@@ -477,6 +558,7 @@ async def chat_endpoint(
             extra_collections=extra_collections,
             reranker_profile=reranker_profile,
             reranker_model_name=reranker_model_name,
+            force_session_context=force_session_context,
         )
 
         response = ChatResponse(
@@ -499,7 +581,7 @@ async def chat_endpoint(
                 session_id=session_id,
                 user_id=x_user_id or "anonymous_user",
                 query=query,
-                intent_detected=result.get("intent", "unknown"),
+                intent_detected=(result.get("intent") or "unknown"),
                 routed_agent=result.get("optimizations", {}).get("agent_routed", "unknown"),
                 latency_ms=elapsed_ms,
                 llm_time_ms=float(result.get("latency_optimizations", {}).get("llm_time_ms", 0.0)),
@@ -536,6 +618,8 @@ async def chat_endpoint(
             return StreamingResponse(event_gen(), media_type="text/event-stream")
 
         return response
+    except HTTPException:
+        raise
     except Exception as e:
         import traceback; logger.error(f"Chat Execution Failed: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Internal Generation Error.")
@@ -879,7 +963,25 @@ async def ingestion_status_endpoint(x_tenant_id: Optional[str] = Header(default=
     tags=["Audio"],
     summary="Text-to-Speech (Coqui)",
     description="Generate a WAV audio response from input text using Coqui TTS. "
-                "Accepts JSON ({\"text\": \"...\"}) or form-data (text=...)."
+                "Accepts JSON ({\"text\": \"...\"}) or form-data (text=...).",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "application/json": {
+                    "schema": {"$ref": "#/components/schemas/TTSRequest"}
+                },
+                "application/x-www-form-urlencoded": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "text": {"type": "string", "description": "Text to synthesize into speech."}
+                        },
+                        "required": ["text"]
+                    }
+                }
+            }
+        }
+    }
 )
 async def tts_endpoint(
     payload: Optional[TTSRequest] = Body(default=None),

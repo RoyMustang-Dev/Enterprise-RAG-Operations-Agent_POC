@@ -113,7 +113,10 @@ class MultimodalRouter:
                 if chosen_mode == "vision":
                     logger.info("[MULTIMODAL] Using vision model for semantic image understanding.")
                     vision_text = self.vision.answer(file_bytes, question=question)
-                    if ocr_text:
+                    if not vision_text and ocr_text:
+                        # Fallback to OCR text if vision produced nothing.
+                        content = ocr_text
+                    elif ocr_text:
                         content = f"{ocr_text}\n\nVISION_CONTEXT:\n{vision_text}"
                     else:
                         content = vision_text
@@ -124,6 +127,7 @@ class MultimodalRouter:
 
             content = content.strip() if content else ""
             if not content:
+                logger.warning(f"[MULTIMODAL] No extracted content for {filename}; skipping.")
                 continue
 
             chunks = chunk_text(content)
@@ -144,6 +148,70 @@ class MultimodalRouter:
             "collection_name": store.collection_name,
             "chunks_added": ingested,
             "modes": modes,
+        }
+
+    def answer_images(
+        self,
+        question: str,
+        image_files: list,
+        session_id: Optional[str] = None,
+        image_mode: str = "auto",
+    ) -> Dict[str, Any]:
+        """
+        Direct image understanding path (OCR/Vision) without mixing base KB.
+        Processes the first image and returns a formatted response.
+        """
+        if not image_files:
+            return {
+                "session_id": session_id,
+                "answer": "No image provided.",
+                "sources": [],
+                "confidence": 0.0,
+                "verifier_verdict": "UNVERIFIED",
+                "is_hallucinated": False,
+                "optimizations": {},
+                "latency_optimizations": {},
+            }
+
+        combined_answers = []
+        combined_sources = []
+        for filename, file_bytes in image_files:
+            if not file_bytes:
+                logger.warning(f"[MULTIMODAL] Empty image bytes for {filename}, skipping.")
+                continue
+            response = self._handle_image(
+                question=question,
+                file_bytes=file_bytes,
+                filename=filename,
+                session_id=session_id,
+                image_mode=image_mode,
+            )
+            answer_text = response.get("answer") or ""
+            if answer_text:
+                combined_answers.append(f"[{filename}]\n{answer_text}")
+            combined_sources.extend(response.get("sources", []))
+
+        if not combined_answers:
+            return {
+                "session_id": session_id,
+                "answer": "No images produced extractable content.",
+                "sources": [],
+                "confidence": 0.0,
+                "verifier_verdict": "UNVERIFIED",
+                "is_hallucinated": False,
+                "optimizations": {},
+                "latency_optimizations": {},
+            }
+
+        return {
+            "session_id": session_id,
+            "answer": "\n\n".join(combined_answers),
+            "sources": combined_sources,
+            "confidence": 0.7,
+            "verifier_verdict": "UNVERIFIED",
+            "is_hallucinated": False,
+            "optimizations": {"mode_used": "vision_multi"},
+            "latency_optimizations": {},
         }
 
     def _handle_image(
