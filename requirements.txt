@@ -15,8 +15,8 @@ urllib3==2.2.3
 charset-normalizer==3.3.2
 chardet==5.2.0
 pytest
-langgraph
-langchain-core
+langgraph==1.0.9
+langchain-core==1.2.17
 pydantic
 python-multipart
 langchain-text-splitters
@@ -44,3 +44,29 @@ prometheus-client>=0.20.0
 psutil
 ragas
 paddlepaddle-gpu
+langchain-experimental==0.4.1
+prophet
+scikit-learn
+langchain-groq==1.1.2
+# Third-Party API Integrations
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+simple-salesforce
+stripe
+snowflake-connector-python
+hubspot-api-client
+msal
+numpy>=2.0.0
+xgboost>=2.0.0
+xlsxwriter
+scipy
+statsmodels
+dowhy
+econml
+river
+
+# Langfuse
+langfuse>=2.0.0
+langfuse-langchain
+langchain-google-genai

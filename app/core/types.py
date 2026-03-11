@@ -13,6 +13,14 @@ Usage:
 """
 from typing import TypedDict, Annotated, List, Dict, Optional, Any
 from pydantic import BaseModel, Field
+from enum import Enum
+
+# -----------------------------------------------------------------------------
+# 0. Agent Identification Enums
+# -----------------------------------------------------------------------------
+class AgentType(str, Enum):
+    ENTERPRISE_RAG = "ENTERPRISE_RAG"          # The Master 12-stage RAG Pipeline
+    BUSINESS_ANALYST = "BUSINESS_ANALYST"      # The LangGraph Data Analytics Agent
 
 # -----------------------------------------------------------------------------
 # 1. LangGraph Core State Dictionary schema

@@ -32,13 +32,14 @@ class PersonaCacheManager:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             # Fetch the most recently saved agent persona
-            cursor.execute("SELECT bot_name, brand_details, expanded_prompt FROM agent_profiles ORDER BY id DESC LIMIT 1")
+            cursor.execute("SELECT bot_name, brand_details, expanded_prompt, welcome_message FROM agent_profiles ORDER BY id DESC LIMIT 1")
             row = cursor.fetchone()
             if row:
                 self._cached_persona = {
                     "bot_name": row[0],
                     "brand_details": row[1],
-                    "expanded_prompt": row[2]
+                    "expanded_prompt": row[2],
+                    "welcome_message": row[3] if len(row) > 3 else ""
                 }
             else:
                 self._cached_persona = None
@@ -69,7 +70,7 @@ def get_compiled_prompt(stage: str, model: str) -> str:
     # Define which stages receive persona injection.
     # If PERSONA_INJECTION_MODE=all, all stages receive full injection.
     injection_mode = os.getenv("PERSONA_INJECTION_MODE", "strict").lower()
-    FULL_INJECTION_STAGES = ["rag_synthesis", "multimodal_voice"]
+    FULL_INJECTION_STAGES = ["rag_synthesis", "multimodal_voice", "smalltalk_agent"]
     PARTIAL_INJECTION_STAGES = ["intent_classifier", "coder_agent"]
     NO_INJECTION_STAGES = [
         "security_guard",
@@ -93,6 +94,7 @@ def get_compiled_prompt(stage: str, model: str) -> str:
             persona_block = f"""[GLOBAL PERSONA INITIATED]
 You are dynamically mapped to "{persona.get('bot_name', 'Agent')}".
 Brand Details: {persona.get('brand_details', '')}
+Brand Welcome Greeting: {persona.get('welcome_message', '')}
 Core Directives (ReAct/CoT/ToT Constraints):
 {expanded}
 [END GLOBAL PERSONA]
@@ -103,6 +105,7 @@ Core Directives (ReAct/CoT/ToT Constraints):
             persona_block = f"""[GLOBAL PERSONA INITIATED]
 You are dynamically mapped to "{persona.get('bot_name', 'Agent')}".
 Brand Details: {persona.get('brand_details', '')}
+Brand Welcome Greeting: {persona.get('welcome_message', '')}
 Core Directives (ReAct/CoT/ToT Constraints):
 {expanded}
 [END GLOBAL PERSONA]

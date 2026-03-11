@@ -194,6 +194,77 @@ def init_chat_history_db(tenant_id: str | None = None):
     conn.commit()
     conn.close()
 
+def init_analytics_memory_db(tenant_id: str | None = None):
+    """Ensures the analytics memory table exists."""
+    conn = _get_conn("app", tenant_id)
+    c = conn.cursor()
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS analytics_memory (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT,
+        role TEXT,
+        content TEXT,
+        kpi_json TEXT,
+        created_at TEXT
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+def init_analytics_jobs_db(tenant_id: str | None = None):
+    conn = _get_conn("app", tenant_id)
+    c = conn.cursor()
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS analytics_jobs (
+        job_id TEXT PRIMARY KEY,
+        status TEXT,
+        payload_json TEXT,
+        updated_at TEXT
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+def upsert_analytics_job(job_id: str, status: str, payload_json: str, tenant_id: str | None = None):
+    conn = _get_conn("app", tenant_id)
+    c = conn.cursor()
+    c.execute("""
+    INSERT INTO analytics_jobs (job_id, status, payload_json, updated_at)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(job_id) DO UPDATE SET status=excluded.status, payload_json=excluded.payload_json, updated_at=excluded.updated_at
+    """, (job_id, status, payload_json, datetime.utcnow().isoformat()))
+    conn.commit()
+    conn.close()
+
+def fetch_analytics_job(job_id: str, tenant_id: str | None = None):
+    conn = _get_conn("app", tenant_id)
+    c = conn.cursor()
+    c.execute("SELECT status, payload_json, updated_at FROM analytics_jobs WHERE job_id = ?", (job_id,))
+    row = c.fetchone()
+    conn.close()
+    return row
+
+def insert_analytics_memory(session_id: str, role: str, content: str, kpi_json: str = "", tenant_id: str | None = None):
+    conn = _get_conn("app", tenant_id)
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO analytics_memory (session_id, role, content, kpi_json, created_at) VALUES (?, ?, ?, ?, ?)",
+        (session_id, role, content, kpi_json, datetime.utcnow().isoformat())
+    )
+    conn.commit()
+    conn.close()
+
+def fetch_analytics_memory(session_id: str, limit: int = 6, tenant_id: str | None = None):
+    conn = _get_conn("app", tenant_id)
+    c = conn.cursor()
+    c.execute(
+        "SELECT role, content, kpi_json FROM analytics_memory WHERE session_id = ? ORDER BY id DESC LIMIT ?",
+        (session_id, limit)
+    )
+    rows = c.fetchall()
+    conn.close()
+    return list(reversed(rows))
+
 def init_ephemeral_collections_db(tenant_id: str | None = None):
     """Ensures the ephemeral collections table exists."""
     conn = _get_conn("app", tenant_id)

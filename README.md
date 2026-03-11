@@ -138,6 +138,33 @@ You must define the exact `.env` configuration file in the primary project root 
 1. Copy `.env-copy` to `.env`.
 2. Open `.env` and fill the variables. Below is the step-by-step breakdown:
    - **CORE_LLM_PROVIDER, VISION_LLM_PROVIDER**: Explicitly routes the reasoning tasks. Provide strings like `modelslab`, `groq`, or `sarvam`.
+
+### LLM Providers
+```env
+MODELSLAB_API_KEY=your_key_here
+GEMINI_API_KEY=your_key_here
+GROQ_API_KEY=your_key_here
+```
+
+### Data Analytics Agent (Advanced APIs)
+Ensure the following variables are configured in `.env` if utilizing the `BUSINESS_ANALYST` persona natively routing to third-party endpoints:
+```env
+# Google Cloud (GA4 & Google Sheets)
+GOOGLE_APPLICATION_CREDENTIALS_JSON='{"type": "service_account", ...}'
+
+# Salesforce Lightning
+SALESFORCE_USERNAME=your_username
+SALESFORCE_PASSWORD=your_password
+SALESFORCE_SECURITY_TOKEN=your_token
+
+# Stripe Financials
+STRIPE_API_KEY=sk_live_...
+
+# Microsoft Azure (Power BI DAX queries)
+AZURE_CLIENT_ID=your_client_id
+AZURE_CLIENT_SECRET=your_client_secret
+AZURE_TENANT_ID=your_tenant_id
+```
    - **MODELSLAB_API_KEY**: Used for ultra-fast Gemini queries & Audio synthesis. Acquire at `https://modelslab.com/` (Dashboard -> API Keys).
    - **GEMINI_API_KEY**: Direct Google Vision endpoint. Acquire at `https://aistudio.google.com/` (Get API Key).
    - **GROQ_API_KEY**: Required for micro-models (Llama-Guard, intent routing). Acquire at `https://console.groq.com/` (API Keys section).

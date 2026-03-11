@@ -23,7 +23,7 @@ from app.core.rate_limit import TokenBucketRateLimiter
 from app.infra.database import init_ingestion_db, get_ingestion_job, set_current_tenant
 from app.infra.job_tracker import JobTracker
 from app.infra.hardware import HardwareProbe
-from app.core.types import TelemetryLogRecord
+from app.core.types import TelemetryLogRecord, AgentType
 
 
 # -----------------------------------------------------------------------------
@@ -56,6 +56,7 @@ async def create_new_agent(
     brand_details: str = Form(...),
     welcome_message: str = Form(...),
     prompt_instructions: str = Form(""),
+    agent_type: AgentType = Form(AgentType.ENTERPRISE_RAG),
     company_logo: Optional[UploadFile] = File(default=None)
 ):
     """
@@ -93,7 +94,8 @@ async def create_new_agent(
             brand_details=brand_details, 
             welcome_message=welcome_message, 
             raw_prompt=prompt_instructions, 
-            expanded_prompt=expanded_prompt
+            expanded_prompt=expanded_prompt,
+            agent_type=agent_type.value
         )
         
         if success:
@@ -1499,19 +1501,29 @@ async def rlhf_feedback_endpoint(request: FeedbackRequest):
 # -----------------------------------------------------------------------------
 # 8. System Metrics Endpoint
 # -----------------------------------------------------------------------------
-class SystemMetricsResponse(BaseModel):
+class HardwareMetrics(BaseModel):
     cpu_usage_percent: float
     memory_usage_percent: float
-    tenant_id: str
     active_jobs: int
+
+class SystemMetricsResponse(BaseModel):
+    hardware: HardwareMetrics
+    tenant_id: str
+    llm_observability: Optional[Dict[str, Any]] = None
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "cpu_usage_percent": 15.4,
-                "memory_usage_percent": 42.1,
+                "hardware": {
+                    "cpu_usage_percent": 15.4,
+                    "memory_usage_percent": 42.1,
+                    "active_jobs": 2
+                },
                 "tenant_id": "default",
-                "active_jobs": 2
+                "llm_observability": {
+                    "rag_agent_metrics": { "tokens": 40200, "errors": 0 },
+                    "business_analyst_metrics": { "tokens": 85030, "errors": 2 }
+                }
             }
         }
     }
@@ -1526,9 +1538,188 @@ class SystemMetricsResponse(BaseModel):
 async def system_metrics_endpoint(x_tenant_id: Optional[str] = Header(default="default", alias="x-tenant-id")):
     import psutil
     active = len([j for j in ingestion_jobs.values() if j._state.get("status") in ["pending", "crawling_and_extracting", "running", "extracting"]])
-    return SystemMetricsResponse(
+    
+    hardware = HardwareMetrics(
         cpu_usage_percent=psutil.cpu_percent(interval=0.1),
         memory_usage_percent=psutil.virtual_memory().percent,
-        tenant_id=x_tenant_id,
         active_jobs=active
+    )
+    
+    llm_metrics = {
+        "rag_agent_metrics": { "tokens": 0, "errors": 0 },
+        "business_analyst_metrics": { "tokens": 0, "errors": 0 }
+    }
+    
+    # Langfuse Observability Integration via non-blocking API payload
+    if os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"):
+        try:
+            # Placeholder: In a real environment, query https://us.langfuse.com/api/public/metrics
+            pass
+        except Exception as e:
+            logger.warning(f"[LANGFUSE] Failed to fetch Langfuse metrics: {e}")
+
+    return SystemMetricsResponse(
+        hardware=hardware,
+        tenant_id=x_tenant_id,
+        llm_observability=llm_metrics
+    )
+
+# -----------------------------------------------------------------------------
+# 9. Decoupled Business Analyst Agent Endpoint
+# -----------------------------------------------------------------------------
+@router.post(
+    "/business_analyst/chat",
+    tags=["Analytics"],
+    summary="Decoupled Data Analytics Chat Execution",
+    description="Dedicated LangGraph REPL pipeline for explicit CSV file mathematical analysis.",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "query": {"type": "string"},
+                            "session_id": {"type": "string"},
+                            "files": {
+                                "type": "array",
+                                "items": {"type": "string", "format": "binary"},
+                                "description": "Upload one or more CSV/Excel files."
+                            }
+                        },
+                        "required": ["query", "session_id", "files"]
+                    }
+                }
+            }
+        }
+    }
+)
+async def analytics_chat_endpoint(
+    request: Request,
+    query: str = Form(...),
+    session_id: str = Form(...),
+    files: List[UploadFile] = File(...),
+    async_mode: bool = Form(False),
+    background_tasks: BackgroundTasks = None,
+    x_tenant_id: str = Header(default="default", alias="x-tenant-id")
+):
+    import pandas as pd
+    import io
+    import os
+    import json
+    
+    # Securely retrieve the Persona from Cache
+    from app.prompt_engine.groq_prompts.config import PersonaCacheManager
+    cache = PersonaCacheManager()
+    persona = cache.get_persona()
+
+    if os.getenv("ANALYTICS_REQUIRE_TENANT", "false").lower() == "true":
+        if not x_tenant_id or x_tenant_id == "default":
+            raise HTTPException(status_code=400, detail="x-tenant-id is required for Business Analyst Agent.")
+    
+    # We strictly mandate tabular data
+    if not files:
+        raise HTTPException(status_code=400, detail="The Business Analyst Agent requires at least one CSV/Excel file upload to perform mathematical tasks.")
+        
+    dataframes = []
+    sources = []
+    for file in files:
+        contents = await file.read()
+        try:
+            if file.filename.endswith('.csv'):
+                df = pd.read_csv(io.BytesIO(contents))
+            elif file.filename.endswith(('.xls', '.xlsx')):
+                df = pd.read_excel(io.BytesIO(contents))
+            else:
+                continue
+            dataframes.append(df)
+            sources.append({"source": file.filename, "rows": int(len(df))})
+        except Exception as e:
+            logger.error(f"[ANALYTICS] File parsing failed for {file.filename}: {e}")
+            raise HTTPException(status_code=400, detail=f"Failed to parse {file.filename} as tabular data.")
+            
+    if not dataframes:
+         raise HTTPException(status_code=400, detail="No readable CSV or Excel dataframes were extracted from the uploaded files.")
+         
+    from app.agents.data_analytics.supervisor import DataAnalyticsSupervisor
+    supervisor = DataAnalyticsSupervisor(dataframes=dataframes, sources=sources)
+    
+    logger.info(f"[{session_id}] Executing Business Analyst LangGraph on {len(dataframes)} dataframes.")
+    if async_mode:
+        from uuid import uuid4
+        from app.infra.database import init_analytics_jobs_db, upsert_analytics_job
+        job_id = str(uuid4())
+        init_analytics_jobs_db()
+        upsert_analytics_job(job_id, "queued", "{}", x_tenant_id)
+
+        async def _run_job():
+            try:
+                payload = await supervisor.run(query=query, persona=persona, session_id=session_id)
+                upsert_analytics_job(job_id, "completed", json.dumps(payload), x_tenant_id)
+            except Exception as e:
+                upsert_analytics_job(job_id, "failed", json.dumps({"error": str(e)}), x_tenant_id)
+
+        if background_tasks:
+            background_tasks.add_task(_run_job)
+        else:
+            await _run_job()
+        return {"status": "accepted", "job_id": job_id}
+
+    dashboard_payload = await supervisor.run(query=query, persona=persona, session_id=session_id)
+    
+    return {
+        "status": "success",
+        "agent": "BUSINESS_ANALYST",
+        "data": dashboard_payload
+    }
+
+# -----------------------------------------------------------------------------
+# Analytics Job Status
+# -----------------------------------------------------------------------------
+@router.get(
+    "/analytics/progress/{job_id}",
+    tags=["Analytics"],
+    summary="Analytics Job Status",
+    description="Check the status and result of an async Business Analyst job."
+)
+async def analytics_job_status(job_id: str, x_tenant_id: str = Header(default="default", alias="x-tenant-id")):
+    from app.infra.database import init_analytics_jobs_db, fetch_analytics_job
+    init_analytics_jobs_db()
+    row = fetch_analytics_job(job_id, x_tenant_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Job not found.")
+    status, payload_json, updated_at = row
+    try:
+        payload = json.loads(payload_json) if payload_json else {}
+    except Exception:
+        payload = {"raw": payload_json}
+    return {"job_id": job_id, "status": status, "updated_at": updated_at, "data": payload}
+
+# -----------------------------------------------------------------------------
+# 10. File Download Route (CSV Export)
+# -----------------------------------------------------------------------------
+@router.get(
+    "/exports/{filename}",
+    tags=["Exports"],
+    summary="Download Generated Analytical Reports",
+    description="Serves physically compiled CSV insights securely back to the frontend dashboard."
+)
+async def download_export(filename: str):
+    import os
+    from fastapi.responses import FileResponse
+    
+    export_dir = os.path.join(os.getcwd(), "data", "exports")
+    file_path = os.path.join(export_dir, filename)
+    
+    if not os.path.exists(file_path):
+         raise HTTPException(status_code=404, detail="File has expired or does not exist.")
+    
+    media_type = "text/csv"
+    if filename.endswith(".xlsx"):
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        
+    return FileResponse(
+        path=file_path,
+        media_type=media_type,
+        filename=filename
     )

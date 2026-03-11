@@ -25,6 +25,7 @@ class PersonaBootstrapper:
         self.db_path = "data/agent_profiles.db"
         self._initialize_db()
 
+
     def _initialize_db(self):
         """Builds the strict SQLite schema mandated by the blueprint."""
         try:
@@ -39,11 +40,17 @@ class PersonaBootstrapper:
                     brand_details TEXT NOT NULL,
                     welcome_message TEXT NOT NULL,
                     raw_prompt TEXT,
+                    agent_type TEXT DEFAULT 'ENTERPRISE_RAG',
                     expanded_prompt TEXT NOT NULL,
                     creator_user_id TEXT DEFAULT 'system',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+            # Attempt to upgrade legacy schemas seamlessly
+            try:
+                cursor.execute("ALTER TABLE agent_profiles ADD COLUMN agent_type TEXT DEFAULT 'ENTERPRISE_RAG'")
+            except sqlite3.OperationalError:
+                pass # Column already exists
             conn.commit()
             conn.close()
         except Exception as e:
@@ -93,17 +100,16 @@ CRITICAL RULES:
         except Exception as e:
             logger.error(f"[BOOTSTRAPPER] Expansion Engine Fault: {e}")
             return raw_instructions
-
     def persist_agent(self, bot_name: str, logo_path: str, brand_details: str, 
-                      welcome_message: str, raw_prompt: str, expanded_prompt: str, user_id: str = "system") -> bool:
+                      welcome_message: str, raw_prompt: str, expanded_prompt: str, agent_type: str = "ENTERPRISE_RAG", user_id: str = "system") -> bool:
         """Saves the fully bootstrapped Persona into SQLite, forcing dynamic caches to update."""
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO agent_profiles (bot_name, logo_path, brand_details, welcome_message, raw_prompt, expanded_prompt, creator_user_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (bot_name, logo_path, brand_details, welcome_message, raw_prompt, expanded_prompt, user_id))
+                INSERT INTO agent_profiles (bot_name, logo_path, brand_details, welcome_message, raw_prompt, agent_type, expanded_prompt, creator_user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (bot_name, logo_path, brand_details, welcome_message, raw_prompt, agent_type, expanded_prompt, user_id))
             conn.commit()
             conn.close()
             

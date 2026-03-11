@@ -39,7 +39,7 @@ class SmalltalkAgent:
         
         # Compile System Prompt explicitly using the multimodal/conversational template 
         # (This injects the ReAct persona + strict bounds)
-        system_prompt = get_compiled_prompt("multimodal_voice", self.model_id)
+        system_prompt = get_compiled_prompt("smalltalk_agent", self.model_id)
         
         # Build messages payload including history for context
         messages = [{"role": "system", "content": system_prompt}]

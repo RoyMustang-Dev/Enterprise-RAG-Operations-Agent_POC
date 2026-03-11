@@ -243,7 +243,7 @@ class ExecutionGraph:
              logger.info(f"[ROUTER] Dispatching payload to the {state['intent']} Coder Agent.")
              state["optimizations"]["agent_routed"] = "coder_agent"
              # We execute solely against the Coder MoE ignoring dense 70B RAG chains
-             final_state = await self.coder_agent.ainvoke(state)
+             final_state = await self.coder_agent.ainvoke(state, config=config)
              if not final_state.get("verifier_verdict"):
                  final_state["verifier_verdict"] = "N/A"
              if "sources" not in final_state:
@@ -263,7 +263,7 @@ class ExecutionGraph:
              state["optimizations"]["agent_routed"] = "rag_agent"
              
              # Execute the end-to-end RAG pipeline
-             final_state = await self.rag_agent.ainvoke(state)
+             final_state = await self.rag_agent.ainvoke(state, config=config)
              final_state["answer"] = self._strip_think(final_state.get("answer", ""))
              final_state["chat_history"].append({"role": "assistant", "content": final_state.get("answer", "")})
              if session_id:
